@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "start": "nodemon ./index.ts",
+    "build": "npx tsc",
+    "build:watch": "npx tsc --watch",
+    "dev": "npm run build:watch & npm run start"
+  },
   "dependencies": {
     "@prisma/client": "^4.16.0",
     "cors": "^2.8.5",
