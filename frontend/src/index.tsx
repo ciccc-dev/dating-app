@@ -3,7 +3,6 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Auth0Provider } from "@auth0/auth0-react";
-import ErrorBoundary from "./components/ErrorBoundary";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -16,9 +15,7 @@ const Bootstrap = () => {
       clientId={process.env.REACT_APP_AUTH0_CLIENT_ID as string}
       authorizationParams={{ redirect_uri: window.location.origin }}
     >
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      <App />
     </Auth0Provider>
   );
 };

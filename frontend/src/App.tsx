@@ -1,16 +1,24 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Header } from "./components/Header";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Home } from "./pages/Home";
+import { Root } from "./pages/Root";
 
-const router = createBrowserRouter([{ path: "/", element: <Home /> }]);
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: "",
+        element: <Home />,
+      },
+    ],
+  },
+]);
 
 const App = () => {
-  return (
-    <>
-      <Header />
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;
