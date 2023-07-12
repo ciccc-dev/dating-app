@@ -22,7 +22,6 @@ export const Root = () => {
   useEffect(() => {
     if (isLoading) return;
     if (!isAuthenticated) return navigate("/home");
-
     if (user?.updated_at) {
       const secondsAfterLogin = differenceInSeconds(
         new Date(),
