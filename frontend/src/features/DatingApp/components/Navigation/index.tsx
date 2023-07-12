@@ -7,10 +7,11 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { Tab, Tabs, Typography } from "@mui/material";
+import { Button, Tab, Tabs, Typography } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/system";
 
+// TODO: Replace to constant
 const tabValues = ["discovery", "likes", "messages"];
 
 export const DatingAppNavigation = () => {
@@ -19,7 +20,8 @@ export const DatingAppNavigation = () => {
   const currentPath = location.pathname.replace("/app/", "");
   const tabIndex = tabValues.indexOf(currentPath);
 
-  const { user } = useAuth0();
+  const { user, logout } = useAuth0();
+  const handleLogout = () => logout();
 
   const navigate = useNavigate();
   const handleNavigateToProfile = () => navigate("/app/profile");
@@ -50,7 +52,6 @@ export const DatingAppNavigation = () => {
           <Tab label="messages" />
         </Tabs>
       </Box>
-
       <Divider />
       <List>
         <ListItem key="email" disablePadding>
@@ -60,6 +61,10 @@ export const DatingAppNavigation = () => {
         </ListItem>
       </List>
       <Divider />
+      <StyledLogoutBox>
+        <Button onClick={handleLogout}>LOGOUT</Button>
+      </StyledLogoutBox>
+      <Toolbar />
     </div>
   );
 };
@@ -69,4 +74,12 @@ const StyledAccountBox = styled(Box)`
   background-color: #ec407a;
   text-align: center;
   border-bottom: 1px;
+`;
+
+const StyledLogoutBox = styled(Box)`
+  width: 350px;
+  text-align: center;
+  border-bottom: 1px;
+  position: fixed;
+  bottom: 0;
 `;
