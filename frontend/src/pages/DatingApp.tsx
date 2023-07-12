@@ -1,15 +1,9 @@
-import { Outlet, useNavigate, useOutletContext } from "react-router-dom";
+import { Outlet, useOutletContext } from "react-router-dom";
+import { DatingAppWrapper } from "../features/DatingApp/components/Wrapper";
 
 export const DatingApp = () => {
-  const navigate = useNavigate();
   const user = useOutletContext();
-
   console.log("@@@@@@@@@@@@@", user);
 
-  return (
-    <>
-      <Outlet />
-      app
-    </>
-  );
+  return <DatingAppWrapper Outlet={Outlet} />;
 };
