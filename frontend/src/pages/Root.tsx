@@ -27,7 +27,7 @@ export const Root = () => {
         new Date(),
         parseISO(user?.updated_at)
       );
-      secondsAfterLogin < LOGIN_DURATION && navigate("/app");
+      secondsAfterLogin < LOGIN_DURATION && navigate("/app/discovery");
     }
   }, [isAuthenticated, isLoading, navigate, user?.updated_at]);
 
