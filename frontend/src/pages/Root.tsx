@@ -17,7 +17,7 @@ const theme = createTheme({
 export const Root = () => {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const navigate = useNavigate();
-  const LOGIN_DURATION = 1;
+  const LOGIN_DURATION = 2;
 
   useEffect(() => {
     if (isLoading) return;
