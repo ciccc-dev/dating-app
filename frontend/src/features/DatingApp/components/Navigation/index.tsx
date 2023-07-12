@@ -22,11 +22,12 @@ export const DatingAppNavigation = () => {
   const { user } = useAuth0();
 
   const navigate = useNavigate();
+  const handleNavigateToProfile = () => navigate("/app/profile");
   const handleChange = (e: SyntheticEvent) =>
     e.currentTarget.textContent && navigate(e.currentTarget.textContent);
 
   const MyAccount = () => (
-    <StyledAccountBox>
+    <StyledAccountBox onClick={handleNavigateToProfile}>
       <Typography variant="h5" color="common.white">
         {user?.name ?? "---"}
       </Typography>
