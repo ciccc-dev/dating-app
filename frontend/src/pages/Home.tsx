@@ -9,45 +9,49 @@ import { styled } from "@mui/system";
 export const Home = () => {
   const headerTheme = createTheme({
     palette: {
-      primary: {
-        main: grey[800],
-      },
-      secondary: {
-        main: pink[400],
-      },
+      primary: { main: grey[800] },
+      secondary: { main: pink[600] },
     },
   });
-
   const { user } = useAuth0();
-
   const handleClickCreateAccountButton = () => {
     console.log("Redirect to signup page");
   };
 
-  const StyledGrid = styled(Grid)`
-    margin-top: 300px;
-  `;
-
   return (
     <ThemeProvider theme={headerTheme}>
       <Header user={user} />
-      <Grid
-        container
-        alignItems="center"
-        justifyContent="center"
-        direction="column"
-      >
-        <StyledGrid item xs={12}>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="small"
-            onClick={handleClickCreateAccountButton}
-          >
-            Create account
-          </Button>
-        </StyledGrid>
-      </Grid>
+      <div style={styles.paperContainer}>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <StyledGrid item xs={12}>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              onClick={handleClickCreateAccountButton}
+            >
+              Create account
+            </Button>
+          </StyledGrid>
+        </Grid>
+      </div>
     </ThemeProvider>
   );
+};
+
+const StyledGrid = styled(Grid)`
+  margin-top: 300px;
+`;
+
+const styles = {
+  paperContainer: {
+    opacity: 0.7,
+    height: 890,
+    backgroundImage: `url(${"https://tinder.com/static/build/f527e47b80b40fa123bc1093175cb7dd.webp"})`,
+  },
 };
