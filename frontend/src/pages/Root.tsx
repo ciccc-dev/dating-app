@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { differenceInSeconds, parseISO } from "date-fns";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -16,12 +16,13 @@ const theme = createTheme({
 
 export const Root = () => {
   const { isAuthenticated, isLoading, user } = useAuth0();
+  const location = useLocation();
   const navigate = useNavigate();
-  const LOGIN_DURATION = 2;
+  const LOGIN_DURATION = 3;
 
   useEffect(() => {
     if (isLoading) return;
-    if (!isAuthenticated) return navigate("/home");
+    if (!isAuthenticated || location.pathname === "/") return navigate("/home");
     if (user?.updated_at) {
       const secondsAfterLogin = differenceInSeconds(
         new Date(),
@@ -29,7 +30,13 @@ export const Root = () => {
       );
       secondsAfterLogin < LOGIN_DURATION && navigate("/app/discovery");
     }
-  }, [isAuthenticated, isLoading, navigate, user?.updated_at]);
+  }, [
+    isAuthenticated,
+    isLoading,
+    location.pathname,
+    navigate,
+    user?.updated_at,
+  ]);
 
   return (
     <>
