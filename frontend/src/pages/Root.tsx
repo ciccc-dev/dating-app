@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { differenceInSeconds, parseISO } from "date-fns";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import { pink } from "@mui/material/colors";
 
 const theme = createTheme({
@@ -16,7 +17,7 @@ const theme = createTheme({
 export const Root = () => {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const navigate = useNavigate();
-  const LOGIN_DURATION = 3;
+  const LOGIN_DURATION = 1;
 
   useEffect(() => {
     if (isLoading) return;
@@ -33,6 +34,7 @@ export const Root = () => {
 
   return (
     <>
+      <CssBaseline />
       <ThemeProvider theme={theme}>
         <Outlet context={user} />
       </ThemeProvider>
