@@ -1,10 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { Home } from "./pages/Home";
-import { Root } from "./pages/Root";
 import { DatingApp } from "./pages/DatingApp";
+import { Discovery } from "./pages/Discovery";
+import { Home } from "./pages/Home";
 import { Profile } from "./pages/Profile";
+import { Root } from "./pages/Root";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/app/discovery",
-            element: <Profile />,
+            element: <Discovery />,
           },
           {
             path: "/app/likes",
