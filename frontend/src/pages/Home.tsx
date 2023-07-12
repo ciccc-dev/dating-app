@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { grey, pink } from "@mui/material/colors";
 
@@ -13,10 +13,10 @@ export const Home = () => {
       secondary: { main: pink[600] },
     },
   });
-  const { user } = useAuth0();
-  const handleClickCreateAccountButton = () => {
-    console.log("Redirect to signup page");
-  };
+
+  const { loginWithRedirect, user } = useAuth0();
+  const handleClickCreateAccountButton = () =>
+    loginWithRedirect({ authorizationParams: { screen_hint: "signup" } });
 
   return (
     <ThemeProvider theme={headerTheme}>
@@ -29,13 +29,16 @@ export const Home = () => {
           direction="column"
         >
           <StyledGrid item xs={12}>
+            <Typography variant="h3">Connect</Typography>
+          </StyledGrid>
+          <StyledGrid item xs={12}>
             <Button
               variant="contained"
               color="secondary"
-              size="small"
+              size="large"
               onClick={handleClickCreateAccountButton}
             >
-              Create account
+              Create Account
             </Button>
           </StyledGrid>
         </Grid>
@@ -45,7 +48,7 @@ export const Home = () => {
 };
 
 const StyledGrid = styled(Grid)`
-  margin-top: 300px;
+  margin-top: 200px;
 `;
 
 const styles = {
