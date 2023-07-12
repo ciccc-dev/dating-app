@@ -17,11 +17,9 @@ export const Root = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading) {
-      console.log(isLoading, isAuthenticated);
-      if (!isAuthenticated) return navigate("/home");
-      navigate("/app");
-    }
+    if (isLoading) return;
+    if (!isAuthenticated) return navigate("/home");
+    navigate("/app");
   }, [isAuthenticated, isLoading, navigate]);
 
   return (
