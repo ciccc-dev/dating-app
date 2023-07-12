@@ -1,7 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Home } from "./pages/Home";
 import { Root } from "./pages/Root";
+import { DatingApp } from "./pages/DatingApp";
+import { Profile } from "./pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -10,8 +13,18 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     children: [
       {
-        path: "",
+        path: "/home",
         element: <Home />,
+      },
+      {
+        path: "/app",
+        element: <DatingApp />,
+        children: [
+          {
+            path: "/app/profile",
+            element: <Profile />,
+          },
+        ],
       },
     ],
   },

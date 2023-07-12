@@ -1,7 +1,16 @@
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Header } from "../components/Header";
-import { useEffect } from "react";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { pink } from "@mui/material/colors";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: pink[400],
+    },
+  },
+});
 
 export const Root = () => {
   const { isAuthenticated, isLoading, user } = useAuth0();
@@ -17,8 +26,9 @@ export const Root = () => {
 
   return (
     <>
-      <Header user={user} />
-      <Outlet />
+      <ThemeProvider theme={theme}>
+        <Outlet context={user} />
+      </ThemeProvider>
     </>
   );
 };
