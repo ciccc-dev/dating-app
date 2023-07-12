@@ -13,8 +13,8 @@ export const Discovery = () => {
           flexWrap: "wrap",
           "& > :not(style)": {
             m: 3,
-            width: 384,
-            height: 384,
+            width: 256,
+            height: 256,
           },
         }}
       >

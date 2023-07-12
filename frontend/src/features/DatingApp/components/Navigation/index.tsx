@@ -47,9 +47,9 @@ export const DatingAppNavigation = () => {
           aria-label="basic tabs example"
           centered
         >
-          <Tab label="discovery" />
-          <Tab label="likes" />
-          <Tab label="messages" />
+          <StyledTab label="discovery" />
+          <StyledTab label="likes" />
+          <StyledTab label="messages" />
         </Tabs>
       </Box>
       <Divider />
@@ -76,8 +76,12 @@ const StyledAccountBox = styled(Box)`
   border-bottom: 1px;
 `;
 
+const StyledTab = styled(Tab)`
+  font-size: 10px;
+`;
+
 const StyledLogoutBox = styled(Box)`
-  width: 350px;
+  width: 256px;
   text-align: center;
   border-bottom: 1px;
   position: fixed;

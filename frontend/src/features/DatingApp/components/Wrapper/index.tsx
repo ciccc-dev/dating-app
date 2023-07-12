@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const DatingAppWrapper = ({ Outlet }: Props) => {
-  const drawerWidth = 350;
+  const drawerWidth = 256;
 
   return (
     <Box sx={{ display: "flex" }}>
