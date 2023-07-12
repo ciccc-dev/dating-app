@@ -24,6 +24,18 @@ const router = createBrowserRouter([
             path: "/app/profile",
             element: <Profile />,
           },
+          {
+            path: "/app/discovery",
+            element: <Profile />,
+          },
+          {
+            path: "/app/likes",
+            element: <Profile />,
+          },
+          {
+            path: "/app/messages",
+            element: <Profile />,
+          },
         ],
       },
     ],
