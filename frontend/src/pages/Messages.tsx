@@ -9,10 +9,14 @@ export const Messages = () => {
     socket.on("hello", (message) => {
       console.log(message);
     });
+    socket.on("messages", (message) => {
+      console.log(message);
+    });
   });
 
   const handleSendMessage = () => {
     socket.emit("message", "hello world");
+    socket.emit("joined-user", { name: "hoge", room: "room" });
   };
 
   return (
