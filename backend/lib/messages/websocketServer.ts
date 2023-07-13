@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { fetchMessagesByRoom } from "./repository";
 
 export const webscoketConnect = (
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>
@@ -7,9 +8,15 @@ export const webscoketConnect = (
   io.on("connection", (socket) => {
     console.log(socket.id);
 
+    socket.on("choose_user", (data: { message: string; room: string }) => {
+      const messages = fetchMessagesByRoom(data.room);
+      socket.emit("messages", messages);
+      // socket.broadcast.emit("messages", messages);
+    });
+
     socket.on("joined-user", (data) => {
       //Storing users connected in a room in memory
-      console.log(data.name);
+      console.log(data);
       // var user = {};
       // user[socket.id] = data.username;
       // if (users[data.roomname]) {
@@ -17,6 +24,8 @@ export const webscoketConnect = (
       // } else {
       //   users[data.roomname] = [user];
       // }
+      const messages = fetchMessagesByRoom("user1");
+      // socket.emit("messages", messages);
 
       //Joining the Socket Room
       socket.join(data.roomname);
