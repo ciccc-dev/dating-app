@@ -30,7 +30,7 @@ export const DatingAppNavigation = () => {
 
   const MyAccount = () => (
     <StyledAccountBox onClick={handleNavigateToProfile}>
-      <Typography variant="h5" color="common.white">
+      <Typography variant="inherit" color="common.white">
         {user?.name ?? "---"}
       </Typography>
     </StyledAccountBox>
