@@ -4,6 +4,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { DatingApp } from "./pages/DatingApp";
 import { Discovery } from "./pages/Discovery";
 import { Home } from "./pages/Home";
+import { Messages } from "./pages/Messages";
 import { Profile } from "./pages/Profile";
 import { Root } from "./pages/Root";
 
@@ -35,7 +36,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/app/messages",
-            element: <Profile />,
+            element: <Messages />,
           },
         ],
       },
