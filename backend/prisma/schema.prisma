@@ -11,19 +11,19 @@ datasource db {
 }
 
 model Profile {
-  id           String     @id @db.Uuid
-  userName     String     @map("user_name")
-  birthday     DateTime
-  gender       String
-  sexuality    String
-  aboutMe      String     @map("about_me")
-  purpose      String[]
-  registeredAt DateTime   @map("registered_at") @db.Timestamptz(3)
-  updatedAt    DateTime   @map("updated_at") @db.Timestamptz(3)
+  id                String     @id @db.Uuid
+  userName          String     @map("user_name") @db.VarChar(50)
+  birthday          DateTime
+  gender            String     @db.VarChar(30)
+  sexualOrientation String     @map("sexual_orientation") @db.VarChar(30)
+  aboutMe           String     @map("about_me")
+  purpose           String[]   @db.VarChar(20)
+  registeredAt      DateTime   @map("registered_at") @db.Timestamptz(3)
+  updatedAt         DateTime   @map("updated_at") @db.Timestamptz(3)
   // user          User     @relation(fields: [userId], references: [id])
-  userId       String     @map("user_id")
-  photos       PhotoUrl[]
-  interests    Interest[] @relation("ProfileInterest")
+  userId            String     @map("user_id")
+  photos            PhotoUrl[]
+  interests         Interest[] @relation("ProfileInterest")
 
   @@map("profiles")
 }
@@ -42,9 +42,77 @@ model PhotoUrl {
 
 model Interest {
   id        Int       @id @default(autoincrement())
-  name      String
+  name      String    @db.VarChar(20)
   sortOrder Int       @map("sort_order")
   profiles  Profile[] @relation("ProfileInterest")
+  filters   Filter[]  @relation("FilterInterest")
 
   @@map("interest")
+}
+
+model Filter {
+  id                          String     @id @db.Uuid
+  showMe                      String     @map("show_me") @db.VarChar(10)
+  minAge                      Int        @map("min_age")
+  maxAge                      Int        @map("max_age")
+  isAgeFiltered               Boolean    @map("is_age_filtered")
+  minDistance                 Int        @map("min_distance")
+  maxDistance                 Int        @map("max_distance")
+  isDistanceFiltered          Boolean    @map("is_distance_filtered")
+  sexualOrientation           String     @map("sexual_orientation") @db.VarChar(30)
+  isSexualOrientationFiltered Boolean    @map("is_sexual_orientation_filtered")
+  purpose                     String[]   @db.VarChar(20)
+  isPurposeFiltered           Boolean    @map("is_purpose_filtered")
+  // user          User     @relation(fields: [userId], references: [id])
+  userId                      String     @map("user_id")
+  interests                   Interest[] @relation("FilterInterest")
+
+  @@map("filter")
+}
+
+model ChatRoom {
+  id           String   @id @db.Uuid
+  // user          User     @relation(fields: [selectedBy], references: [id])
+  selectedBy   String   @db.Uuid
+  // selecteduser          User     @relation(fields: [selectedUser], references: [id])
+  selectedUser String   @db.Uuid
+  registeredAt DateTime @map("registered_at") @db.Timestamptz(3)
+  updatedAt    DateTime @map("updated_at") @db.Timestamptz(3)
+  Chat         Chat[]
+
+  @@map("chat_room")
+}
+
+model Chat {
+  id         String   @id @db.Uuid
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String   @map("chat_room_id") @db.Uuid
+  // user          User     @relation(fields: [selectedUser], references: [id])
+  sentBy     String   @map("sent_by") @db.Uuid
+  hasRead    Boolean  @map("has_read")
+  timestamp  DateTime @db.Timestamptz(3)
+
+  @@map("chat")
+}
+
+model UserBlock {
+  id           String   @id @db.Uuid
+  // user          User     @relation(fields: [blockedBy], references: [id])
+  blockedBy    String   @db.Uuid
+  // blockeduser          User     @relation(fields: [blockedUser], references: [id])
+  blockedUser  String   @db.Uuid
+  registeredAt DateTime @map("registered_at") @db.Timestamptz(3)
+
+  @@map("user_block")
+}
+
+model Geolocation {
+  id         String  @id @db.Uuid
+  // user          User     @relation(fields: [userId], references: [id])
+  userId     String  @map("user_id")
+  location   String  @db.VarChar(60)
+  latitude   Decimal @db.Decimal(17, 14)
+  longtitude Decimal @db.Decimal(17, 14)
+
+  @@map("geolocation")
 }
