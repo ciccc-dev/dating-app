@@ -1,51 +1,18 @@
-export const fetchMessagesByRoom = (roomId: string) => {
-  const allMessages = [
-    {
-      id: "user1",
-      messages: [
-        {
-          time: "2023-07-13 23:34",
-          user: "aaaaaaaaaaaaaaa",
-          text: "Hello, Jay",
-        },
-        {
-          time: "2023-07-13 23:35",
-          user: "bbbbbbbbbbbbbbb",
-          text: "Hello, Ann",
-        },
-      ],
-    },
-    {
-      id: "user2",
-      messages: [
-        {
-          time: "2023-07-13 23:34",
-          user: "aaaaaaaaaaaaaaa",
-          text: "Hello, Yuta",
-        },
-        {
-          time: "2023-07-13 23:35",
-          user: "bbbbbbbbbbbbbbb",
-          text: "Hello, Yuri",
-        },
-      ],
-    },
-    {
-      id: "user3",
-      messages: [
-        {
-          time: "2023-07-13 23:34",
-          user: "aaaaaaaaaaaaaaa",
-          text: "Hello, Gen",
-        },
-        {
-          time: "2023-07-13 23:35",
-          user: "bbbbbbbbbbbbbbb",
-          text: "Hello, Yui",
-        },
-      ],
-    },
-  ];
+import { allMessages } from "./testdata";
 
-  return allMessages.find((message) => message.id === roomId);
+export const fetchMessagesByRoomId = (roomId: string) => {
+  return allMessages.filter((message) => message.roomId === roomId);
+};
+
+export const fetchMessagesByRoomIds = (roomdIds: string[]) => {
+  const messages = allMessages
+    .map((message) => {
+      if (roomdIds.includes(message.roomId)) return message;
+    })
+    .filter((v) => v);
+  return messages;
+};
+
+export const fetchAllMessages = () => {
+  return allMessages;
 };
