@@ -95,6 +95,17 @@ model Chat {
   @@map("chat")
 }
 
+model UserUnselected {
+  id             String   @id @db.Uuid
+  // user          User     @relation(fields: [blockedBy], references: [id])
+  unselectedBy   String   @db.Uuid
+  // unselecteduser          User     @relation(fields: [unselectedUser], references: [id])
+  unselectedUser String   @db.Uuid
+  registeredAt   DateTime @map("registered_at") @db.Timestamptz(3)
+
+  @@map("user_unselected")
+}
+
 model UserBlock {
   id           String   @id @db.Uuid
   // user          User     @relation(fields: [blockedBy], references: [id])
