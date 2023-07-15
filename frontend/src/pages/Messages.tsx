@@ -1,89 +1,133 @@
-import { useState, SyntheticEvent } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Button, Tab, Tabs, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
-import { useEffect } from "react";
-import io from "socket.io-client";
 
-interface Chat {
+import { WebsocketClient } from "../features/Messages/api/websocketClient";
+
+interface Chatroom {
   id: string;
-  messages: Message[];
+  users: string[];
 }
 
 interface Message {
+  roomId: string;
+  userId: string;
   time: string;
   text: string;
 }
 
-export const Messages = () => {
-  const socket = io(process.env.REACT_APP_SERVER_URL ?? "");
-  const [tabIndexState, setTabIndex] = useState(0);
-  const tabValues = ["user1", "user2", "user3"];
-  const [chat, setChat] = useState<Chat>({ id: "", messages: [] });
+interface State {
+  chatrooms: Chatroom[];
+  messages: Message[];
+  currentChatroom: string;
+}
 
-  socket.on("hello", (message) => {
-    console.log(message);
-  });
-  socket.on("messages", (message) => {
-    console.log(message);
-    setChat(message);
-  });
+const initialState = {
+  chatrooms: [],
+  messages: [],
+  currentChatroom: "",
+};
+
+export const Messages = () => {
+  const [state, update] = useState<State>(initialState);
+  const [message, setMessage] = useState("");
+
+  const { isLoading, user } = useAuth0();
 
   useEffect(() => {
-    socket.emit("choose_user", {
-      message: "aaaaaaaaaaaaaaaaaaaaaaaa",
-      room: tabValues[tabIndexState],
-    });
-  }, []);
+    if (!isLoading && user) {
+      WebsocketClient.initialLoad(user);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
-  const handleChange = (e: SyntheticEvent) => {
-    const tabIndex = tabValues.indexOf(e.currentTarget.textContent as string);
-    setTabIndex(tabIndex);
-    socket.emit("joined-user", {
-      message: "hoge",
-      room: tabValues[tabIndex],
-    });
-    socket.emit("choose_user", {
-      message: "aaaaaaaaaaaaaaaaaaaaaaaa",
-      room: tabValues[tabIndex],
-    });
+  const handleUpdateChatrooms = (chatrooms: Chatroom[]) =>
+    update((prev) => ({ ...prev, chatrooms }));
+
+  const handleUpdateMessages = (messages: Message[]) =>
+    update((prev) => ({ ...prev, messages }));
+
+  WebsocketClient.onChatrooms(handleUpdateChatrooms);
+  WebsocketClient.onMessages(handleUpdateMessages);
+
+  const handleChangeChatroom = (e: SyntheticEvent) =>
+    update((prev) => ({
+      ...prev,
+      currentChatroom: e.currentTarget.textContent as string,
+    }));
+
+  const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) =>
+    setMessage(event.target.value);
+
+  const onSubmit = () => {
+    WebsocketClient.emitSendMessage({ message, userId: user?.sub ?? "" });
+    setMessage("");
   };
 
-  const handleSendMessage = () => {
-    socket.emit("message", "hello world");
-    socket.emit("joined-user", {
-      message: "hoge",
-      room: tabValues[tabIndexState],
-    });
+  const handleSendMessage = (event: FormEvent) => {
+    event.preventDefault();
+    onSubmit();
   };
+
+  const handleClickEnter = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      onSubmit();
+    }
+  };
+
+  const currentRoomMessages = useMemo(
+    () =>
+      state.messages.filter(
+        (message) => message.roomId === state.currentChatroom
+      ),
+    [state.currentChatroom, state.messages]
+  );
+
+  const currentTabIndex = useMemo(() => {
+    const chatroomIds = state?.chatrooms.map((chatroom) => chatroom.id);
+    return chatroomIds.indexOf(state.currentChatroom);
+  }, [state.currentChatroom, state?.chatrooms]);
 
   return (
     <>
       <Box>
-        <Tabs
-          value={tabIndexState}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-          centered
-        >
-          <StyledTab label="user1" />
-          <StyledTab label="user2" />
-          <StyledTab label="user3" />
+        <Tabs value={currentTabIndex} onChange={handleChangeChatroom} centered>
+          {state?.chatrooms.map((chatroom) => (
+            <StyledTab key={chatroom.id} label={chatroom.id} />
+          ))}
         </Tabs>
       </Box>
-      {chat.messages.map((message) => {
-        return <div>{message.text}</div>;
-      })}
+      {currentRoomMessages.map((message) => (
+        <div>{message.text}</div>
+      ))}
       <Box>
-        <StyledTextField
-          fullWidth
-          margin="normal"
-          rows={1}
-          multiline
-          variant="outlined"
-          placeholder="Message"
-        />
-        <StyledButton onClick={handleSendMessage}>Send</StyledButton>
+        <form onSubmit={handleSendMessage}>
+          <StyledTextField
+            fullWidth
+            margin="normal"
+            rows={1}
+            onKeyDown={handleClickEnter}
+            multiline
+            variant="outlined"
+            placeholder="Message"
+            value={message}
+            onChange={handleChangeMessage}
+          />
+          <StyledButton variant="contained" color="primary" type="submit">
+            Send
+          </StyledButton>
+        </form>
       </Box>
     </>
   );

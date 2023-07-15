@@ -20,14 +20,6 @@ export const webscoketConnect = (
     socket.on("joined-user", (data) => {
       //Storing users connected in a room in memory
       console.log(data);
-      // var user = {};
-      // user[socket.id] = data.username;
-      // if (users[data.roomname]) {
-      //   users[data.roomname].push(user);
-      // } else {
-      //   users[data.roomname] = [user];
-      // }
-      // socket.emit("messages", messages);
 
       //Joining the Socket Room
       socket.join(data.roomname);
@@ -41,11 +33,9 @@ export const webscoketConnect = (
       // io.to(data.roomname).emit("online-users", getUsers(users[data.roomname]));
     });
 
-    socket.emit("hello", "from server");
-
-    socket.on("message", (message) => {
-      console.log(`from client: ${message}`);
-      socket.broadcast.emit("message", message);
+    socket.on("send", (data: { message: string; userId: string }) => {
+      console.log(`from client: ${data.message}`);
+      socket.broadcast.emit("message", data.message);
     });
 
     socket.on("disconnect", (reason) => {
