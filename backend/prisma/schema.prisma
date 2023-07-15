@@ -11,31 +11,39 @@ datasource db {
 }
 
 model Profile {
-  id                String     @id @db.Uuid
-  userName          String     @map("user_name") @db.VarChar(50)
-  birthday          DateTime
-  gender            String     @db.VarChar(30)
-  sexualOrientation String     @map("sexual_orientation") @db.VarChar(30)
-  aboutMe           String     @map("about_me")
-  purpose           String[]   @db.VarChar(20)
-  registeredAt      DateTime   @map("registered_at") @db.Timestamptz(3)
-  updatedAt         DateTime   @map("updated_at") @db.Timestamptz(3)
-  // user          User     @relation(fields: [userId], references: [id])
-  userId            String     @map("user_id")
-  photos            PhotoUrl[]
-  interests         Interest[] @relation("ProfileInterest")
+  id                   String              @id @db.Uuid
+  userId               String              @map("user_id")
+  userName             String              @map("user_name") @db.VarChar(50)
+  birthday             DateTime
+  gender               String              @db.VarChar(30)
+  sexualOrientation    String              @map("sexual_orientation") @db.VarChar(30)
+  aboutMe              String              @map("about_me")
+  purpose              String[]            @db.VarChar(20)
+  interests            Interest[]          @relation("ProfileInterest")
+  registeredAt         DateTime            @map("registered_at") @db.Timestamptz(3)
+  updatedAt            DateTime            @map("updated_at") @db.Timestamptz(3)
+  photos               PhotoUrl[]
+  filter               Filter?
+  geolocation          Geolocation?
+  ChatroomSelectedBy   ChatRoom[]          @relation("ChatroomSelectedBy")
+  ChatroomSelectedUser ChatRoom[]          @relation("ChatroomSelectedUser")
+  Chat                 Chat[]
+  UnselectedBy         ProfileUnselected[] @relation("UnselectedBy")
+  UnselectedProfile    ProfileUnselected[] @relation("UnselectedProfile")
+  BlockedBy            ProfileBlocked[]    @relation("BlockedBy")
+  BlockedProfile       ProfileBlocked[]    @relation("BlockedProfile")
 
   @@map("profiles")
 }
 
 model PhotoUrl {
   id           String   @id @db.Uuid
+  profile      Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId    String   @map("profile_id") @db.Uuid
   photoUrl     String   @map("photo_url")
   sortOrder    Int      @map("sort_order")
   registeredAt DateTime @map("registered_at") @db.Timestamptz(3)
   updatedAt    DateTime @map("updated_at") @db.Timestamptz(3)
-  profile      Profile  @relation(fields: [profileId], references: [id])
-  profileId    String   @map("profile_id") @db.Uuid
 
   @@map("photo_url")
 }
@@ -52,6 +60,8 @@ model Interest {
 
 model Filter {
   id                          String     @id @db.Uuid
+  profile                     Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId                   String     @unique @map("profile_id") @db.Uuid
   showMe                      String     @map("show_me") @db.VarChar(10)
   minAge                      Int        @map("min_age")
   maxAge                      Int        @map("max_age")
@@ -63,64 +73,64 @@ model Filter {
   isSexualOrientationFiltered Boolean    @map("is_sexual_orientation_filtered")
   purpose                     String[]   @db.VarChar(20)
   isPurposeFiltered           Boolean    @map("is_purpose_filtered")
-  // user          User     @relation(fields: [userId], references: [id])
-  userId                      String     @map("user_id")
   interests                   Interest[] @relation("FilterInterest")
 
   @@map("filter")
 }
 
 model ChatRoom {
-  id           String   @id @db.Uuid
-  // user          User     @relation(fields: [selectedBy], references: [id])
-  selectedBy   String   @db.Uuid
-  // selecteduser          User     @relation(fields: [selectedUser], references: [id])
-  selectedUser String   @db.Uuid
-  registeredAt DateTime @map("registered_at") @db.Timestamptz(3)
-  updatedAt    DateTime @map("updated_at") @db.Timestamptz(3)
-  Chat         Chat[]
+  id              String   @id @db.Uuid
+  profile         Profile  @relation("ChatroomSelectedBy", fields: [selectedBy], references: [id], onDelete: Cascade)
+  selectedBy      String   @map("selected_by") @db.Uuid
+  selectedprofile Profile  @relation("ChatroomSelectedUser", fields: [selectedProfile], references: [id], onDelete: Cascade)
+  selectedProfile String   @map("selected_profile") @db.Uuid
+  isOpened        Boolean
+  registeredAt    DateTime @map("registered_at") @db.Timestamptz(3)
+  updatedAt       DateTime @map("updated_at") @db.Timestamptz(3)
+  Chat            Chat[]
 
   @@map("chat_room")
 }
 
 model Chat {
   id         String   @id @db.Uuid
-  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
   chatRoomId String   @map("chat_room_id") @db.Uuid
-  // user          User     @relation(fields: [selectedUser], references: [id])
+  profile    Profile  @relation(fields: [sentBy], references: [id])
   sentBy     String   @map("sent_by") @db.Uuid
+  message    String
   hasRead    Boolean  @map("has_read")
   timestamp  DateTime @db.Timestamptz(3)
 
   @@map("chat")
 }
 
-model UserUnselected {
-  id             String   @id @db.Uuid
-  // user          User     @relation(fields: [blockedBy], references: [id])
-  unselectedBy   String   @db.Uuid
-  // unselecteduser          User     @relation(fields: [unselectedUser], references: [id])
-  unselectedUser String   @db.Uuid
-  registeredAt   DateTime @map("registered_at") @db.Timestamptz(3)
+model ProfileUnselected {
+  id                String   @id @db.Uuid
+  profile           Profile  @relation("UnselectedBy", fields: [unselectedBy], references: [id], onDelete: Cascade)
+  unselectedBy      String   @map("unselected_by") @db.Uuid
+  unselectedprofile Profile  @relation("UnselectedProfile", fields: [unselectedProfile], references: [id], onDelete: Cascade)
+  unselectedProfile String   @map("unselected_profile") @db.Uuid
+  registeredAt      DateTime @map("registered_at") @db.Timestamptz(3)
 
   @@map("user_unselected")
 }
 
-model UserBlock {
-  id           String   @id @db.Uuid
-  // user          User     @relation(fields: [blockedBy], references: [id])
-  blockedBy    String   @db.Uuid
-  // blockeduser          User     @relation(fields: [blockedUser], references: [id])
-  blockedUser  String   @db.Uuid
-  registeredAt DateTime @map("registered_at") @db.Timestamptz(3)
+model ProfileBlocked {
+  id             String   @id @db.Uuid
+  profile        Profile  @relation("BlockedBy", fields: [blockedBy], references: [id], onDelete: Cascade)
+  blockedBy      String   @map("blocked_by") @db.Uuid
+  blockedprofile Profile  @relation("BlockedProfile", fields: [blockedProfile], references: [id], onDelete: Cascade)
+  blockedProfile String   @map("blocked_profile") @db.Uuid
+  registeredAt   DateTime @map("registered_at") @db.Timestamptz(3)
 
   @@map("user_block")
 }
 
 model Geolocation {
   id         String  @id @db.Uuid
-  // user          User     @relation(fields: [userId], references: [id])
-  userId     String  @map("user_id")
+  profile    Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId  String  @unique @map("profile_id") @db.Uuid
   location   String  @db.VarChar(60)
   latitude   Decimal @db.Decimal(17, 14)
   longtitude Decimal @db.Decimal(17, 14)
