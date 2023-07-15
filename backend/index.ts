@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-// import cors from "cors";
 import apiRoutes from "./routes";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -13,7 +12,6 @@ const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
-    allowedHeaders: ["my-custom-header"],
     credentials: true,
   },
 });
@@ -26,5 +24,5 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 server.listen(port, () => {
-  console.log("Server start on port 3000.");
+  console.log(`Server start on port ${port}.`);
 });
