@@ -18,11 +18,11 @@ model Profile {
   gender               String              @db.VarChar(30)
   sexualOrientation    String              @map("sexual_orientation") @db.VarChar(30)
   aboutMe              String              @map("about_me")
-  purposes             String[]            @db.VarChar(20)
-  interests            Interest[]          @relation("ProfileInterest")
   registeredAt         DateTime            @map("registered_at") @db.Timestamptz(3)
   updatedAt            DateTime            @map("updated_at") @db.Timestamptz(3)
   photos               PhotoUrl[]
+  purposes             Purpose[]
+  interests            UserInterest[]
   filter               Filter?
   geolocation          Geolocation?
   ChatroomSelectedBy   ChatRoom[]          @relation("ChatroomSelectedBy")
@@ -33,7 +33,26 @@ model Profile {
   BlockedBy            ProfileBlocked[]    @relation("BlockedBy")
   BlockedProfile       ProfileBlocked[]    @relation("BlockedProfile")
 
-  @@map("profiles")
+  @@map("profile")
+}
+
+model Purpose {
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String  @map("profile_id") @db.Uuid
+  name      String  @db.VarChar(20)
+
+  @@id([profileId, name])
+  @@map("purpose")
+}
+
+model UserInterest {
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId  String   @map("profile_id") @db.Uuid
+  interest   Interest @relation(fields: [interestId], references: [id])
+  interestId Int      @map("interest_id")
+
+  @@id([profileId, interestId])
+  @@map("user_interest")
 }
 
 model PhotoUrl {
@@ -49,11 +68,11 @@ model PhotoUrl {
 }
 
 model Interest {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(20)
-  sortOrder Int       @map("sort_order")
-  profiles  Profile[] @relation("ProfileInterest")
-  filters   Filter[]  @relation("FilterInterest")
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(20)
+  sortOrder    Int            @map("sort_order")
+  userInterest UserInterest[]
+  filters      Filter[]       @relation("FilterInterest")
 
   @@map("interest")
 }
