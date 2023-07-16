@@ -12,7 +12,7 @@ datasource db {
 
 model Profile {
   id                   String              @id @db.Uuid
-  userId               String              @map("user_id")
+  userId               String              @unique @map("user_id")
   userName             String              @map("user_name") @db.VarChar(50)
   birthday             DateTime
   gender               String              @db.VarChar(30)
