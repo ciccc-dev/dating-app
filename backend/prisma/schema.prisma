@@ -33,6 +33,9 @@ model Profile {
   BlockedBy            ProfileBlocked[]    @relation("BlockedBy")
   BlockedProfile       ProfileBlocked[]    @relation("BlockedProfile")
 
+  @@index([birthday])
+  @@index([gender])
+  @@index([sexualOrientation])
   @@map("profile")
 }
 
@@ -42,6 +45,7 @@ model Purpose {
   name      String  @db.VarChar(20)
 
   @@id([profileId, name])
+  @@index([name])
   @@map("purpose")
 }
 
@@ -52,6 +56,7 @@ model UserInterest {
   interestId Int      @map("interest_id")
 
   @@id([profileId, interestId])
+  @@index([interestId])
   @@map("user_interest")
 }
 
@@ -64,6 +69,7 @@ model PhotoUrl {
   registeredAt DateTime @map("registered_at") @db.Timestamptz(3)
   updatedAt    DateTime @map("updated_at") @db.Timestamptz(3)
 
+  @@index([profileId])
   @@map("photo_url")
 }
 
@@ -108,6 +114,8 @@ model ChatRoom {
   updatedAt       DateTime @map("updated_at") @db.Timestamptz(3)
   Chat            Chat[]
 
+  @@index([selectedBy])
+  @@index([selectedProfile])
   @@map("chat_room")
 }
 
@@ -121,6 +129,7 @@ model Chat {
   hasRead    Boolean  @map("has_read")
   timestamp  DateTime @db.Timestamptz(3)
 
+  @@index([chatRoomId])
   @@map("chat")
 }
 
@@ -132,6 +141,8 @@ model ProfileUnselected {
   unselectedProfile String   @map("unselected_profile") @db.Uuid
   registeredAt      DateTime @map("registered_at") @db.Timestamptz(3)
 
+  @@index([unselectedBy])
+  @@index([unselectedProfile])
   @@map("user_unselected")
 }
 
@@ -143,6 +154,8 @@ model ProfileBlocked {
   blockedProfile String   @map("blocked_profile") @db.Uuid
   registeredAt   DateTime @map("registered_at") @db.Timestamptz(3)
 
+  @@index([blockedBy])
+  @@index([blockedProfile])
   @@map("user_block")
 }
 
@@ -154,5 +167,7 @@ model Geolocation {
   latitude   Decimal @db.Decimal(17, 14)
   longtitude Decimal @db.Decimal(17, 14)
 
+  @@index([latitude])
+  @@index([longtitude])
   @@map("geolocation")
 }
