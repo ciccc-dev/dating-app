@@ -45,9 +45,7 @@ export const Messages = () => {
   const { isLoading, user } = useAuth0();
 
   useEffect(() => {
-    if (!isLoading && user) {
-      WebsocketClient.initialLoad(user);
-    }
+    if (!isLoading && user) WebsocketClient.initialLoad(user);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
