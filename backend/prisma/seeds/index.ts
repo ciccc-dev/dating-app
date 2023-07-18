@@ -1,36 +1,15 @@
-import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
+
+import { seedChats } from "./chats";
+import { seedProfiles } from "./profiles";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.profile.upsert({
-    where: { userId: "auth0|6493c3668860a0c976f765af" },
-    update: {},
-    create: {
-      id: crypto.randomUUID(),
-      userId: "auth0|6493c3668860a0c976f765af",
-      userName: "test1",
-      birthday: new Date(),
-      gender: "man",
-      sexualOrientation: "straight",
-      aboutMe: "",
-      registeredAt: new Date(),
-      updatedAt: new Date(),
-    },
-  });
-
-  await prisma.chat.create({
-    data: {
-      id: crypto.randomUUID(),
-      sentBy: "auth0|6493c3668860a0c976f765af",
-      message: "Hello",
-      receivedBy: "auth0|64af99336e86aeb92a526d0e",
-      hasRead: false,
-      timestamp: new Date(),
-    },
-  });
+  await seedProfiles(prisma);
+  await seedChats(prisma);
 }
+
 main()
   .then(async () => {
     await prisma.$disconnect();
