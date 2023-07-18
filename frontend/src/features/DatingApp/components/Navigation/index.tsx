@@ -4,9 +4,15 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Button, Tab, Tabs, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/system";
 import { TabPanel } from "../TabPanel";
+import { DistanceInputSlider } from "../DistanceInputSlider";
+import { AgePreferenceInputSlider } from "../AgePreferenceInputSlider";
 
 // TODO: Replace to constant
 const tabValues = ["discovery", "likes", "messages"];
@@ -58,7 +64,34 @@ export const DatingAppNavigation = () => {
       </Box>
       <Divider />
       <TabPanel value={tabIndex} index={0}>
-        Item One
+        <List>
+          <ListItem key="distance" disablePadding>
+            <DistanceInputSlider />
+          </ListItem>
+          <ListItem key="age-preference" disablePadding>
+            <AgePreferenceInputSlider />
+          </ListItem>
+          <ListItem key="looking-for" disablePadding>
+            <ListItemButton>
+              <ListItemText primary="Looking For" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key="sexual-orientation" disablePadding>
+            <ListItemButton>
+              <ListItemText primary="Sexual Orientation" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key="interests" disablePadding>
+            <ListItemButton>
+              <ListItemText primary="Interests" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key="purposes" disablePadding>
+            <ListItemButton>
+              <ListItemText primary="Purposes" />
+            </ListItemButton>
+          </ListItem>
+        </List>
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
         Item Two
