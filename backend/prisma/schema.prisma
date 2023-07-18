@@ -112,7 +112,6 @@ model ChatRoom {
   isOpened        Boolean
   registeredAt    DateTime @map("registered_at") @db.Timestamptz(3)
   updatedAt       DateTime @map("updated_at") @db.Timestamptz(3)
-  // Chat            Chat[]
 
   @@index([selectedBy])
   @@index([selectedProfile])
@@ -121,8 +120,6 @@ model ChatRoom {
 
 model Chat {
   id         String   @id @db.Uuid
-  // chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
-  // chatRoomId String   @map("chat_room_id") @db.Uuid
   profile    Profile  @relation(fields: [sentBy], references: [userId])
   sentBy     String   @map("sent_by")
   receivedBy String   @map("received_by")
@@ -130,7 +127,6 @@ model Chat {
   hasRead    Boolean  @map("has_read")
   timestamp  DateTime @db.Timestamptz(3)
 
-  // @@index([chatRoomId])
   @@map("chat")
 }
 
