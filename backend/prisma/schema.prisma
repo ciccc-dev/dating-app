@@ -9,3 +9,165 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Profile {
+  id                   String              @id @db.Uuid
+  userId               String              @unique @map("user_id")
+  userName             String              @map("user_name") @db.VarChar(50)
+  birthday             DateTime
+  gender               String              @db.VarChar(30)
+  sexualOrientation    String              @map("sexual_orientation") @db.VarChar(30)
+  aboutMe              String              @map("about_me")
+  registeredAt         DateTime            @map("registered_at") @db.Timestamptz(3)
+  updatedAt            DateTime            @map("updated_at") @db.Timestamptz(3)
+  photos               PhotoUrl[]
+  purposes             Purpose[]
+  interests            UserInterest[]
+  filter               Filter?
+  geolocation          Geolocation?
+  ChatroomSelectedBy   ChatRoom[]          @relation("ChatroomSelectedBy")
+  ChatroomSelectedUser ChatRoom[]          @relation("ChatroomSelectedUser")
+  Chat                 Chat[]
+  UnselectedBy         ProfileUnselected[] @relation("UnselectedBy")
+  UnselectedProfile    ProfileUnselected[] @relation("UnselectedProfile")
+  BlockedBy            ProfileBlocked[]    @relation("BlockedBy")
+  BlockedProfile       ProfileBlocked[]    @relation("BlockedProfile")
+
+  @@index([birthday])
+  @@index([gender])
+  @@index([sexualOrientation])
+  @@map("profile")
+}
+
+model Purpose {
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String  @map("profile_id") @db.Uuid
+  name      String  @db.VarChar(20)
+
+  @@id([profileId, name])
+  @@index([name])
+  @@map("purpose")
+}
+
+model UserInterest {
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId  String   @map("profile_id") @db.Uuid
+  interest   Interest @relation(fields: [interestId], references: [id])
+  interestId Int      @map("interest_id")
+
+  @@id([profileId, interestId])
+  @@index([interestId])
+  @@map("user_interest")
+}
+
+model PhotoUrl {
+  id           String   @id @db.Uuid
+  profile      Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId    String   @map("profile_id") @db.Uuid
+  photoUrl     String   @map("photo_url")
+  sortOrder    Int      @map("sort_order")
+  registeredAt DateTime @map("registered_at") @db.Timestamptz(3)
+  updatedAt    DateTime @map("updated_at") @db.Timestamptz(3)
+
+  @@index([profileId])
+  @@map("photo_url")
+}
+
+model Interest {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(20)
+  sortOrder    Int            @map("sort_order")
+  userInterest UserInterest[]
+  filters      Filter[]       @relation("FilterInterest")
+
+  @@map("interest")
+}
+
+model Filter {
+  id                          String     @id @db.Uuid
+  profile                     Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId                   String     @unique @map("profile_id") @db.Uuid
+  showMe                      String     @map("show_me") @db.VarChar(10)
+  minAge                      Int        @map("min_age")
+  maxAge                      Int        @map("max_age")
+  isAgeFiltered               Boolean    @map("is_age_filtered")
+  minDistance                 Int        @map("min_distance")
+  maxDistance                 Int        @map("max_distance")
+  isDistanceFiltered          Boolean    @map("is_distance_filtered")
+  sexualOrientation           String     @map("sexual_orientation") @db.VarChar(30)
+  isSexualOrientationFiltered Boolean    @map("is_sexual_orientation_filtered")
+  purpose                     String[]   @db.VarChar(20)
+  isPurposeFiltered           Boolean    @map("is_purpose_filtered")
+  interests                   Interest[] @relation("FilterInterest")
+
+  @@map("filter")
+}
+
+model ChatRoom {
+  id              String   @id @db.Uuid
+  profile         Profile  @relation("ChatroomSelectedBy", fields: [selectedBy], references: [id], onDelete: Cascade)
+  selectedBy      String   @map("selected_by") @db.Uuid
+  selectedprofile Profile  @relation("ChatroomSelectedUser", fields: [selectedProfile], references: [id], onDelete: Cascade)
+  selectedProfile String   @map("selected_profile") @db.Uuid
+  isOpened        Boolean
+  registeredAt    DateTime @map("registered_at") @db.Timestamptz(3)
+  updatedAt       DateTime @map("updated_at") @db.Timestamptz(3)
+  Chat            Chat[]
+
+  @@index([selectedBy])
+  @@index([selectedProfile])
+  @@map("chat_room")
+}
+
+model Chat {
+  id         String   @id @db.Uuid
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  chatRoomId String   @map("chat_room_id") @db.Uuid
+  profile    Profile  @relation(fields: [sentBy], references: [id])
+  sentBy     String   @map("sent_by") @db.Uuid
+  message    String
+  hasRead    Boolean  @map("has_read")
+  timestamp  DateTime @db.Timestamptz(3)
+
+  @@index([chatRoomId])
+  @@map("chat")
+}
+
+model ProfileUnselected {
+  id                String   @id @db.Uuid
+  profile           Profile  @relation("UnselectedBy", fields: [unselectedBy], references: [id], onDelete: Cascade)
+  unselectedBy      String   @map("unselected_by") @db.Uuid
+  unselectedprofile Profile  @relation("UnselectedProfile", fields: [unselectedProfile], references: [id], onDelete: Cascade)
+  unselectedProfile String   @map("unselected_profile") @db.Uuid
+  registeredAt      DateTime @map("registered_at") @db.Timestamptz(3)
+
+  @@index([unselectedBy])
+  @@index([unselectedProfile])
+  @@map("user_unselected")
+}
+
+model ProfileBlocked {
+  id             String   @id @db.Uuid
+  profile        Profile  @relation("BlockedBy", fields: [blockedBy], references: [id], onDelete: Cascade)
+  blockedBy      String   @map("blocked_by") @db.Uuid
+  blockedprofile Profile  @relation("BlockedProfile", fields: [blockedProfile], references: [id], onDelete: Cascade)
+  blockedProfile String   @map("blocked_profile") @db.Uuid
+  registeredAt   DateTime @map("registered_at") @db.Timestamptz(3)
+
+  @@index([blockedBy])
+  @@index([blockedProfile])
+  @@map("user_block")
+}
+
+model Geolocation {
+  id         String  @id @db.Uuid
+  profile    Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId  String  @unique @map("profile_id") @db.Uuid
+  location   String  @db.VarChar(60)
+  latitude   Decimal @db.Decimal(17, 14)
+  longtitude Decimal @db.Decimal(17, 14)
+
+  @@index([latitude])
+  @@index([longtitude])
+  @@map("geolocation")
+}
