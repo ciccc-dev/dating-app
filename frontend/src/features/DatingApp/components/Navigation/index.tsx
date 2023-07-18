@@ -4,12 +4,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Button, Tab, Tabs, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/system";
+import { TabPanel } from "../TabPanel";
 
 // TODO: Replace to constant
 const tabValues = ["discovery", "likes", "messages"];
@@ -27,6 +24,13 @@ export const DatingAppNavigation = () => {
   const handleNavigateToProfile = () => navigate("/app/profile");
   const handleChange = (e: SyntheticEvent) =>
     e.currentTarget.textContent && navigate(e.currentTarget.textContent);
+
+  const a11yProps = (index: number) => {
+    return {
+      id: `simple-tab-${index}`,
+      "aria-controls": `simple-tabpanel-${index}`,
+    };
+  };
 
   const MyAccount = () => (
     <StyledAccountBox onClick={handleNavigateToProfile}>
@@ -47,20 +51,21 @@ export const DatingAppNavigation = () => {
           aria-label="basic tabs example"
           centered
         >
-          <StyledTab label="discovery" />
-          <StyledTab label="likes" />
-          <StyledTab label="messages" />
+          <StyledTab label="discovery" {...a11yProps(0)} />
+          <StyledTab label="likes" {...a11yProps(1)} />
+          <StyledTab label="messages" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <Divider />
-      <List>
-        <ListItem key="email" disablePadding>
-          <ListItemButton>
-            <ListItemText primary="email" />
-          </ListItemButton>
-        </ListItem>
-      </List>
-      <Divider />
+      <TabPanel value={tabIndex} index={0}>
+        Item One
+      </TabPanel>
+      <TabPanel value={tabIndex} index={1}>
+        Item Two
+      </TabPanel>
+      <TabPanel value={tabIndex} index={2}>
+        Item Three
+      </TabPanel>
       <StyledLogoutBox>
         <Button onClick={handleLogout}>LOGOUT</Button>
       </StyledLogoutBox>
