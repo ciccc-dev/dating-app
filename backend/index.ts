@@ -8,6 +8,7 @@ import { webscoketConnect } from "./lib/messages/websocketServer";
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 const port = 3000;
 const server = createServer(app);
 const io = new Server(server, {

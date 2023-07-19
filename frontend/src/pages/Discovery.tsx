@@ -2,35 +2,13 @@ import { Toolbar } from "@mui/material";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import { useEffect } from "react";
+import { Filter } from "../features/DatingApp/api/filter";
+import { Profiles } from "../features/DatingApp/api/profile";
 
 export const Discovery = () => {
-  const getProfiles = async () => {
-    const filters = {
-      age: 20,
-      gender: "Male",
-    };
-    try {
-      const response = await fetch("http://localhost:8000/api/profiles", {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(filters),
-      });
-
-      if (response.ok) {
-        const chatRoomsData = await response.json();
-        console.log(chatRoomsData);
-        return true;
-      } else {
-        return false;
-      }
-    } catch (err) {
-      return false;
-    }
-  };
-
   useEffect(() => {
-    getProfiles();
+    Filter.getFilters();
+    Profiles.getProfiles();
   }, []);
 
   return (
