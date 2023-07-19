@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 import { PrismaClient } from "@prisma/client";
 
 import { allMessages } from "./testdata";
@@ -33,4 +35,25 @@ export const fetchMessagesByUserId = async (userId: string) => {
     return index === self.findIndex((p) => p.id === partner.id);
   });
   return { partners, messages };
+};
+
+export const createMessage = async ({
+  message,
+  sentBy,
+  receivedBy,
+}: {
+  message: string;
+  sentBy: string;
+  receivedBy: string;
+}) => {
+  await prisma.chat.create({
+    data: {
+      id: crypto.randomUUID(),
+      sentBy,
+      message,
+      receivedBy,
+      hasRead: false,
+      timestamp: new Date(),
+    },
+  });
 };
