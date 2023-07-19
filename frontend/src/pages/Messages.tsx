@@ -2,46 +2,55 @@ import {
   ChangeEvent,
   FormEvent,
   KeyboardEvent,
-  SyntheticEvent,
   useEffect,
   useMemo,
   useState,
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button, Tab, Tabs, TextField } from "@mui/material";
+import { Button, Divider, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+
 import { styled } from "@mui/system";
 
 import { WebsocketClient } from "../features/Messages/api/websocketClient";
 
-interface Chatroom {
-  id: string;
-  users: string[];
+interface Partner {
+  userId: string;
+  userName: string;
 }
 
 interface Message {
-  roomId: string;
-  userId: string;
-  time: string;
-  text: string;
+  id: string;
+  sentBy: string;
+  receivedBy: string;
+  message: string;
+  hasRead: boolean;
+  timestamp: Date;
 }
 
 interface State {
-  chatrooms: Chatroom[];
   messages: Message[];
   currentChatroom: string;
+  partners: Partner[];
+  selectedPartner: string;
 }
 
 const initialState = {
   chatrooms: [],
   messages: [],
   currentChatroom: "",
+  partners: [],
+  selectedPartner: "",
 };
 
 export const Messages = () => {
   const [state, update] = useState<State>(initialState);
   const [message, setMessage] = useState("");
-
   const { isLoading, user } = useAuth0();
 
   useEffect(() => {
@@ -49,26 +58,31 @@ export const Messages = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
-  const handleUpdateChatrooms = (chatrooms: Chatroom[]) =>
-    update((prev) => ({ ...prev, chatrooms }));
-
   const handleUpdateMessages = (messages: Message[]) =>
     update((prev) => ({ ...prev, messages }));
 
-  WebsocketClient.onChatrooms(handleUpdateChatrooms);
-  WebsocketClient.onMessages(handleUpdateMessages);
+  const handleUpdatePartners = (partners: Partner[]) =>
+    update((prev) => ({ ...prev, partners }));
 
-  const handleChangeChatroom = (e: SyntheticEvent) =>
+  WebsocketClient.onMessages(handleUpdateMessages);
+  WebsocketClient.onPartners(handleUpdatePartners);
+
+  // const handleChangePartner = (e: MouseEventHan<HTMLLIElement, MouseEvent>) =>
+  const handleChangePartner = (e: any) =>
     update((prev) => ({
       ...prev,
-      currentChatroom: e.currentTarget.textContent as string,
+      selectedPartner: e.currentTarget.dataset.id as string,
     }));
 
   const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) =>
     setMessage(event.target.value);
 
   const onSubmit = () => {
-    WebsocketClient.emitSendMessage({ message, userId: user?.sub ?? "" });
+    WebsocketClient.emitSendMessage({
+      message,
+      sentBy: user?.sub ?? "",
+      receivedBy: state.selectedPartner,
+    });
     setMessage("");
   };
 
@@ -84,56 +98,73 @@ export const Messages = () => {
     }
   };
 
-  const currentRoomMessages = useMemo(
+  const currentMessages = useMemo(
     () =>
       state.messages.filter(
-        (message) => message.roomId === state.currentChatroom
+        (message) =>
+          message.sentBy === state.selectedPartner ||
+          message.receivedBy === state.selectedPartner
       ),
-    [state.currentChatroom, state.messages]
+    [state.messages, state.selectedPartner]
   );
-
-  const currentTabIndex = useMemo(() => {
-    const chatroomIds = state?.chatrooms.map((chatroom) => chatroom.id);
-    return chatroomIds.indexOf(state.currentChatroom);
-  }, [state.currentChatroom, state?.chatrooms]);
 
   return (
     <>
-      <Box>
-        <Tabs value={currentTabIndex} onChange={handleChangeChatroom} centered>
-          {state?.chatrooms.map((chatroom) => (
-            <StyledTab key={chatroom.id} label={chatroom.id} />
+      <Grid container spacing={2}>
+        <Grid item xs={2}>
+          <List>
+            {state.partners.map((partner) => (
+              <>
+                <ListItem
+                  key={partner.userId}
+                  disablePadding
+                  onClick={handleChangePartner}
+                  data-id={partner.userId}
+                >
+                  <ListItemButton>
+                    <ListItemText primary={partner.userName} />
+                  </ListItemButton>
+                </ListItem>
+                <Divider />
+              </>
+            ))}
+          </List>
+        </Grid>
+        <Grid item xs={10}>
+          {currentMessages.map((message) => (
+            <div key={message.id}>
+              {message.message} by {message.sentBy}
+            </div>
           ))}
-        </Tabs>
-      </Box>
-      {currentRoomMessages.map((message) => (
-        <div>{message.text}</div>
-      ))}
+        </Grid>
+      </Grid>
       <Box>
         <form onSubmit={handleSendMessage}>
-          <StyledTextField
-            fullWidth
-            margin="normal"
-            rows={1}
-            onKeyDown={handleClickEnter}
-            multiline
-            variant="outlined"
-            placeholder="Message"
-            value={message}
-            onChange={handleChangeMessage}
-          />
-          <StyledButton variant="contained" color="primary" type="submit">
-            Send
-          </StyledButton>
+          <Grid container spacing={2}>
+            <Grid item xs={11}>
+              <StyledTextField
+                fullWidth
+                margin="normal"
+                rows={1}
+                onKeyDown={handleClickEnter}
+                multiline
+                variant="outlined"
+                placeholder="Message"
+                value={message}
+                onChange={handleChangeMessage}
+              />
+            </Grid>
+            <Grid item xs={1}>
+              <StyledButton variant="contained" color="primary" type="submit">
+                SEND
+              </StyledButton>
+            </Grid>
+          </Grid>
         </form>
       </Box>
     </>
   );
 };
-
-const StyledTab = styled(Tab)`
-  font-size: 10px;
-`;
 
 const StyledButton = styled(Button)`
   position: absolute;
