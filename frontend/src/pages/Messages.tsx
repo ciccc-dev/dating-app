@@ -7,17 +7,14 @@ import {
   useState,
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button, Divider, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-
 import { styled } from "@mui/system";
 
 import { WebsocketClient } from "../features/Messages/api/websocketClient";
+import { Chats } from "../features/Messages/components/Chats";
+import { PartnerList } from "../features/Messages/components/PartnerList";
 
 interface Partner {
   userId: string;
@@ -30,7 +27,13 @@ interface Message {
   receivedBy: string;
   message: string;
   hasRead: boolean;
-  timestamp: Date;
+  timestamp: string;
+  sender: Profile;
+  receiver: Profile;
+}
+
+interface Profile {
+  userName: string;
 }
 
 interface State {
@@ -67,7 +70,6 @@ export const Messages = () => {
   WebsocketClient.onMessages(handleUpdateMessages);
   WebsocketClient.onPartners(handleUpdatePartners);
 
-  // const handleChangePartner = (e: MouseEventHan<HTMLLIElement, MouseEvent>) =>
   const handleChangePartner = (e: any) =>
     update((prev) => ({
       ...prev,
@@ -112,31 +114,12 @@ export const Messages = () => {
     <>
       <Grid container spacing={2}>
         <Grid item xs={2}>
-          <List>
-            {state.partners.map((partner) => (
-              <>
-                <ListItem
-                  key={partner.userId}
-                  disablePadding
-                  onClick={handleChangePartner}
-                  data-id={partner.userId}
-                >
-                  <ListItemButton>
-                    <ListItemText primary={partner.userName} />
-                  </ListItemButton>
-                </ListItem>
-                <Divider />
-              </>
-            ))}
-          </List>
+          <PartnerList
+            partners={state.partners}
+            onClick={handleChangePartner}
+          />
         </Grid>
-        <Grid item xs={10}>
-          {currentMessages.map((message) => (
-            <div key={message.id}>
-              {message.message} by {message.sentBy}
-            </div>
-          ))}
-        </Grid>
+        <Chats messages={currentMessages} />
       </Grid>
       <Box>
         <form onSubmit={handleSendMessage}>
