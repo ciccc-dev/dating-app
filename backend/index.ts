@@ -18,7 +18,6 @@ const io = new Server(server, {
 webscoketConnect(io);
 
 app.use("/api", apiRoutes);
-
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
 });

@@ -27,7 +27,8 @@ model Profile {
   geolocation          Geolocation?
   ChatroomSelectedBy   ChatRoom[]          @relation("ChatroomSelectedBy")
   ChatroomSelectedUser ChatRoom[]          @relation("ChatroomSelectedUser")
-  Chat                 Chat[]
+  ChatSender           Chat[]              @relation("sender")
+  ChatReceiver         Chat[]              @relation("receiver")
   UnselectedBy         ProfileUnselected[] @relation("UnselectedBy")
   UnselectedProfile    ProfileUnselected[] @relation("UnselectedProfile")
   BlockedBy            ProfileBlocked[]    @relation("BlockedBy")
@@ -112,7 +113,6 @@ model ChatRoom {
   isOpened        Boolean
   registeredAt    DateTime @map("registered_at") @db.Timestamptz(3)
   updatedAt       DateTime @map("updated_at") @db.Timestamptz(3)
-  Chat            Chat[]
 
   @@index([selectedBy])
   @@index([selectedProfile])
@@ -121,15 +121,14 @@ model ChatRoom {
 
 model Chat {
   id         String   @id @db.Uuid
-  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
-  chatRoomId String   @map("chat_room_id") @db.Uuid
-  profile    Profile  @relation(fields: [sentBy], references: [id])
-  sentBy     String   @map("sent_by") @db.Uuid
+  sender     Profile  @relation("sender", fields: [sentBy], references: [userId])
+  receiver   Profile  @relation("receiver", fields: [receivedBy], references: [userId])
+  sentBy     String   @map("sent_by")
+  receivedBy String   @map("received_by")
   message    String
   hasRead    Boolean  @map("has_read")
   timestamp  DateTime @db.Timestamptz(3)
 
-  @@index([chatRoomId])
   @@map("chat")
 }
 

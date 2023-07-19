@@ -1,12 +1,14 @@
 import express from "express";
-import { io, Socket } from "socket.io-client";
 
-const socket: Socket = io("http://localhost:8000");
+import { fetchMessagesByUserId } from "../lib/messages/repository";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  res.json({ message: "Fetch all users." });
+router.get("/:userId", async (req, res) => {
+  const { partners, messages } = await fetchMessagesByUserId(
+    req.params.userId as string
+  );
+  res.json({ partners, messages });
 });
 
 export default router;

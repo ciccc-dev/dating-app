@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { fetchMessagesByRoomId, fetchMessagesByRoomIds } from "./repository";
+import { fetchMessagesByRoomIds, fetchMessagesByUserId } from "./repository";
 import { fetchChatroomsByUserId } from "../Chatrooms";
 
 export const webscoketConnect = (
@@ -9,12 +9,14 @@ export const webscoketConnect = (
   io.on("connection", (socket) => {
     console.log(socket.id);
 
-    socket.on("initial_load", (data: { userId: string }) => {
+    socket.on("initial_load", async (data: { userId: string }) => {
       const chatrooms = fetchChatroomsByUserId(data.userId);
       const roomdIds = chatrooms.map((chatroom) => chatroom.id);
       const messages = fetchMessagesByRoomIds(roomdIds);
+      const { partners } = await fetchMessagesByUserId(data.userId);
       socket.emit("fetchChatrooms", chatrooms);
       socket.emit("messages", messages);
+      socket.emit("partners", partners);
     });
 
     socket.on("joined-user", (data) => {
