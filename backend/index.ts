@@ -2,10 +2,12 @@ import express, { Request, Response } from "express";
 import apiRoutes from "./routes";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import cors from "cors";
 
 import { webscoketConnect } from "./lib/messages/websocketServer";
 
 const app = express();
+app.use(cors());
 const port = 3000;
 const server = createServer(app);
 const io = new Server(server, {
