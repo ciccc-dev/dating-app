@@ -2,9 +2,18 @@ import crypto from "crypto";
 
 import { PrismaClient } from "@prisma/client";
 
+interface Chat {
+  id: string;
+  sentBy: string;
+  receivedBy: string;
+  message: string;
+  hasRead: boolean;
+  timestamp: Date;
+}
+
 export const seedChats = async (prisma: PrismaClient) => {
-  await prisma.chat.create({
-    data: {
+  const chats: Chat[] = [
+    {
       id: crypto.randomUUID(),
       sentBy: "auth0|6493c3668860a0c976f765af",
       message: "Hello",
@@ -12,10 +21,7 @@ export const seedChats = async (prisma: PrismaClient) => {
       hasRead: false,
       timestamp: new Date(),
     },
-  });
-
-  await prisma.chat.create({
-    data: {
+    {
       id: crypto.randomUUID(),
       sentBy: "auth0|64af99336e86aeb92a526d0e",
       message: "Hey",
@@ -23,10 +29,7 @@ export const seedChats = async (prisma: PrismaClient) => {
       hasRead: false,
       timestamp: new Date(),
     },
-  });
-
-  await prisma.chat.create({
-    data: {
+    {
       id: crypto.randomUUID(),
       sentBy: "auth0|64af99336e86aeb92a526d0e",
       message: "test",
@@ -34,5 +37,6 @@ export const seedChats = async (prisma: PrismaClient) => {
       hasRead: false,
       timestamp: new Date(),
     },
-  });
+  ];
+  await prisma.chat.createMany({ data: chats });
 };
