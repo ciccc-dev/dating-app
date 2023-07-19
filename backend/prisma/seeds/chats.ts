@@ -30,7 +30,7 @@ export const seedChats = async (prisma: PrismaClient) => {
       id: crypto.randomUUID(),
       sentBy: "auth0|64af99336e86aeb92a526d0e",
       message: "test",
-      receivedBy: "test",
+      receivedBy: "auth0|64b485fd37c9277946e4b7b9",
       hasRead: false,
       timestamp: new Date(),
     },

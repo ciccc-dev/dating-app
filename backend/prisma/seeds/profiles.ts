@@ -33,4 +33,19 @@ export const seedProfiles = async (prisma: PrismaClient) => {
       updatedAt: new Date(),
     },
   });
+  await prisma.profile.upsert({
+    where: { userId: "auth0|64b485fd37c9277946e4b7b9" },
+    update: {},
+    create: {
+      id: crypto.randomUUID(),
+      userId: "auth0|64b485fd37c9277946e4b7b9",
+      userName: "test3",
+      birthday: new Date(),
+      gender: "man",
+      sexualOrientation: "straight",
+      aboutMe: "",
+      registeredAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
 };

@@ -27,7 +27,8 @@ model Profile {
   geolocation          Geolocation?
   ChatroomSelectedBy   ChatRoom[]          @relation("ChatroomSelectedBy")
   ChatroomSelectedUser ChatRoom[]          @relation("ChatroomSelectedUser")
-  Chat                 Chat[]
+  ChatSender           Chat[]              @relation("sender")
+  ChatReceiver         Chat[]              @relation("receiver")
   UnselectedBy         ProfileUnselected[] @relation("UnselectedBy")
   UnselectedProfile    ProfileUnselected[] @relation("UnselectedProfile")
   BlockedBy            ProfileBlocked[]    @relation("BlockedBy")
@@ -120,7 +121,8 @@ model ChatRoom {
 
 model Chat {
   id         String   @id @db.Uuid
-  profile    Profile  @relation(fields: [sentBy], references: [userId])
+  sender     Profile  @relation("sender", fields: [sentBy], references: [userId])
+  receiver   Profile  @relation("receiver", fields: [receivedBy], references: [userId])
   sentBy     String   @map("sent_by")
   receivedBy String   @map("received_by")
   message    String
