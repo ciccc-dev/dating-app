@@ -1,5 +1,4 @@
 import crypto from "crypto";
-
 import { PrismaClient } from "@prisma/client";
 
 import { allMessages } from "./testdata";
@@ -27,7 +26,9 @@ export const fetchMessagesByUserId = async (userId: string) => {
   const messages = await prisma.chat.findMany({
     include: { sender: true, receiver: true },
     where: { OR: [{ sentBy: userId }, { receivedBy: userId }] },
+    orderBy: { timestamp: "asc" },
   });
+
   const rawPartners = messages.map((message) =>
     message.sentBy === userId ? message.receiver : message.sender
   );
