@@ -14,7 +14,10 @@ import { TabPanel } from "../../../Discovery/components/TabPanel";
 import { DistanceInputSlider } from "../../../Discovery/components/DistanceInputSlider";
 import { AgePreferenceInputSlider } from "../../../Discovery/components/AgePreferenceInputSlider";
 import { FilterClient } from "../../../Discovery/api/filter";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { FilterDialog } from "../../../Discovery/components/FilterDialog/FilterDialog";
+import { lookingFor } from "../../../../constants/lookingfor";
+import { sexualOrientations } from "../../../../constants/sexualOrientations";
+import { purposes } from "../../../../constants/purposes";
 
 // TODO: Replace to constant
 const tabValues = ["discovery", "likes", "messages"];
@@ -123,31 +126,22 @@ export const DatingAppNavigation = () => {
             />
           </ListItem>
           <StyledListItem key="looking-for" disablePadding>
-            <StyledListItemButton>
-              <ListItemText primary="Looking For" />
-              <KeyboardArrowRightIcon />
-            </StyledListItemButton>
+            <StyledDialog title="Looking For" list={lookingFor} />
             <StyledTypography>{filter.showMe}</StyledTypography>
           </StyledListItem>
           <StyledListItem key="sexual-orientation" disablePadding>
-            <StyledListItemButton>
-              <ListItemText primary="Sexual Orientation" />
-              <KeyboardArrowRightIcon />
-            </StyledListItemButton>
+            <StyledDialog
+              title="Sexual Orientation"
+              list={sexualOrientations}
+            />
             <StyledTypography>{filter.sexualOrientation}</StyledTypography>
           </StyledListItem>
           <StyledListItem key="interests" disablePadding>
-            <StyledListItemButton>
-              <ListItemText primary="Interests" />
-              <KeyboardArrowRightIcon />
-            </StyledListItemButton>
+            <StyledDialog title="Interests" list={purposes} />
             <StyledTypography>Hello</StyledTypography>
           </StyledListItem>
           <StyledListItem key="purposes" disablePadding>
-            <StyledListItemButton>
-              <ListItemText primary="Purposes" />
-              <KeyboardArrowRightIcon />
-            </StyledListItemButton>
+            <StyledDialog title="Purposes" list={purposes} />
             <StyledListBlock>
               {filter.purposes.map((purpose, index) => (
                 <StyledListSpan key={index}>{purpose}</StyledListSpan>
@@ -222,4 +216,8 @@ const StyledListSpan = styled("span")`
   border: 1px solid black;
   border-radius: 0.7rem;
   margin: 0 0.25rem;
+`;
+
+const StyledDialog = styled(FilterDialog)`
+  width: 100%;
 `;
