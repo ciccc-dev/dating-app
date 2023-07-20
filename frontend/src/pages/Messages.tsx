@@ -7,39 +7,19 @@ import {
   useState,
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { styled } from "@mui/system";
+import { styled } from "@mui/material";
 
 import { WebsocketClient } from "../features/Messages/api/websocketClient";
 import { Chats } from "../features/Messages/components/Chats";
-import { PartnerList } from "../features/Messages/components/PartnerList";
-
-interface Partner {
-  userId: string;
-  userName: string;
-}
-
-interface Message {
-  id: string;
-  sentBy: string;
-  receivedBy: string;
-  message: string;
-  hasRead: boolean;
-  timestamp: string;
-  sender: Profile;
-  receiver: Profile;
-}
-
-interface Profile {
-  userName: string;
-}
+import { MessagesNavigation } from "../features/Messages/components/Navigation";
+import { Form } from "../features/Messages/components/Form";
+import { Message, Profile } from "../features/Messages/types";
 
 interface State {
   messages: Message[];
   currentChatroom: string;
-  partners: Partner[];
+  partners: Profile[];
   selectedPartner: string;
 }
 
@@ -50,6 +30,8 @@ const initialState = {
   partners: [],
   selectedPartner: "",
 };
+
+const drawerWidth = 256;
 
 export const Messages = () => {
   const [state, update] = useState<State>(initialState);
@@ -64,7 +46,7 @@ export const Messages = () => {
   const handleUpdateMessages = (messages: Message[]) =>
     update((prev) => ({ ...prev, messages }));
 
-  const handleUpdatePartners = (partners: Partner[]) =>
+  const handleUpdatePartners = (partners: Profile[]) =>
     update((prev) => ({ ...prev, partners }));
 
   WebsocketClient.onMessages(handleUpdateMessages);
@@ -112,50 +94,42 @@ export const Messages = () => {
 
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid item xs={2}>
-          <PartnerList
+      <Box sx={{ display: "flex" }}>
+        <StyledNavigationWrapper component="nav">
+          <MessagesNavigation
             partners={state.partners}
             onClick={handleChangePartner}
           />
-        </Grid>
-        <Chats messages={currentMessages} />
-      </Grid>
-      <Box>
-        <form onSubmit={handleSendMessage}>
-          <Grid container spacing={2}>
-            <Grid item xs={11}>
-              <StyledTextField
-                fullWidth
-                margin="normal"
-                rows={1}
-                onKeyDown={handleClickEnter}
-                multiline
-                variant="outlined"
-                placeholder="Message"
-                value={message}
-                onChange={handleChangeMessage}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <StyledButton variant="contained" color="primary" type="submit">
-                SEND
-              </StyledButton>
-            </Grid>
-          </Grid>
-        </form>
+        </StyledNavigationWrapper>
+        <StyledContent component="main">
+          <Chats messages={currentMessages} />
+          <Form
+            message={message}
+            onChange={handleChangeMessage}
+            onClickEnter={handleClickEnter}
+            onSubmit={handleSendMessage}
+          />
+        </StyledContent>
       </Box>
     </>
   );
 };
 
-const StyledButton = styled(Button)`
-  position: absolute;
-  right: 5%;
-  bottom: 0;
+const StyledNavigationWrapper = styled(Box)`
+  width: ${drawerWidth}px;
+  flex-shrink: 0;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
-const StyledTextField = styled(TextField)`
-  position: absolute;
-  width: 70%;
-  bottom: 0;
+
+const StyledContent = styled(Box)`
+  flex-grow: 1;
+  padding: 3px;
+  width: calc(100% - ${drawerWidth}px);
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 `;
