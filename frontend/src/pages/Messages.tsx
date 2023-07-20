@@ -20,7 +20,7 @@ interface State {
   messages: Message[];
   currentChatroom: string;
   partners: Profile[];
-  selectedPartner: string;
+  selectedPartnerId: string;
 }
 
 const initialState = {
@@ -28,7 +28,7 @@ const initialState = {
   messages: [],
   currentChatroom: "",
   partners: [],
-  selectedPartner: "",
+  selectedPartnerId: "",
 };
 
 const drawerWidth = 256;
@@ -55,7 +55,7 @@ export const Messages = () => {
   const handleChangePartner = (e: any) =>
     update((prev) => ({
       ...prev,
-      selectedPartner: e.currentTarget.dataset.id as string,
+      selectedPartnerId: e.currentTarget.dataset.id as string,
     }));
 
   const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) =>
@@ -65,7 +65,7 @@ export const Messages = () => {
     WebsocketClient.emitSendMessage({
       message,
       sentBy: user?.sub ?? "",
-      receivedBy: state.selectedPartner,
+      receivedBy: state.selectedPartnerId,
     });
     setMessage("");
   };
@@ -86,10 +86,10 @@ export const Messages = () => {
     () =>
       state.messages.filter(
         (message) =>
-          message.sentBy === state.selectedPartner ||
-          message.receivedBy === state.selectedPartner
+          message.sentBy === state.selectedPartnerId ||
+          message.receivedBy === state.selectedPartnerId
       ),
-    [state.messages, state.selectedPartner]
+    [state.messages, state.selectedPartnerId]
   );
 
   return (
@@ -102,7 +102,7 @@ export const Messages = () => {
           />
         </StyledNavigationWrapper>
         <StyledContent component="main">
-          {state.selectedPartner.length ? (
+          {state.selectedPartnerId.length ? (
             <>
               <Chats messages={currentMessages} />
               <Form
