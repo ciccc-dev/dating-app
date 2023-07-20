@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Grid, Typography } from "@mui/material";
 import { Paper } from "@mui/material";
@@ -43,10 +44,17 @@ const PartnerText = ({
 );
 
 export const Chats = ({ messages }: { messages: Message[] }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth0();
 
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight;
+    }
+  }, []);
+
   return (
-    <StyledPaper>
+    <StyledPaper ref={contentRef}>
       {messages.map((message) => (
         <>
           {user?.sub === message.sentBy ? (
