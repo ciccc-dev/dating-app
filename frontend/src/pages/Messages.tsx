@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Box from "@mui/material/Box";
-import { styled } from "@mui/material";
+import { Typography, styled } from "@mui/material";
 
 import { WebsocketClient } from "../features/Messages/api/websocketClient";
 import { Chats } from "../features/Messages/components/Chats";
@@ -102,13 +102,19 @@ export const Messages = () => {
           />
         </StyledNavigationWrapper>
         <StyledContent component="main">
-          <Chats messages={currentMessages} />
-          <Form
-            message={message}
-            onChange={handleChangeMessage}
-            onClickEnter={handleClickEnter}
-            onSubmit={handleSendMessage}
-          />
+          {state.selectedPartner.length ? (
+            <>
+              <Chats messages={currentMessages} />
+              <Form
+                message={message}
+                onChange={handleChangeMessage}
+                onClickEnter={handleClickEnter}
+                onSubmit={handleSendMessage}
+              />
+            </>
+          ) : (
+            <StyledText variant="h4">Please choose a partner!</StyledText>
+          )}
         </StyledContent>
       </Box>
     </>
@@ -132,4 +138,10 @@ const StyledContent = styled(Box)`
   @media (max-width: 600px) {
     width: 100%;
   }
+`;
+
+const StyledText = styled(Typography)`
+  height: 10rem;
+  text-align: center;
+  margin-top: 10rem;
 `;

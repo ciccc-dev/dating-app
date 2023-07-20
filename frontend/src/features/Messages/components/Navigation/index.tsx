@@ -14,23 +14,18 @@ interface Props {
 
 export const MessagesNavigation = ({ partners, onClick }: Props) => {
   const PartnerList = () => (
-    <List>
+    <>
       {partners.map((partner) => (
-        <>
-          <ListItem
-            key={partner.userId}
-            disablePadding
-            onClick={onClick}
-            data-id={partner.userId}
-          >
+        <List key={partner.userId}>
+          <ListItem disablePadding onClick={onClick} data-id={partner.userId}>
             <ListItemButton>
               <ListItemText primary={partner.userName} />
             </ListItemButton>
           </ListItem>
           <Divider />
-        </>
+        </List>
       ))}
-    </List>
+    </>
   );
   return <Navigation Outlet={<PartnerList />} />;
 };

@@ -16,7 +16,7 @@ interface Message {
   receiver: { userName: string };
 }
 
-const OwnChat = ({
+const OwnText = ({
   message,
   timestamp,
 }: {
@@ -29,7 +29,7 @@ const OwnChat = ({
   </StyledGrid>
 );
 
-const PartnerChat = ({
+const PartnerText = ({
   message,
   timestamp,
 }: {
@@ -50,9 +50,14 @@ export const Chats = ({ messages }: { messages: Message[] }) => {
       {messages.map((message) => (
         <>
           {user?.sub === message.sentBy ? (
-            <OwnChat message={message.message} timestamp={message.timestamp} />
+            <OwnText
+              key={message.id}
+              message={message.message}
+              timestamp={message.timestamp}
+            />
           ) : (
-            <PartnerChat
+            <PartnerText
+              key={message.id}
               message={message.message}
               timestamp={message.timestamp}
             />
@@ -64,7 +69,7 @@ export const Chats = ({ messages }: { messages: Message[] }) => {
 };
 
 const StyledPaper = styled(Paper)`
-  max-height: 810px;
+  height: 810px;
   width: 95%;
   overflow: auto;
   margin: 20px;
