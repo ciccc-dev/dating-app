@@ -1,4 +1,4 @@
-import { SyntheticEvent } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button, Tab, Tabs, Typography } from "@mui/material";
@@ -13,9 +13,27 @@ import { styled } from "@mui/system";
 import { TabPanel } from "../../../Discovery/components/TabPanel";
 import { DistanceInputSlider } from "../../../Discovery/components/DistanceInputSlider";
 import { AgePreferenceInputSlider } from "../../../Discovery/components/AgePreferenceInputSlider";
+import { FilterClient } from "../../../Discovery/api/filter";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 // TODO: Replace to constant
 const tabValues = ["discovery", "likes", "messages"];
+
+export interface Filter {
+  id: string;
+  profileId: string;
+  showMe: string;
+  minAge: number;
+  maxAge: number;
+  isAgeFiltered: boolean;
+  minDistance: number;
+  maxDistance: number;
+  isDistanceFiltered: boolean;
+  sexualOrientation: string;
+  isSexualOrientationFiltered: boolean;
+  purposes: string[];
+  isPurposeFiltered: boolean;
+}
 
 export const DatingAppNavigation = () => {
   // Prepare variables to set tab from current url path
@@ -37,6 +55,34 @@ export const DatingAppNavigation = () => {
       "aria-controls": `simple-tabpanel-${index}`,
     };
   };
+
+  const [filter, setFilter] = useState<Filter>({
+    id: "",
+    profileId: "",
+    showMe: "",
+    minAge: 20,
+    maxAge: 40,
+    isAgeFiltered: false,
+    minDistance: 0,
+    maxDistance: 50,
+    isDistanceFiltered: false,
+    sexualOrientation: "",
+    isSexualOrientationFiltered: false,
+    purposes: [],
+    isPurposeFiltered: false,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await FilterClient.getFilters();
+        if (data) {
+          setFilter(data);
+        }
+      } catch (error) {}
+    };
+    fetchData();
+  }, []);
 
   const MyAccount = () => (
     <StyledAccountBox onClick={handleNavigateToProfile}>
@@ -68,36 +114,51 @@ export const DatingAppNavigation = () => {
       <TabPanel value={tabIndex} index={0}>
         <List>
           <ListItem key="distance" disablePadding>
-            <DistanceInputSlider />
+            <DistanceInputSlider distance={filter.maxDistance} />
           </ListItem>
           <ListItem key="age-preference" disablePadding>
-            <AgePreferenceInputSlider />
+            <AgePreferenceInputSlider
+              minAge={filter.minAge}
+              maxAge={filter.maxAge}
+            />
           </ListItem>
-          <ListItem key="looking-for" disablePadding>
-            <ListItemButton>
+          <StyledListItem key="looking-for" disablePadding>
+            <StyledListItemButton>
               <ListItemText primary="Looking For" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem key="sexual-orientation" disablePadding>
-            <ListItemButton>
-              <ListItemText primary="Sexual Orientation" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem key="interests" disablePadding>
-            <ListItemButton>
-              <ListItemText primary="Interests" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem key="purposes" disablePadding>
-            <ListItemButton>
-              <ListItemText primary="Purposes" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem key="filter" disablePadding>
-            <StyledListItemButton onClick={handleFilterClick}>
-              <ListItemText primary="Filter" />
+              <KeyboardArrowRightIcon />
             </StyledListItemButton>
-          </ListItem>
+            <StyledTypography>{filter.showMe}</StyledTypography>
+          </StyledListItem>
+          <StyledListItem key="sexual-orientation" disablePadding>
+            <StyledListItemButton>
+              <ListItemText primary="Sexual Orientation" />
+              <KeyboardArrowRightIcon />
+            </StyledListItemButton>
+            <StyledTypography>{filter.sexualOrientation}</StyledTypography>
+          </StyledListItem>
+          <StyledListItem key="interests" disablePadding>
+            <StyledListItemButton>
+              <ListItemText primary="Interests" />
+              <KeyboardArrowRightIcon />
+            </StyledListItemButton>
+            <StyledTypography>Hello</StyledTypography>
+          </StyledListItem>
+          <StyledListItem key="purposes" disablePadding>
+            <StyledListItemButton>
+              <ListItemText primary="Purposes" />
+              <KeyboardArrowRightIcon />
+            </StyledListItemButton>
+            <StyledListBlock>
+              {filter.purposes.map((purpose, index) => (
+                <StyledListSpan key={index}>{purpose}</StyledListSpan>
+              ))}
+            </StyledListBlock>
+          </StyledListItem>
+          <StyledListItem key="filter" disablePadding>
+            <StyledButton onClick={handleFilterClick}>
+              <ListItemText primary="Filter" />
+            </StyledButton>
+          </StyledListItem>
         </List>
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
@@ -133,8 +194,32 @@ const StyledLogoutBox = styled(Box)`
   bottom: 0;
 `;
 
-const StyledListItemButton = styled(ListItemButton)`
+const StyledButton = styled(ListItemButton)`
   background-color: #ec407a;
   text-align: center;
   color: white;
+`;
+
+const StyledListItem = styled(ListItem)`
+  flex-direction: column;
+`;
+
+const StyledListItemButton = styled(ListItemButton)`
+  padding: 0.5rem 0;
+  width: 100%;
+`;
+
+const StyledTypography = styled(Typography)`
+  padding: 0.5rem 1rem;
+`;
+
+const StyledListBlock = styled("div")`
+  padding: 0.5rem 1rem;
+`;
+
+const StyledListSpan = styled("span")`
+  padding: 0.25rem 0.5rem;
+  border: 1px solid black;
+  border-radius: 0.7rem;
+  margin: 0 0.25rem;
 `;

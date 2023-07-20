@@ -11,7 +11,7 @@ interface ProfileCardProps {
   profile: Profile;
 }
 
-export default function ImgMediaCard({ profile }: ProfileCardProps) {
+export default function ProfileCard({ profile }: ProfileCardProps) {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia

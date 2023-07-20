@@ -6,14 +6,14 @@ import Slider from "@mui/material/Slider";
 import MuiInput from "@mui/material/Input";
 import Typography from "@mui/material/Typography";
 
-const Input = styled(MuiInput)`
-  width: 42px;
-`;
+interface DistanceInputSliderProps {
+  distance: number;
+}
 
-export const DistanceInputSlider = () => {
+export const DistanceInputSlider = ({ distance }: DistanceInputSliderProps) => {
   const [value, setValue] = React.useState<
     number | string | Array<number | string>
-  >([30]);
+  >(distance);
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setValue(newValue);
@@ -68,3 +68,7 @@ export const DistanceInputSlider = () => {
     </Box>
   );
 };
+
+const Input = styled(MuiInput)`
+  width: 42px;
+`;

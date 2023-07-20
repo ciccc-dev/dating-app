@@ -6,12 +6,16 @@ import MuiInput from "@mui/material/Input";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 
-const Input = styled(MuiInput)`
-  width: 42px;
-`;
+interface AgePreferenceInputSliderProps {
+  minAge: number;
+  maxAge: number;
+}
 
-export const AgePreferenceInputSlider = () => {
-  const [value, setValue] = useState<number[]>([20, 30]);
+export const AgePreferenceInputSlider = ({
+  minAge,
+  maxAge,
+}: AgePreferenceInputSliderProps) => {
+  const [value, setValue] = useState<number[]>([minAge, maxAge]);
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setValue(newValue as number[]);
   };
@@ -88,3 +92,7 @@ export const AgePreferenceInputSlider = () => {
     </Box>
   );
 };
+
+const Input = styled(MuiInput)`
+  width: 42px;
+`;

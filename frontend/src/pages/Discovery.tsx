@@ -1,14 +1,11 @@
 import { Toolbar } from "@mui/material";
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
-import { FilterClient } from "../features/Discovery/api/filter";
 import { ProfileClient } from "../features/Discovery/api/profile";
-import { UUID } from "crypto";
-import ImgMediaCard from "../features/Discovery/components/ProfileCard";
+import ProfileCard from "../features/Discovery/components/ProfileCard";
 
 export interface Profile {
-  id: UUID;
+  id: string;
   userId: string;
   userName: string;
   birthday: Date;
@@ -24,7 +21,6 @@ export const Discovery = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await FilterClient.getFilters();
         const data = await ProfileClient.getProfiles();
         if (data) {
           setProfiles(data);
@@ -52,7 +48,7 @@ export const Discovery = () => {
         }}
       >
         {profiles.map((profile) => (
-          <ImgMediaCard profile={profile} />
+          <ProfileCard profile={profile} key={profile.id} />
         ))}
       </Box>
     </>

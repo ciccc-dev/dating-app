@@ -14,10 +14,10 @@ class _filterClient {
         console.log(data);
         return data;
       } else {
-        return false;
+        throw new Error();
       }
     } catch (error) {
-      return false;
+      throw error;
     }
   };
 }
