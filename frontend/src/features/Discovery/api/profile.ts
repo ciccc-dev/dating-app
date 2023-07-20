@@ -1,11 +1,4 @@
-class _profiles {
-  //   constructor() {
-  //     this.socket = io(process.env.REACT_APP_SERVER_URL ?? "");
-  //   }
-  //   initialLoad = (user: User) => {
-  //     this.socket.emit("initial_load", { userId: user.sub });
-  //     console.log(user);
-  //   };
+class _profileClient {
   getProfiles = async () => {
     const filters = {
       age: 20,
@@ -22,14 +15,14 @@ class _profiles {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        return true;
+        return data;
       } else {
-        return false;
+        throw new Error();
       }
-    } catch (err) {
-      return false;
+    } catch (error: any) {
+      throw error;
     }
   };
 }
 
-export const Profiles = new _profiles();
+export const ProfileClient = new _profileClient();

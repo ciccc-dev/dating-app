@@ -1,8 +1,4 @@
-class _filter {
-  //   constructor() {
-  //     this.socket = io(process.env.REACT_APP_SERVER_URL ?? "");
-  //   }
-
+class _filterClient {
   getFilters = async () => {
     const user = { id: "223e4567-e89b-12d3-a456-426614174000" };
     try {
@@ -16,14 +12,14 @@ class _filter {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        return true;
+        return data;
       } else {
         return false;
       }
-    } catch (err) {
+    } catch (error) {
       return false;
     }
   };
 }
 
-export const Filter = new _filter();
+export const FilterClient = new _filterClient();

@@ -10,9 +10,9 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/system";
-import { TabPanel } from "../TabPanel";
-import { DistanceInputSlider } from "../DistanceInputSlider";
-import { AgePreferenceInputSlider } from "../AgePreferenceInputSlider";
+import { TabPanel } from "../../../Discovery/components/TabPanel";
+import { DistanceInputSlider } from "../../../Discovery/components/DistanceInputSlider";
+import { AgePreferenceInputSlider } from "../../../Discovery/components/AgePreferenceInputSlider";
 
 // TODO: Replace to constant
 const tabValues = ["discovery", "likes", "messages"];
@@ -45,6 +45,8 @@ export const DatingAppNavigation = () => {
       </Typography>
     </StyledAccountBox>
   );
+
+  const handleFilterClick = () => {};
 
   return (
     <div>
@@ -91,6 +93,11 @@ export const DatingAppNavigation = () => {
               <ListItemText primary="Purposes" />
             </ListItemButton>
           </ListItem>
+          <ListItem key="filter" disablePadding>
+            <StyledListItemButton onClick={handleFilterClick}>
+              <ListItemText primary="Filter" />
+            </StyledListItemButton>
+          </ListItem>
         </List>
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
@@ -124,4 +131,10 @@ const StyledLogoutBox = styled(Box)`
   border-bottom: 1px;
   position: fixed;
   bottom: 0;
+`;
+
+const StyledListItemButton = styled(ListItemButton)`
+  background-color: #ec407a;
+  text-align: center;
+  color: white;
 `;
