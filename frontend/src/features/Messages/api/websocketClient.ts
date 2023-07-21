@@ -26,14 +26,22 @@ class _websocketClient {
     });
   };
 
+  onPartners = (update: (partners: any) => void) => {
+    this.socket.on("partners", (partners) => {
+      update(partners);
+    });
+  };
+
   emitSendMessage = ({
     message,
-    userId,
+    sentBy,
+    receivedBy,
   }: {
     message: string;
-    userId: string;
+    sentBy: string;
+    receivedBy: string;
   }) => {
-    this.socket.emit("send", { message, userId });
+    this.socket.emit("send", { message, sentBy, receivedBy });
   };
 }
 

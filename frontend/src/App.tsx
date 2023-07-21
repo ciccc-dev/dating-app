@@ -19,6 +19,10 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "/messages",
+        element: <Messages />,
+      },
+      {
         path: "/app",
         element: <DatingApp />,
         children: [

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 import { allMessages } from "./testdata";
+import { Message } from "./message";
 
 const prisma = new PrismaClient();
 
@@ -25,12 +26,27 @@ export const fetchMessagesByUserId = async (userId: string) => {
   const messages = await prisma.chat.findMany({
     include: { sender: true, receiver: true },
     where: { OR: [{ sentBy: userId }, { receivedBy: userId }] },
+    orderBy: { timestamp: "asc" },
   });
-  const rawPartners = messages.map((message) =>
+  let partners = messages.map((message) =>
     message.sentBy === userId ? message.receiver : message.sender
   );
-  const partners = rawPartners.filter((partner, index, self) => {
+  // Remove duplicated partners
+  partners = partners.filter((partner, index, self) => {
     return index === self.findIndex((p) => p.id === partner.id);
   });
   return { partners, messages };
+};
+
+export const createMessage = async ({
+  message,
+  sentBy,
+  receivedBy,
+}: {
+  message: string;
+  sentBy: string;
+  receivedBy: string;
+}) => {
+  const messageEntity = new Message(sentBy, receivedBy, message);
+  await prisma.chat.create({ data: messageEntity.toHash() });
 };

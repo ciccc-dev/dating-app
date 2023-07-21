@@ -1,25 +1,48 @@
-class Message {
-  private id: string;
-  private sentBy: string;
-  private receivedBy: string;
-  private message: string;
-  private hasRead: boolean;
-  private timestamp: Date;
+import crypto from "crypto";
 
-  constructor(id, sentBy, receivedBy, message, hasRead, timestamp) {
-    this.id = id ?? crypto.randomUUID;
+export class Message {
+  readonly id: string;
+  readonly sentBy: string;
+  readonly receivedBy: string;
+  readonly message: string;
+  readonly hasRead: boolean;
+  readonly timestamp: Date;
 
+  constructor(
+    sentBy: string,
+    receivedBy: string,
+    message: string,
+    id: string = crypto.randomUUID(),
+    hasRead: boolean = false,
+    timestamp: Date = new Date()
+  ) {
     if (!sentBy) throw new Error("sentBy can't be empty");
-    this.sentBy = sentBy;
-
     if (!receivedBy) throw new Error("receivedtBy can't be empty");
-    this.receivedBy = receivedBy;
-
     if (!message) throw new Error("message can't be empty");
+
+    this.sentBy = sentBy;
+    this.receivedBy = receivedBy;
     this.message = message;
-
-    this.hasRead = hasRead ?? false;
-
-    this.timestamp = timestamp ?? new Date();
+    this.id = id;
+    this.hasRead = hasRead;
+    this.timestamp = timestamp;
   }
+
+  toHash = (): {
+    sentBy: string;
+    receivedBy: string;
+    message: string;
+    id: string;
+    hasRead: boolean;
+    timestamp: Date;
+  } => {
+    return {
+      sentBy: this.sentBy,
+      receivedBy: this.receivedBy,
+      message: this.message,
+      id: this.id,
+      hasRead: this.hasRead,
+      timestamp: this.timestamp,
+    };
+  };
 }
