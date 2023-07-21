@@ -7,18 +7,26 @@ export const webscoketConnect = (
 ) => {
   io.on("connection", (socket) => {
     socket.on("initial_load", async (data: { userId: string }) => {
-      const { partners, messages } = await fetchMessagesByUserId(data.userId);
-      socket.emit("messages", messages);
-      socket.emit("partners", partners);
+      try {
+        const { partners, messages } = await fetchMessagesByUserId(data.userId);
+        socket.emit("messages", messages);
+        socket.emit("partners", partners);
+      } catch (err) {
+        console.error(err);
+      }
     });
 
     socket.on(
       "send",
       async (data: { message: string; sentBy: string; receivedBy: string }) => {
-        await createMessage(data);
-        const { messages } = await fetchMessagesByUserId(data.sentBy);
-        socket.emit("messages", messages);
-        socket.broadcast.emit("messages", messages);
+        try {
+          await createMessage(data);
+          const { messages } = await fetchMessagesByUserId(data.sentBy);
+          socket.emit("messages", messages);
+          socket.broadcast.emit("messages", messages);
+        } catch (err) {
+          console.error(err);
+        }
       }
     );
 
