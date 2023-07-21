@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
 
 import { allMessages } from "./testdata";
+import { Message } from "./message";
 
 const prisma = new PrismaClient();
 
@@ -47,14 +48,6 @@ export const createMessage = async ({
   sentBy: string;
   receivedBy: string;
 }) => {
-  await prisma.chat.create({
-    data: {
-      id: crypto.randomUUID(),
-      sentBy,
-      message,
-      receivedBy,
-      hasRead: false,
-      timestamp: new Date(),
-    },
-  });
+  const messageEntity = new Message(sentBy, receivedBy, message);
+  await prisma.chat.create({ data: messageEntity.toHash() });
 };
