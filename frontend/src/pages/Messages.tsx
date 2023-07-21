@@ -82,6 +82,12 @@ export const Messages = () => {
     }
   };
 
+  const selectedPartner = useMemo(() => {
+    return state.partners.find(
+      (partner) => partner.userId === state.selectedPartnerId
+    );
+  }, [state.partners, state.selectedPartnerId]);
+
   const currentMessages = useMemo(
     () =>
       state.messages.filter(
@@ -94,7 +100,7 @@ export const Messages = () => {
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <StyledWrapper>
         <StyledNavigationWrapper component="nav">
           <MessagesNavigation
             partners={state.partners}
@@ -104,6 +110,9 @@ export const Messages = () => {
         <StyledContent component="main">
           {state.selectedPartnerId.length ? (
             <>
+              <StyledPartnerName variant="h5">
+                {selectedPartner?.userName ?? ""}
+              </StyledPartnerName>
               <Chats messages={currentMessages} />
               <Form
                 message={message}
@@ -116,10 +125,14 @@ export const Messages = () => {
             <StyledText variant="h4">Please choose a partner!</StyledText>
           )}
         </StyledContent>
-      </Box>
+      </StyledWrapper>
     </>
   );
 };
+
+const StyledWrapper = styled(Box)`
+  display: flex;
+`;
 
 const StyledNavigationWrapper = styled(Box)`
   width: ${drawerWidth}px;
@@ -128,6 +141,11 @@ const StyledNavigationWrapper = styled(Box)`
   @media (max-width: 600px) {
     display: none;
   }
+`;
+
+const StyledPartnerName = styled(Typography)`
+  margin-top: 10px;
+  margin-left: 30px;
 `;
 
 const StyledContent = styled(Box)`

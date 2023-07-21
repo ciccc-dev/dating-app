@@ -58,14 +58,9 @@ export const Chats = ({ messages }: { messages: Message[] }) => {
       {messages.map((message) => (
         <List key={message.id}>
           {user?.sub === message.sentBy ? (
-            <OwnText
-              key={message.id}
-              message={message.message}
-              timestamp={message.timestamp}
-            />
+            <OwnText message={message.message} timestamp={message.timestamp} />
           ) : (
             <PartnerText
-              key={message.id}
               message={message.message}
               timestamp={message.timestamp}
             />
@@ -77,7 +72,7 @@ export const Chats = ({ messages }: { messages: Message[] }) => {
 };
 
 const StyledPaper = styled(Paper)`
-  height: 810px;
+  height: 800px;
   width: 95%;
   overflow: auto;
   margin: 20px;
