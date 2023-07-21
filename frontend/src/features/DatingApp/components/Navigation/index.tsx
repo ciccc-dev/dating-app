@@ -38,6 +38,10 @@ export interface Filter {
   isPurposeFiltered: boolean;
 }
 
+export interface Item {
+  name: string;
+}
+
 export const DatingAppNavigation = () => {
   // Prepare variables to set tab from current url path
   const location = useLocation();
@@ -74,13 +78,25 @@ export const DatingAppNavigation = () => {
     purposes: [],
     isPurposeFiltered: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedLookingFor, setSelectedLookingFor] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [selectedsexualOrientations, setSelectedSexualOrientations] = useState<
+    string[]
+  >([]);
+  const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const data = await FilterClient.getFilters();
         if (data) {
+          setSelectedLookingFor([data.showMe]);
+          setSelectedSexualOrientations([data.sexualOrientation]);
+          setSelectedPurposes(data.purposes);
           setFilter(data);
+          setIsLoading(false);
         }
       } catch (error) {}
     };
@@ -95,78 +111,115 @@ export const DatingAppNavigation = () => {
     </StyledAccountBox>
   );
 
+  const handleSelectedLookingForChange = (values: string[]) => {
+    setSelectedLookingFor(values);
+  };
+
+  const handleSelectedsexualOrientationsChange = (values: string[]) => {
+    setSelectedSexualOrientations(values);
+  };
+
+  const handleSelectedInterestsChange = (values: string[]) => {
+    setSelectedInterests(values);
+  };
+
+  const handleSelectedPurposesChange = (values: string[]) => {
+    setSelectedPurposes(values);
+  };
+
   const handleFilterClick = () => {};
 
-  return (
-    <div>
-      <MyAccount />
-      <Toolbar />
-      <Box>
-        <Tabs
-          value={tabIndex}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-          centered
-        >
-          <StyledTab label="discovery" {...a11yProps(0)} />
-          <StyledTab label="likes" {...a11yProps(1)} />
-          <StyledTab label="messages" {...a11yProps(2)} />
-        </Tabs>
-      </Box>
-      <Divider />
-      <TabPanel value={tabIndex} index={0}>
-        <List>
-          <ListItem key="distance" disablePadding>
-            <DistanceInputSlider distance={filter.maxDistance} />
-          </ListItem>
-          <ListItem key="age-preference" disablePadding>
-            <AgePreferenceInputSlider
-              minAge={filter.minAge}
-              maxAge={filter.maxAge}
-            />
-          </ListItem>
-          <StyledListItem key="looking-for" disablePadding>
-            <StyledDialog title="Looking For" list={lookingFor} />
-            <StyledTypography>{filter.showMe}</StyledTypography>
-          </StyledListItem>
-          <StyledListItem key="sexual-orientation" disablePadding>
-            <StyledDialog
-              title="Sexual Orientation"
-              list={sexualOrientations}
-            />
-            <StyledTypography>{filter.sexualOrientation}</StyledTypography>
-          </StyledListItem>
-          <StyledListItem key="interests" disablePadding>
-            <StyledDialog title="Interests" list={purposes} />
-            <StyledTypography>Hello</StyledTypography>
-          </StyledListItem>
-          <StyledListItem key="purposes" disablePadding>
-            <StyledDialog title="Purposes" list={purposes} />
-            <StyledListBlock>
-              {filter.purposes.map((purpose, index) => (
-                <StyledListSpan key={index}>{purpose}</StyledListSpan>
-              ))}
-            </StyledListBlock>
-          </StyledListItem>
-          <StyledListItem key="filter" disablePadding>
-            <StyledButton onClick={handleFilterClick}>
-              <ListItemText primary="Filter" />
-            </StyledButton>
-          </StyledListItem>
-        </List>
-      </TabPanel>
-      <TabPanel value={tabIndex} index={1}>
-        Item Two
-      </TabPanel>
-      <TabPanel value={tabIndex} index={2}>
-        Item Three
-      </TabPanel>
-      <StyledLogoutBox>
-        <Button onClick={handleLogout}>LOGOUT</Button>
-      </StyledLogoutBox>
-      <Toolbar />
-    </div>
-  );
+  if (isLoading) {
+    return <div style={{ color: "black" }}>Loading...</div>;
+  } else {
+    return (
+      <div>
+        <MyAccount />
+        <Toolbar />
+        <Box>
+          <Tabs
+            value={tabIndex}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+            centered
+          >
+            <StyledTab label="discovery" {...a11yProps(0)} />
+            <StyledTab label="likes" {...a11yProps(1)} />
+            <StyledTab label="messages" {...a11yProps(2)} />
+          </Tabs>
+        </Box>
+        <Divider />
+        <TabPanel value={tabIndex} index={0}>
+          <List>
+            <ListItem key="distance" disablePadding>
+              <DistanceInputSlider distance={filter.maxDistance} />
+            </ListItem>
+            <ListItem key="age-preference" disablePadding>
+              <AgePreferenceInputSlider
+                minAge={filter.minAge}
+                maxAge={filter.maxAge}
+              />
+            </ListItem>
+            <StyledListItem key="looking-for" disablePadding>
+              <StyledDialog
+                title="Looking For"
+                items={lookingFor}
+                selectedItems={selectedLookingFor}
+                onChange={handleSelectedLookingForChange}
+              />
+              <StyledTypography>{selectedLookingFor}</StyledTypography>
+            </StyledListItem>
+            <StyledListItem key="sexual-orientation" disablePadding>
+              <StyledDialog
+                title="Sexual Orientation"
+                items={sexualOrientations}
+                selectedItems={selectedsexualOrientations}
+                onChange={handleSelectedsexualOrientationsChange}
+              />
+              <StyledTypography>{filter.sexualOrientation}</StyledTypography>
+            </StyledListItem>
+            {/* <StyledListItem key="interests" disablePadding>
+              <StyledDialog
+                title="Interests"
+                items={purposes}
+                selectedItems={selectedInterests}
+                onChange={handleSelectedInterestsChange}
+              />
+              <StyledTypography>Hello</StyledTypography>
+            </StyledListItem> */}
+            <StyledListItem key="purposes" disablePadding>
+              <StyledDialog
+                title="Purposes"
+                items={purposes}
+                selectedItems={selectedPurposes}
+                onChange={handleSelectedPurposesChange}
+              />
+              <StyledListBlock>
+                {selectedPurposes.map((purpose, index) => (
+                  <StyledListSpan key={index}>{purpose}</StyledListSpan>
+                ))}
+              </StyledListBlock>
+            </StyledListItem>
+            <StyledListItem key="filter" disablePadding>
+              <StyledButton onClick={handleFilterClick}>
+                <ListItemText primary="Filter" />
+              </StyledButton>
+            </StyledListItem>
+          </List>
+        </TabPanel>
+        <TabPanel value={tabIndex} index={1}>
+          Item Two
+        </TabPanel>
+        <TabPanel value={tabIndex} index={2}>
+          Item Three
+        </TabPanel>
+        <StyledLogoutBox>
+          <Button onClick={handleLogout}>LOGOUT</Button>
+        </StyledLogoutBox>
+        <Toolbar />
+      </div>
+    );
+  }
 };
 
 const StyledAccountBox = styled(Box)`
