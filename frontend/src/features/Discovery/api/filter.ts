@@ -21,14 +21,13 @@ class _filterClient {
     }
   };
 
-  updateFilters = async () => {
-    const user = { id: "723e4567-e89b-12d3-a456-426614174000" };
+  updateFilters = async (filterdata: any) => {
     try {
       const response = await fetch("http://localhost:8000/api/filter/update", {
         method: "POST",
         mode: "cors",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
+        body: JSON.stringify(filterdata),
       });
 
       if (response.ok) {

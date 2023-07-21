@@ -150,7 +150,15 @@ export const DatingAppNavigation = () => {
   };
 
   const handleFilterClick = () => {
-    FilterClient.updateFilters();
+    const filterCondition = {
+      profileId: "723e4567-e89b-12d3-a456-426614174000",
+      showMe: selectedLookingFor[0],
+      ageRange: ageRange,
+      distance: distance,
+      sexualOrientations: selectedSexualOrientations,
+      purposes: selectedPurposes,
+    };
+    FilterClient.updateFilters(filterCondition);
   };
 
   if (isLoading) {
