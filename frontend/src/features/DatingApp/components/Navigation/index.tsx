@@ -29,10 +29,9 @@ export interface Filter {
   minAge: number;
   maxAge: number;
   isAgeFiltered: boolean;
-  minDistance: number;
-  maxDistance: number;
+  distance: number;
   isDistanceFiltered: boolean;
-  sexualOrientation: string;
+  sexualOrientations: string[];
   isSexualOrientationFiltered: boolean;
   purposes: string[];
   isPurposeFiltered: boolean;
@@ -70,10 +69,9 @@ export const DatingAppNavigation = () => {
     minAge: 20,
     maxAge: 40,
     isAgeFiltered: false,
-    minDistance: 0,
-    maxDistance: 50,
+    distance: 50,
     isDistanceFiltered: false,
-    sexualOrientation: "",
+    sexualOrientations: [],
     isSexualOrientationFiltered: false,
     purposes: [],
     isPurposeFiltered: false,
@@ -81,7 +79,7 @@ export const DatingAppNavigation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedLookingFor, setSelectedLookingFor] = useState<string[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [selectedsexualOrientations, setSelectedSexualOrientations] = useState<
+  const [selectedSexualOrientations, setSelectedSexualOrientations] = useState<
     string[]
   >([]);
   const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
@@ -93,7 +91,7 @@ export const DatingAppNavigation = () => {
         const data = await FilterClient.getFilters();
         if (data) {
           setSelectedLookingFor([data.showMe]);
-          setSelectedSexualOrientations([data.sexualOrientation]);
+          setSelectedSexualOrientations(data.sexualOrientations);
           setSelectedPurposes(data.purposes);
           setFilter(data);
           setIsLoading(false);
@@ -152,7 +150,7 @@ export const DatingAppNavigation = () => {
         <TabPanel value={tabIndex} index={0}>
           <List>
             <ListItem key="distance" disablePadding>
-              <DistanceInputSlider distance={filter.maxDistance} />
+              <DistanceInputSlider distance={filter.distance} />
             </ListItem>
             <ListItem key="age-preference" disablePadding>
               <AgePreferenceInputSlider
@@ -173,10 +171,18 @@ export const DatingAppNavigation = () => {
               <StyledDialog
                 title="Sexual Orientation"
                 items={sexualOrientations}
-                selectedItems={selectedsexualOrientations}
+                selectedItems={selectedSexualOrientations}
                 onChange={handleSelectedsexualOrientationsChange}
               />
-              <StyledTypography>{filter.sexualOrientation}</StyledTypography>
+              <StyledListBlock>
+                {selectedSexualOrientations.map(
+                  (selectedSexualOrientation, index) => (
+                    <StyledListSpan key={index}>
+                      {selectedSexualOrientation}
+                    </StyledListSpan>
+                  )
+                )}
+              </StyledListBlock>
             </StyledListItem>
             {/* <StyledListItem key="interests" disablePadding>
               <StyledDialog

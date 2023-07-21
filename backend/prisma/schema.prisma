@@ -91,10 +91,9 @@ model Filter {
   minAge                      Int              @map("min_age")
   maxAge                      Int              @map("max_age")
   isAgeFiltered               Boolean          @map("is_age_filtered")
-  minDistance                 Int              @map("min_distance")
-  maxDistance                 Int              @map("max_distance")
+  distance                    Int
   isDistanceFiltered          Boolean          @map("is_distance_filtered")
-  sexualOrientation           String           @map("sexual_orientation") @db.VarChar(30)
+  sexualOrientations          String[]         @map("sexual_orientations") @db.VarChar(30)
   isSexualOrientationFiltered Boolean          @map("is_sexual_orientation_filtered")
   purposes                    String[]         @db.VarChar(20)
   isPurposeFiltered           Boolean          @map("is_purpose_filtered")

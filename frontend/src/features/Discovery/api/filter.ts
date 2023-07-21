@@ -1,6 +1,6 @@
 class _filterClient {
   getFilters = async () => {
-    const user = { id: "223e4567-e89b-12d3-a456-426614174000" };
+    const user = { id: "723e4567-e89b-12d3-a456-426614174000" };
     try {
       const response = await fetch("http://localhost:8000/api/filter", {
         method: "POST",
