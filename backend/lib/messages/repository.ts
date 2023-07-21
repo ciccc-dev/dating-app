@@ -29,7 +29,6 @@ export const fetchMessagesByUserId = async (userId: string) => {
     where: { OR: [{ sentBy: userId }, { receivedBy: userId }] },
     orderBy: { timestamp: "asc" },
   });
-
   const rawPartners = messages.map((message) =>
     message.sentBy === userId ? message.receiver : message.sender
   );

@@ -1,12 +1,12 @@
 import crypto from "crypto";
 
 export class Message {
-  private id: string;
-  private sentBy: string;
-  private receivedBy: string;
-  private message: string;
-  private hasRead: boolean;
-  private timestamp: Date;
+  readonly id: string;
+  readonly sentBy: string;
+  readonly receivedBy: string;
+  readonly message: string;
+  readonly hasRead: boolean;
+  readonly timestamp: Date;
 
   constructor(
     sentBy: string,
