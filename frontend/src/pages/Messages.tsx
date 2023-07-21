@@ -101,10 +101,12 @@ export const Messages = () => {
   return (
     <>
       <StyledWrapper>
-        <MessagesNavigation
-          partners={state.partners}
-          onClick={handleChangePartner}
-        />
+        <StyledNavigationWrapper component="nav">
+          <MessagesNavigation
+            partners={state.partners}
+            onClick={handleChangePartner}
+          />
+        </StyledNavigationWrapper>
         <StyledContent component="main">
           {state.selectedPartnerId.length ? (
             <>
@@ -130,6 +132,15 @@ export const Messages = () => {
 
 const StyledWrapper = styled(Box)`
   display: flex;
+`;
+
+const StyledNavigationWrapper = styled(Box)`
+  width: ${navigationWidth}px;
+  flex-shrink: 0;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const StyledPartnerName = styled(Typography)`
