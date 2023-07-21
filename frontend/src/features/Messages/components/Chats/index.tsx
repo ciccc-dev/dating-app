@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Grid, Typography } from "@mui/material";
+import { Grid, List, Typography } from "@mui/material";
 import { Paper } from "@mui/material";
 import SnackbarContent from "@mui/material/SnackbarContent";
 import { pink } from "@mui/material/colors";
@@ -56,7 +56,7 @@ export const Chats = ({ messages }: { messages: Message[] }) => {
   return (
     <StyledPaper ref={contentRef}>
       {messages.map((message) => (
-        <>
+        <List key={message.id}>
           {user?.sub === message.sentBy ? (
             <OwnText
               key={message.id}
@@ -70,7 +70,7 @@ export const Chats = ({ messages }: { messages: Message[] }) => {
               timestamp={message.timestamp}
             />
           )}
-        </>
+        </List>
       ))}
     </StyledPaper>
   );
