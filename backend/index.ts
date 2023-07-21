@@ -10,7 +10,7 @@ const port = 3000;
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.WEB_URL,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -19,7 +19,9 @@ webscoketConnect(io);
 
 app.use("/api", apiRoutes);
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
+  try {
+    res.send("Hello World!");
+  } catch (err) {}
 });
 
 server.listen(port, () => {
