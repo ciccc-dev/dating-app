@@ -8,30 +8,30 @@ import Typography from "@mui/material/Typography";
 
 interface DistanceInputSliderProps {
   distance: number;
+  onChange: (value: number) => void;
 }
 
-export const DistanceInputSlider = ({ distance }: DistanceInputSliderProps) => {
-  const [value, setValue] = React.useState<
-    number | string | Array<number | string>
-  >(distance);
-
-  const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setValue(newValue);
+export const DistanceInputSlider = ({
+  distance,
+  onChange,
+}: DistanceInputSliderProps) => {
+  const handleSliderChange = (event: Event, newValue: any) => {
+    onChange(newValue);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value === "" ? "" : Number(event.target.value));
+    onChange(Number(event.target.value));
   };
 
   const handleBlur = () => {
-    if (typeof value === "number") {
-      if (typeof value === "number" && value < 0) {
-        setValue(0);
-      } else if (value > 100) {
-        setValue(100);
+    if (typeof distance === "number") {
+      if (typeof distance === "number" && distance < 0) {
+        onChange(0);
+      } else if (distance > 100) {
+        onChange(100);
       }
     } else {
-      setValue(0);
+      onChange(0);
     }
   };
 
@@ -44,14 +44,14 @@ export const DistanceInputSlider = ({ distance }: DistanceInputSliderProps) => {
         <Grid item></Grid>
         <Grid item xs>
           <Slider
-            value={typeof value === "number" ? value : 0}
+            value={typeof distance === "number" ? distance : 0}
             onChange={handleSliderChange}
             aria-labelledby="input-slider"
           />
         </Grid>
         <Grid item>
           <Input
-            value={value}
+            value={distance}
             size="small"
             onChange={handleInputChange}
             onBlur={handleBlur}

@@ -7,27 +7,26 @@ import Typography from "@mui/material/Typography";
 import { useState } from "react";
 
 interface AgePreferenceInputSliderProps {
-  minAge: number;
-  maxAge: number;
+  ageRange: number[];
+  onChange: (value: number[]) => void;
 }
 
 export const AgePreferenceInputSlider = ({
-  minAge,
-  maxAge,
+  ageRange,
+  onChange,
 }: AgePreferenceInputSliderProps) => {
-  const [value, setValue] = useState<number[]>([minAge, maxAge]);
-  const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setValue(newValue as number[]);
+  const handleSliderChange = (event: Event, newValue: any) => {
+    onChange(newValue);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newArray = [...value];
+    const newArray = [...ageRange];
     if (event.target.id === "min") {
       newArray[0] = Number(event.target.value);
     } else {
       newArray[1] = Number(event.target.value);
     }
-    setValue(newArray);
+    onChange(newArray);
   };
 
   // const handleBlur = () => {
@@ -51,7 +50,7 @@ export const AgePreferenceInputSlider = ({
         <Grid item>
           <Input
             id="min"
-            value={value[0]}
+            value={ageRange[0]}
             size="small"
             onChange={handleInputChange}
             // onBlur={handleBlur}
@@ -66,7 +65,7 @@ export const AgePreferenceInputSlider = ({
         </Grid>
         <Grid item xs>
           <Slider
-            value={value}
+            value={ageRange}
             // value={typeof value === "number" ? value : 0}
             onChange={handleSliderChange}
             aria-labelledby="input-slider"
@@ -75,7 +74,7 @@ export const AgePreferenceInputSlider = ({
         <Grid item>
           <Input
             id="max"
-            value={value[1]}
+            value={ageRange[1]}
             size="small"
             onChange={handleInputChange}
             // onBlur={handleBlur}

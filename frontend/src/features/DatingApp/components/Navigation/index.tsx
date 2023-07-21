@@ -77,6 +77,10 @@ export const DatingAppNavigation = () => {
     isPurposeFiltered: false,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [distance, setDistance] = useState(50);
+  // const [minAge, setMinAge] = useState(20);
+  // const [maxAge, setMaxAge] = useState(40);
+  const [ageRange, setAgeRange] = useState([20, 40]);
   const [selectedLookingFor, setSelectedLookingFor] = useState<string[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [selectedSexualOrientations, setSelectedSexualOrientations] = useState<
@@ -90,6 +94,10 @@ export const DatingAppNavigation = () => {
       try {
         const data = await FilterClient.getFilters();
         if (data) {
+          setDistance(data.distance);
+          // setMinAge(data.minAge);
+          // setMaxAge(data.maxAge);
+          setAgeRange([data.minAge, data.maxAge]);
           setSelectedLookingFor([data.showMe]);
           setSelectedSexualOrientations(data.sexualOrientations);
           setSelectedPurposes(data.purposes);
@@ -109,6 +117,22 @@ export const DatingAppNavigation = () => {
     </StyledAccountBox>
   );
 
+  const handleDistanceChange = (value: number) => {
+    setDistance(value);
+  };
+
+  // const handleMinAgeChange = (value: number) => {
+  //   setMinAge(value);
+  // };
+
+  // const handleMaxAgeChange = (value: number) => {
+  //   setMaxAge(value);
+  // };
+
+  const handleAgeRangeChange = (values: number[]) => {
+    setAgeRange(values);
+  };
+
   const handleSelectedLookingForChange = (values: string[]) => {
     setSelectedLookingFor(values);
   };
@@ -125,7 +149,9 @@ export const DatingAppNavigation = () => {
     setSelectedPurposes(values);
   };
 
-  const handleFilterClick = () => {};
+  const handleFilterClick = () => {
+    FilterClient.updateFilters();
+  };
 
   if (isLoading) {
     return <div style={{ color: "black" }}>Loading...</div>;
@@ -150,12 +176,15 @@ export const DatingAppNavigation = () => {
         <TabPanel value={tabIndex} index={0}>
           <List>
             <ListItem key="distance" disablePadding>
-              <DistanceInputSlider distance={filter.distance} />
+              <DistanceInputSlider
+                distance={distance}
+                onChange={handleDistanceChange}
+              />
             </ListItem>
             <ListItem key="age-preference" disablePadding>
               <AgePreferenceInputSlider
-                minAge={filter.minAge}
-                maxAge={filter.maxAge}
+                ageRange={ageRange}
+                onChange={handleAgeRangeChange}
               />
             </ListItem>
             <StyledListItem key="looking-for" disablePadding>
