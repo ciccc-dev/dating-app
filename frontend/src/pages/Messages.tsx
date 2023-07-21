@@ -8,8 +8,10 @@ import {
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Box from "@mui/material/Box";
-import { Typography, styled } from "@mui/material";
+import { Typography } from "@mui/material";
+import { styled } from "@mui/system";
 
+import { navigationWidth } from "../constants/navigation";
 import { WebsocketClient } from "../features/Messages/api/websocketClient";
 import { Chats } from "../features/Messages/components/Chats";
 import { MessagesNavigation } from "../features/Messages/components/Navigation";
@@ -30,8 +32,6 @@ const initialState = {
   partners: [],
   selectedPartnerId: "",
 };
-
-const drawerWidth = 256;
 
 export const Messages = () => {
   const [state, update] = useState<State>(initialState);
@@ -101,12 +101,10 @@ export const Messages = () => {
   return (
     <>
       <StyledWrapper>
-        <StyledNavigationWrapper component="nav">
-          <MessagesNavigation
-            partners={state.partners}
-            onClick={handleChangePartner}
-          />
-        </StyledNavigationWrapper>
+        <MessagesNavigation
+          partners={state.partners}
+          onClick={handleChangePartner}
+        />
         <StyledContent component="main">
           {state.selectedPartnerId.length ? (
             <>
@@ -134,15 +132,6 @@ const StyledWrapper = styled(Box)`
   display: flex;
 `;
 
-const StyledNavigationWrapper = styled(Box)`
-  width: ${drawerWidth}px;
-  flex-shrink: 0;
-
-  @media (max-width: 600px) {
-    display: none;
-  }
-`;
-
 const StyledPartnerName = styled(Typography)`
   margin-top: 10px;
   margin-left: 30px;
@@ -151,7 +140,7 @@ const StyledPartnerName = styled(Typography)`
 const StyledContent = styled(Box)`
   flex-grow: 1;
   padding: 3px;
-  width: calc(100% - ${drawerWidth}px);
+  width: calc(100% - ${navigationWidth}px);
 
   @media (max-width: 600px) {
     width: 100%;

@@ -7,19 +7,19 @@ import { Drawer } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/system";
 
+import { navigationWidth } from "../../constants/navigation";
+
 // TODO: Replace to constant
 const tabValues = ["discovery", "likes", "messages"];
-const drawerWidth = 256;
 
 export const Navigation = ({ Outlet }: { Outlet: any }) => {
-  // Prepare variables to set tab from current url path
+  // Set a current tab from url path
   const location = useLocation();
   const currentPath = location.pathname.replace("/", "");
   const tabIndex = tabValues.indexOf(currentPath);
 
   const { user, logout } = useAuth0();
   const handleLogout = () => logout();
-
   const navigate = useNavigate();
   const handleNavigateToProfile = () => navigate("/app/profile");
   const handleChange = (e: SyntheticEvent) =>
@@ -81,6 +81,6 @@ const StyledDrawer = styled(Drawer)`
 
   & .MuiDrawer-paper {
     box-sizing: border-box;
-    width: ${drawerWidth}px;
+    width: ${navigationWidth}px;
   }
 `;

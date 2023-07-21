@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
 
 import { allMessages } from "./testdata";
@@ -29,10 +28,11 @@ export const fetchMessagesByUserId = async (userId: string) => {
     where: { OR: [{ sentBy: userId }, { receivedBy: userId }] },
     orderBy: { timestamp: "asc" },
   });
-  const rawPartners = messages.map((message) =>
+  let partners = messages.map((message) =>
     message.sentBy === userId ? message.receiver : message.sender
   );
-  const partners = rawPartners.filter((partner, index, self) => {
+  // Remove duplicated partners
+  partners = partners.filter((partner, index, self) => {
     return index === self.findIndex((p) => p.id === partner.id);
   });
   return { partners, messages };
