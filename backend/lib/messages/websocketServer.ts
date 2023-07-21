@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { createMessage, fetchMessagesByUserId } from "./repository";
+
+import { MessageRepository } from "./repository";
 
 export const webscoketConnect = (
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>
@@ -8,8 +9,14 @@ export const webscoketConnect = (
   io.on("connection", (socket) => {
     socket.on("initial_load", async (data: { userId: string }) => {
       try {
-        const { partners, messages } = await fetchMessagesByUserId(data.userId);
+        const messages = await MessageRepository.fetchMessagesByUserId(
+          data.userId
+        );
         socket.emit("messages", messages);
+
+        const partners = await MessageRepository.fetchPartnersByUserId(
+          data.userId
+        );
         socket.emit("partners", partners);
       } catch (err) {
         console.error(err);
@@ -20,8 +27,10 @@ export const webscoketConnect = (
       "send",
       async (data: { message: string; sentBy: string; receivedBy: string }) => {
         try {
-          await createMessage(data);
-          const { messages } = await fetchMessagesByUserId(data.sentBy);
+          await MessageRepository.createMessage(data);
+          const messages = await MessageRepository.fetchMessagesByUserId(
+            data.sentBy
+          );
           socket.emit("messages", messages);
           socket.broadcast.emit("messages", messages);
         } catch (err) {
