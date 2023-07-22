@@ -6,5 +6,5 @@ export const ErrorBoundary = () => {
   console.error(error);
   console.error(typeof error);
   // Uncaught ReferenceError: path is not defined
-  return <div>Dang!</div>;
+  return <div>Sorry 404</div>;
 };

@@ -1,18 +1,52 @@
-import { allMessages } from "./testdata";
+import { PrismaClient } from "@prisma/client";
 
-export const fetchMessagesByRoomId = (roomId: string) => {
-  return allMessages.filter((message) => message.roomId === roomId);
-};
+import { Message } from "./message";
 
-export const fetchMessagesByRoomIds = (roomdIds: string[]) => {
-  const messages = allMessages
-    .map((message) => {
-      if (roomdIds.includes(message.roomId)) return message;
-    })
-    .filter((v) => v);
-  return messages;
-};
+class _MessageRepository {
+  private db: PrismaClient;
 
-export const fetchAllMessages = () => {
-  return allMessages;
-};
+  constructor(db: PrismaClient) {
+    this.db = db;
+  }
+
+  fetchPartnersByUserId = async (userId: string) => {
+    const messages = await this.db.chat.findMany({
+      include: { sender: true, receiver: true },
+      where: { OR: [{ sentBy: userId }, { receivedBy: userId }] },
+      orderBy: { timestamp: "asc" },
+    });
+    let partners = messages.map((message) =>
+      message.sentBy === userId ? message.receiver : message.sender
+    );
+    // Remove duplicated partners
+    partners = partners.filter((partner, index, self) => {
+      return index === self.findIndex((p) => p.id === partner.id);
+    });
+    return partners;
+  };
+
+  fetchMessagesByUserId = async (userId: string) => {
+    const messages = await this.db.chat.findMany({
+      include: { sender: true, receiver: true },
+      where: { OR: [{ sentBy: userId }, { receivedBy: userId }] },
+      orderBy: { timestamp: "asc" },
+    });
+    return messages;
+  };
+
+  createMessage = async ({
+    message,
+    sentBy,
+    receivedBy,
+  }: {
+    message: string;
+    sentBy: string;
+    receivedBy: string;
+  }): Promise<void> => {
+    const messageEntity = new Message(sentBy, receivedBy, message);
+    await this.db.chat.create({ data: messageEntity.toHash() });
+  };
+}
+
+const db = new PrismaClient();
+export const MessageRepository = new _MessageRepository(db);

@@ -2,46 +2,40 @@ import {
   ChangeEvent,
   FormEvent,
   KeyboardEvent,
-  SyntheticEvent,
   useEffect,
   useMemo,
   useState,
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button, Tab, Tabs, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
+import { Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
+import { navigationWidth } from "../constants/navigation";
 import { WebsocketClient } from "../features/Messages/api/websocketClient";
-
-interface Chatroom {
-  id: string;
-  users: string[];
-}
-
-interface Message {
-  roomId: string;
-  userId: string;
-  time: string;
-  text: string;
-}
+import { Chats } from "../features/Messages/components/Chats";
+import { MessagesNavigation } from "../features/Messages/components/Navigation";
+import { Form } from "../features/Messages/components/Form";
+import { Message, Profile } from "../features/Messages/types";
 
 interface State {
-  chatrooms: Chatroom[];
   messages: Message[];
   currentChatroom: string;
+  partners: Profile[];
+  selectedPartnerId: string;
 }
 
 const initialState = {
   chatrooms: [],
   messages: [],
   currentChatroom: "",
+  partners: [],
+  selectedPartnerId: "",
 };
 
 export const Messages = () => {
   const [state, update] = useState<State>(initialState);
   const [message, setMessage] = useState("");
-
   const { isLoading, user } = useAuth0();
 
   useEffect(() => {
@@ -49,26 +43,30 @@ export const Messages = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
-  const handleUpdateChatrooms = (chatrooms: Chatroom[]) =>
-    update((prev) => ({ ...prev, chatrooms }));
-
   const handleUpdateMessages = (messages: Message[]) =>
     update((prev) => ({ ...prev, messages }));
 
-  WebsocketClient.onChatrooms(handleUpdateChatrooms);
-  WebsocketClient.onMessages(handleUpdateMessages);
+  const handleUpdatePartners = (partners: Profile[]) =>
+    update((prev) => ({ ...prev, partners }));
 
-  const handleChangeChatroom = (e: SyntheticEvent) =>
+  WebsocketClient.onMessages(handleUpdateMessages);
+  WebsocketClient.onPartners(handleUpdatePartners);
+
+  const handleChangePartner = (e: any) =>
     update((prev) => ({
       ...prev,
-      currentChatroom: e.currentTarget.textContent as string,
+      selectedPartnerId: e.currentTarget.dataset.id as string,
     }));
 
   const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) =>
     setMessage(event.target.value);
 
   const onSubmit = () => {
-    WebsocketClient.emitSendMessage({ message, userId: user?.sub ?? "" });
+    WebsocketClient.emitSendMessage({
+      message,
+      sentBy: user?.sub ?? "",
+      receivedBy: state.selectedPartnerId,
+    });
     setMessage("");
   };
 
@@ -84,64 +82,84 @@ export const Messages = () => {
     }
   };
 
-  const currentRoomMessages = useMemo(
+  const selectedPartner = useMemo(() => {
+    return state.partners.find(
+      (partner) => partner.userId === state.selectedPartnerId
+    );
+  }, [state.partners, state.selectedPartnerId]);
+
+  const currentMessages = useMemo(
     () =>
       state.messages.filter(
-        (message) => message.roomId === state.currentChatroom
+        (message) =>
+          message.sentBy === state.selectedPartnerId ||
+          message.receivedBy === state.selectedPartnerId
       ),
-    [state.currentChatroom, state.messages]
+    [state.messages, state.selectedPartnerId]
   );
-
-  const currentTabIndex = useMemo(() => {
-    const chatroomIds = state?.chatrooms.map((chatroom) => chatroom.id);
-    return chatroomIds.indexOf(state.currentChatroom);
-  }, [state.currentChatroom, state?.chatrooms]);
 
   return (
     <>
-      <Box>
-        <Tabs value={currentTabIndex} onChange={handleChangeChatroom} centered>
-          {state?.chatrooms.map((chatroom) => (
-            <StyledTab key={chatroom.id} label={chatroom.id} />
-          ))}
-        </Tabs>
-      </Box>
-      {currentRoomMessages.map((message) => (
-        <div>{message.text}</div>
-      ))}
-      <Box>
-        <form onSubmit={handleSendMessage}>
-          <StyledTextField
-            fullWidth
-            margin="normal"
-            rows={1}
-            onKeyDown={handleClickEnter}
-            multiline
-            variant="outlined"
-            placeholder="Message"
-            value={message}
-            onChange={handleChangeMessage}
+      <StyledWrapper>
+        <StyledNavigationWrapper component="nav">
+          <MessagesNavigation
+            partners={state.partners}
+            onClick={handleChangePartner}
           />
-          <StyledButton variant="contained" color="primary" type="submit">
-            Send
-          </StyledButton>
-        </form>
-      </Box>
+        </StyledNavigationWrapper>
+        <StyledContent component="main">
+          {state.selectedPartnerId.length ? (
+            <>
+              <StyledPartnerName variant="h5">
+                {selectedPartner?.userName ?? ""}
+              </StyledPartnerName>
+              <Chats messages={currentMessages} />
+              <Form
+                message={message}
+                onChange={handleChangeMessage}
+                onClickEnter={handleClickEnter}
+                onSubmit={handleSendMessage}
+              />
+            </>
+          ) : (
+            <StyledText variant="h4">Please choose a partner!</StyledText>
+          )}
+        </StyledContent>
+      </StyledWrapper>
     </>
   );
 };
 
-const StyledTab = styled(Tab)`
-  font-size: 10px;
+const StyledWrapper = styled(Box)`
+  display: flex;
 `;
 
-const StyledButton = styled(Button)`
-  position: absolute;
-  right: 5%;
-  bottom: 0;
+const StyledNavigationWrapper = styled(Box)`
+  width: ${navigationWidth}px;
+  flex-shrink: 0;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
-const StyledTextField = styled(TextField)`
-  position: absolute;
-  width: 70%;
-  bottom: 0;
+
+const StyledPartnerName = styled(Typography)`
+  margin-top: 10px;
+  margin-left: 30px;
+`;
+
+const StyledContent = styled(Box)`
+  flex-grow: 1;
+  padding: 3px;
+  width: calc(100% - ${navigationWidth}px);
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+`;
+
+const StyledText = styled(Typography)`
+  height: 10rem;
+  text-align: center;
+  margin-top: 10rem;
 `;

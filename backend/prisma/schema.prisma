@@ -11,27 +11,26 @@ datasource db {
 }
 
 model Profile {
-  id                   String              @id @db.Uuid
-  userId               String              @unique @map("user_id")
-  userName             String              @map("user_name") @db.VarChar(50)
-  birthday             DateTime
-  gender               String              @db.VarChar(30)
-  sexualOrientation    String              @map("sexual_orientation") @db.VarChar(30)
-  aboutMe              String              @map("about_me")
-  registeredAt         DateTime            @map("registered_at") @db.Timestamptz(3)
-  updatedAt            DateTime            @map("updated_at") @db.Timestamptz(3)
-  photos               PhotoUrl[]
-  purposes             Purpose[]
-  interests            UserInterest[]
-  filter               Filter?
-  geolocation          Geolocation?
-  ChatroomSelectedBy   ChatRoom[]          @relation("ChatroomSelectedBy")
-  ChatroomSelectedUser ChatRoom[]          @relation("ChatroomSelectedUser")
-  Chat                 Chat[]
-  UnselectedBy         ProfileUnselected[] @relation("UnselectedBy")
-  UnselectedProfile    ProfileUnselected[] @relation("UnselectedProfile")
-  BlockedBy            ProfileBlocked[]    @relation("BlockedBy")
-  BlockedProfile       ProfileBlocked[]    @relation("BlockedProfile")
+  id                String              @id @db.Uuid
+  userId            String              @unique @map("user_id")
+  userName          String              @map("user_name") @db.VarChar(50)
+  birthday          DateTime
+  gender            String              @db.VarChar(30)
+  sexualOrientation String              @map("sexual_orientation") @db.VarChar(30)
+  aboutMe           String              @map("about_me")
+  registeredAt      DateTime            @map("registered_at") @db.Timestamptz(3)
+  updatedAt         DateTime            @map("updated_at") @db.Timestamptz(3)
+  photos            PhotoUrl[]
+  purposes          Purpose[]
+  interests         UserInterest[]
+  filter            Filter?
+  geolocation       Geolocation?
+  ChatSender        Chat[]              @relation("sender")
+  ChatReceiver      Chat[]              @relation("receiver")
+  UnselectedBy      ProfileUnselected[] @relation("UnselectedBy")
+  UnselectedProfile ProfileUnselected[] @relation("UnselectedProfile")
+  BlockedBy         ProfileBlocked[]    @relation("BlockedBy")
+  BlockedProfile    ProfileBlocked[]    @relation("BlockedProfile")
 
   @@index([birthday])
   @@index([gender])
@@ -113,33 +112,16 @@ model FilterInterest {
   @@map("filter_interest")
 }
 
-model ChatRoom {
-  id              String   @id @db.Uuid
-  profile         Profile  @relation("ChatroomSelectedBy", fields: [selectedBy], references: [id], onDelete: Cascade)
-  selectedBy      String   @map("selected_by") @db.Uuid
-  selectedprofile Profile  @relation("ChatroomSelectedUser", fields: [selectedProfile], references: [id], onDelete: Cascade)
-  selectedProfile String   @map("selected_profile") @db.Uuid
-  isOpened        Boolean
-  registeredAt    DateTime @map("registered_at") @db.Timestamptz(3)
-  updatedAt       DateTime @map("updated_at") @db.Timestamptz(3)
-  Chat            Chat[]
-
-  @@index([selectedBy])
-  @@index([selectedProfile])
-  @@map("chat_room")
-}
-
 model Chat {
   id         String   @id @db.Uuid
-  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
-  chatRoomId String   @map("chat_room_id") @db.Uuid
-  profile    Profile  @relation(fields: [sentBy], references: [id])
-  sentBy     String   @map("sent_by") @db.Uuid
+  sender     Profile  @relation("sender", fields: [sentBy], references: [userId])
+  receiver   Profile  @relation("receiver", fields: [receivedBy], references: [userId])
+  sentBy     String   @map("sent_by")
+  receivedBy String   @map("received_by")
   message    String
   hasRead    Boolean  @map("has_read")
   timestamp  DateTime @db.Timestamptz(3)
 
-  @@index([chatRoomId])
   @@map("chat")
 }
 

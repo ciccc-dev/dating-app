@@ -1,42 +1,43 @@
 import { Server } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { fetchMessagesByRoomId, fetchMessagesByRoomIds } from "./repository";
-import { fetchChatroomsByUserId } from "../Chatrooms";
+
+import { MessageRepository } from "./repository";
 
 export const webscoketConnect = (
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>
 ) => {
   io.on("connection", (socket) => {
-    console.log(socket.id);
+    socket.on("initial_load", async (data: { userId: string }) => {
+      try {
+        const messages = await MessageRepository.fetchMessagesByUserId(
+          data.userId
+        );
+        socket.emit("messages", messages);
 
-    socket.on("initial_load", (data: { userId: string }) => {
-      const chatrooms = fetchChatroomsByUserId(data.userId);
-      const roomdIds = chatrooms.map((chatroom) => chatroom.id);
-      const messages = fetchMessagesByRoomIds(roomdIds);
-      socket.emit("fetchChatrooms", chatrooms);
-      socket.emit("messages", messages);
+        const partners = await MessageRepository.fetchPartnersByUserId(
+          data.userId
+        );
+        socket.emit("partners", partners);
+      } catch (err) {
+        console.error(err);
+      }
     });
 
-    socket.on("joined-user", (data) => {
-      //Storing users connected in a room in memory
-      console.log(data);
-
-      //Joining the Socket Room
-      socket.join(data.roomname);
-
-      //Emitting New Username to Clients
-      io.to(data.roomname).emit("joined-user", {
-        username: data.username,
-      });
-
-      //Send online users array
-      // io.to(data.roomname).emit("online-users", getUsers(users[data.roomname]));
-    });
-
-    socket.on("send", (data: { message: string; userId: string }) => {
-      console.log(`from client: ${data.message}`);
-      socket.broadcast.emit("message", data.message);
-    });
+    socket.on(
+      "send",
+      async (data: { message: string; sentBy: string; receivedBy: string }) => {
+        try {
+          await MessageRepository.createMessage(data);
+          const messages = await MessageRepository.fetchMessagesByUserId(
+            data.sentBy
+          );
+          socket.emit("messages", messages);
+          socket.broadcast.emit("messages", messages);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    );
 
     socket.on("disconnect", (reason) => {
       console.log(`user disconnected. reason is ${reason}.`);
