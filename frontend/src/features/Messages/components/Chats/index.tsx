@@ -72,10 +72,22 @@ export const Chats = ({ messages }: { messages: Message[] }) => {
 };
 
 const StyledPaper = styled(Paper)`
-  height: 800px;
+  padding: 10px;
   width: 95%;
   overflow: auto;
   margin: 20px;
+
+  @media (min-width: 600px) {
+    height: 350px;
+  }
+
+  @media (min-width: 960px) {
+    height: 450px;
+  }
+
+  @media (min-width: 1300px) {
+    height: 600px;
+  }
 `;
 
 const StyledGrid = styled(Grid)`
