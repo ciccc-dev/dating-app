@@ -4,6 +4,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { DatingApp } from "./pages/DatingApp";
 import { Discovery } from "./pages/Discovery";
 import { Home } from "./pages/Home";
+import { Likes } from "./pages/Likes";
 import { Messages } from "./pages/Messages";
 import { Profile } from "./pages/Profile";
 import { Root } from "./pages/Root";
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <Home />,
+      },
+      {
+        path: "/likes",
+        element: <Likes />,
       },
       {
         path: "/messages",
