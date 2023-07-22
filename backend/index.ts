@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import apiRoutes from "./routes";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -18,10 +18,20 @@ const io = new Server(server, {
 webscoketConnect(io);
 
 app.use("/api", apiRoutes);
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.send("Hello World!");
-  } catch (err) {}
+    res.send("Hello World");
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Error Handling
+app.use((err: any, req: Request, res: Response, next: any) => {
+  res.status(500).json({
+    error: { message: "standard error", code: "ServerError", err },
+  });
+  next();
 });
 
 server.listen(port, () => {
