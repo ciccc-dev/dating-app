@@ -86,8 +86,6 @@ export const FilterDialog = ({
     setOpen(false);
   };
 
-  console.log(selectedItems);
-
   return (
     <div>
       <Button onClick={handleClickOpen}>
