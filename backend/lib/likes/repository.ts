@@ -12,7 +12,7 @@ class _LikesRepository {
       select: { receiver: true, likedAt: true },
       where: { sentBy: userId },
     });
-    return likes;
+    return likes.map((like) => like.receiver);
   }
 
   async fetchReceivedLikesByUserId(userId: string) {
@@ -20,7 +20,7 @@ class _LikesRepository {
       select: { sender: true, likedAt: true },
       where: { receivedBy: userId },
     });
-    return likes;
+    return likes.map((like) => like.sender);
   }
 
   async fetchMatchedLikesByUserId(userId: string) {
