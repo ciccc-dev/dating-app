@@ -6,6 +6,7 @@ import cors from "cors";
 
 import { webscoketConnect } from "./lib/messages/websocketServer";
 import { jwtCheck } from "./middleware/authorization";
+import { corsOptions } from "./middleware/corsOptions";
 
 const app = express();
 const port = 3000;
@@ -19,10 +20,10 @@ const io = new Server(server, {
 });
 webscoketConnect(io);
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(jwtCheck);
 app.use("/api", apiRoutes);
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
+app.get("/", (_: Request, res: Response, next: NextFunction) => {
   try {
     res.send("Hello World");
   } catch (err) {
