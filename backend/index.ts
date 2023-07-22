@@ -2,8 +2,10 @@ import express, { NextFunction, Request, Response } from "express";
 import apiRoutes from "./routes";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import cors from "cors";
 
 import { webscoketConnect } from "./lib/messages/websocketServer";
+import { jwtCheck } from "./middleware/authorization";
 
 const app = express();
 const port = 3000;
@@ -11,12 +13,14 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.WEB_URL,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
   },
 });
 webscoketConnect(io);
 
+app.use(cors());
+app.use(jwtCheck);
 app.use("/api", apiRoutes);
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   try {
