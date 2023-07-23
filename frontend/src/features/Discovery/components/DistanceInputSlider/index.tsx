@@ -6,7 +6,7 @@ import Slider from "@mui/material/Slider";
 import MuiInput from "@mui/material/Input";
 import Typography from "@mui/material/Typography";
 import { Switch } from "@mui/material";
-import { ListItemGrid } from "../LIstItemGrid/ListItemGrid";
+import { ListItemGrid } from "../LIstItemGrid";
 
 interface DistanceInputSliderProps {
   distance: number;
@@ -44,8 +44,8 @@ export const DistanceInputSlider = ({
   return (
     <Box sx={{ width: "100%" }}>
       <ListItemGrid
-        title={<Typography id="input-slider">Distance</Typography>}
-        switches={
+        titleComponent={<Typography id="input-slider">Distance</Typography>}
+        switchComponent={
           <Switch
             checked={checked}
             onChange={onCheckedChange}

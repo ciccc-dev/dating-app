@@ -4,7 +4,7 @@ import Grid from "@mui/material/Grid";
 import Slider from "@mui/material/Slider";
 import MuiInput from "@mui/material/Input";
 import Typography from "@mui/material/Typography";
-import { ListItemGrid } from "../LIstItemGrid/ListItemGrid";
+import { ListItemGrid } from "../LIstItemGrid";
 import Switch from "@mui/material/Switch";
 
 interface AgePreferenceInputSliderProps {
@@ -49,12 +49,12 @@ export const AgePreferenceInputSlider = ({
   return (
     <Box sx={{ width: "100%" }}>
       <ListItemGrid
-        title={
+        titleComponent={
           <Typography id="input-slider" gutterBottom>
             Age Preference
           </Typography>
         }
-        switches={
+        switchComponent={
           <Switch
             checked={checked}
             onChange={onCheckedChange}

@@ -8,12 +8,12 @@ import { styled } from "@mui/system";
 import { DistanceInputSlider } from "../../../Discovery/components/DistanceInputSlider";
 import { AgePreferenceInputSlider } from "../../../Discovery/components/AgePreferenceInputSlider";
 import { FilterClient } from "../../../Discovery/api/filter";
-import { FilterDialog } from "../../../Discovery/components/FilterDialog/FilterDialog";
+import { FilterDialog } from "../FilterDialog";
 import { lookingFor } from "../../../../constants/lookingfor";
 import { sexualOrientations } from "../../../../constants/sexualOrientations";
 import { purposes } from "../../../../constants/purposes";
 import { Navigation } from "../../../../components/Navigation";
-import { ListItemGrid } from "../LIstItemGrid/ListItemGrid";
+import { ListItemGrid } from "../LIstItemGrid";
 
 export interface Filter {
   id: string;
@@ -188,7 +188,7 @@ export const DiscoveryNavigation = () => {
         </StyledListItem>
         <StyledListItem key="sexual-orientation" disablePadding>
           <ListItemGrid
-            title={
+            titleComponent={
               <StyledDialog
                 title="Sexual Orientation"
                 items={sexualOrientations}
@@ -196,7 +196,7 @@ export const DiscoveryNavigation = () => {
                 onChange={handleSelectedsexualOrientationsChange}
               />
             }
-            switches={
+            switchComponent={
               <Switch
                 checked={sexualOrientationChecked}
                 onChange={handleSexualOrientationCheckedChange}
@@ -225,7 +225,7 @@ export const DiscoveryNavigation = () => {
             </StyledListItem> */}
         <StyledListItem key="purposes" disablePadding>
           <ListItemGrid
-            title={
+            titleComponent={
               <StyledDialog
                 title="Purposes"
                 items={purposes}
@@ -233,7 +233,7 @@ export const DiscoveryNavigation = () => {
                 onChange={handleSelectedPurposesChange}
               />
             }
-            switches={
+            switchComponent={
               <Switch
                 checked={sexualSelectedPurposeChecked}
                 onChange={handlePurposeCheckedChange}
