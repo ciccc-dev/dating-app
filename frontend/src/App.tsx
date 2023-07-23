@@ -24,6 +24,11 @@ const router = createBrowserRouter([
         element: <Likes />,
       },
       {
+        path: "/discovery",
+        element: <Discovery />,
+      },
+
+      {
         path: "/messages",
         element: <Messages />,
       },

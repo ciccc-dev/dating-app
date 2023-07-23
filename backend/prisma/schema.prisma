@@ -75,33 +75,43 @@ model PhotoUrl {
 }
 
 model Interest {
-  id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar(20)
-  sortOrder    Int            @map("sort_order")
-  userInterest UserInterest[]
-  filters      Filter[]       @relation("FilterInterest")
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(20)
+  sortOrder      Int              @map("sort_order")
+  userInterest   UserInterest[]
+  filterInterest FilterInterest[]
 
   @@map("interest")
 }
 
 model Filter {
-  id                          String     @id @db.Uuid
-  profile                     Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  profileId                   String     @unique @map("profile_id") @db.Uuid
-  showMe                      String     @map("show_me") @db.VarChar(10)
-  minAge                      Int        @map("min_age")
-  maxAge                      Int        @map("max_age")
-  isAgeFiltered               Boolean    @map("is_age_filtered")
-  minDistance                 Int        @map("min_distance")
-  maxDistance                 Int        @map("max_distance")
-  isDistanceFiltered          Boolean    @map("is_distance_filtered")
-  sexualOrientation           String     @map("sexual_orientation") @db.VarChar(30)
-  isSexualOrientationFiltered Boolean    @map("is_sexual_orientation_filtered")
-  purpose                     String[]   @db.VarChar(20)
-  isPurposeFiltered           Boolean    @map("is_purpose_filtered")
-  interests                   Interest[] @relation("FilterInterest")
+  id                          String           @id @db.Uuid
+  profile                     Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId                   String           @unique @map("profile_id") @db.Uuid
+  showMe                      String           @map("show_me") @db.VarChar(10)
+  minAge                      Int              @map("min_age")
+  maxAge                      Int              @map("max_age")
+  isAgeFiltered               Boolean          @map("is_age_filtered")
+  distance                    Int
+  isDistanceFiltered          Boolean          @map("is_distance_filtered")
+  sexualOrientations          String[]         @map("sexual_orientations") @db.VarChar(30)
+  isSexualOrientationFiltered Boolean          @map("is_sexual_orientation_filtered")
+  purposes                    String[]         @db.VarChar(20)
+  isPurposeFiltered           Boolean          @map("is_purpose_filtered")
+  filterInterest              FilterInterest[]
 
   @@map("filter")
+}
+
+model FilterInterest {
+  filter     Filter   @relation(fields: [filterId], references: [id], onDelete: Cascade)
+  filterId   String   @map("filter_id") @db.Uuid
+  interest   Interest @relation(fields: [interestId], references: [id])
+  interestId Int      @map("interest_id")
+
+  @@id([filterId, interestId])
+  @@index([interestId])
+  @@map("filter_interest")
 }
 
 model Chat {
