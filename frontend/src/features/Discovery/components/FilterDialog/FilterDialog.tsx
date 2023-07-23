@@ -8,7 +8,6 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { Item } from "../../../DatingApp/components/Navigation";
 import { Box } from "@mui/material";
 import { useState } from "react";
 
@@ -20,6 +19,10 @@ const BootstrapDialog = muiStyled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
+
+export interface Item {
+  name: string;
+}
 
 export interface FilterDialogProps {
   title: string;
@@ -88,10 +91,10 @@ export const FilterDialog = ({
 
   return (
     <div>
-      <Button onClick={handleClickOpen}>
+      <StyledButton onClick={handleClickOpen}>
         {title}
         <KeyboardArrowRightIcon />
-      </Button>
+      </StyledButton>
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -155,22 +158,13 @@ export const FilterDialog = ({
   );
 };
 
+const StyledButton = styled(Button)`
+  padding: 0.5rem 0;
+`;
+
 const StyledCheckBox = styled.input`
   // display: none;
 `;
-
-// const StyledFormControlLabel = styled(FormControlLabel)`
-//   display: flex;
-//   justify-content: space-between;
-//   border: 1px solid grey;
-//   border-radius: 0.25rem;
-//   padding: 0.6rem;
-//   margin-bottom: 0.75rem;
-//   cursor: pointer;
-//   ${StyledCheckBox}:checked + & {
-//     background: #e0e0e0;
-//   }
-// `;
 
 const StyledLabel = styled.label`
   display: inline-block;

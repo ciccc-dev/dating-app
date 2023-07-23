@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Typography } from "@mui/material";
+import { Grid, Switch, Typography } from "@mui/material";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -13,6 +13,7 @@ import { lookingFor } from "../../../../constants/lookingfor";
 import { sexualOrientations } from "../../../../constants/sexualOrientations";
 import { purposes } from "../../../../constants/purposes";
 import { Navigation } from "../../../../components/Navigation";
+import { ListItemGrid } from "../LIstItemGrid/ListItemGrid";
 
 export interface Filter {
   id: string;
@@ -49,13 +50,19 @@ export const DiscoveryNavigation = () => {
   //   isPurposeFiltered: false,
   // });
   const [distance, setDistance] = useState(50);
+  const [distanceChecked, setDistanceChecked] = useState(false);
   const [ageRange, setAgeRange] = useState([20, 40]);
+  const [ageRangeChecked, setAgeRangeChecked] = useState(false);
   const [selectedLookingFor, setSelectedLookingFor] = useState<string[]>([]);
   // const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [selectedSexualOrientations, setSelectedSexualOrientations] = useState<
     string[]
   >([]);
+  const [sexualOrientationChecked, setSexualOrientationChecked] =
+    useState(false);
   const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
+  const [sexualSelectedPurposeChecked, setSelectedPurposeChecked] =
+    useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,10 +70,14 @@ export const DiscoveryNavigation = () => {
         const data = await FilterClient.getFilters();
         if (data) {
           setDistance(data.distance);
+          setSelectedPurposeChecked(data.isAgeFiltered);
           setAgeRange([data.minAge, data.maxAge]);
+          setSelectedPurposeChecked(data.isDistanceFiltered);
           setSelectedLookingFor([data.showMe]);
           setSelectedSexualOrientations(data.sexualOrientations);
+          setSelectedPurposeChecked(data.isSexualOrientationFiltered);
           setSelectedPurposes(data.purposes);
+          setSelectedPurposeChecked(data.isPurposeFiltered);
           // setFilter(data);
         }
       } catch (error) {}
@@ -76,6 +87,12 @@ export const DiscoveryNavigation = () => {
 
   const handleDistanceChange = (value: number) => {
     setDistance(value);
+  };
+
+  const handleDistanceCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDistanceChecked(event.target.checked);
   };
 
   // const handleMinAgeChange = (value: number) => {
@@ -90,6 +107,12 @@ export const DiscoveryNavigation = () => {
     setAgeRange(values);
   };
 
+  const handleAgeRangeCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAgeRangeChecked(event.target.checked);
+  };
+
   const handleSelectedLookingForChange = (values: string[]) => {
     setSelectedLookingFor(values);
   };
@@ -98,12 +121,24 @@ export const DiscoveryNavigation = () => {
     setSelectedSexualOrientations(values);
   };
 
+  const handleSexualOrientationCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSexualOrientationChecked(event.target.checked);
+  };
+
   // const handleSelectedInterestsChange = (values: string[]) => {
   //   setSelectedInterests(values);
   // };
 
   const handleSelectedPurposesChange = (values: string[]) => {
     setSelectedPurposes(values);
+  };
+
+  const handlePurposeCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSelectedPurposeChecked(event.target.checked);
   };
 
   const handleFilterClick = () => {
@@ -123,34 +158,51 @@ export const DiscoveryNavigation = () => {
   // } else {
   const DiscoveryList = () => (
     <>
-      <List>
+      <StyledList>
         <ListItem key="distance" disablePadding>
           <DistanceInputSlider
             distance={distance}
             onChange={handleDistanceChange}
+            checked={distanceChecked}
+            onCheckedChange={handleDistanceCheckedChange}
           />
         </ListItem>
         <ListItem key="age-preference" disablePadding>
           <AgePreferenceInputSlider
             ageRange={ageRange}
             onChange={handleAgeRangeChange}
+            checked={ageRangeChecked}
+            onCheckedChange={handleAgeRangeCheckedChange}
           />
         </ListItem>
         <StyledListItem key="looking-for" disablePadding>
-          <StyledDialog
-            title="Looking For"
-            items={lookingFor}
-            selectedItems={selectedLookingFor}
-            onChange={handleSelectedLookingForChange}
-          />
+          <Grid container>
+            <StyledDialog
+              title="Looking For"
+              items={lookingFor}
+              selectedItems={selectedLookingFor}
+              onChange={handleSelectedLookingForChange}
+            />
+          </Grid>
           <StyledTypography>{selectedLookingFor}</StyledTypography>
         </StyledListItem>
         <StyledListItem key="sexual-orientation" disablePadding>
-          <StyledDialog
-            title="Sexual Orientation"
-            items={sexualOrientations}
-            selectedItems={selectedSexualOrientations}
-            onChange={handleSelectedsexualOrientationsChange}
+          <ListItemGrid
+            title={
+              <StyledDialog
+                title="Sexual Orientation"
+                items={sexualOrientations}
+                selectedItems={selectedSexualOrientations}
+                onChange={handleSelectedsexualOrientationsChange}
+              />
+            }
+            switches={
+              <Switch
+                checked={sexualOrientationChecked}
+                onChange={handleSexualOrientationCheckedChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
           />
           <StyledListBlock>
             {selectedSexualOrientations.map(
@@ -172,11 +224,22 @@ export const DiscoveryNavigation = () => {
               <StyledTypography>Hello</StyledTypography>
             </StyledListItem> */}
         <StyledListItem key="purposes" disablePadding>
-          <StyledDialog
-            title="Purposes"
-            items={purposes}
-            selectedItems={selectedPurposes}
-            onChange={handleSelectedPurposesChange}
+          <ListItemGrid
+            title={
+              <StyledDialog
+                title="Purposes"
+                items={purposes}
+                selectedItems={selectedPurposes}
+                onChange={handleSelectedPurposesChange}
+              />
+            }
+            switches={
+              <Switch
+                checked={sexualSelectedPurposeChecked}
+                onChange={handlePurposeCheckedChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
           />
           <StyledListBlock>
             {selectedPurposes.map((purpose, index) => (
@@ -189,11 +252,15 @@ export const DiscoveryNavigation = () => {
             <ListItemText primary="Filter" />
           </StyledButton>
         </StyledListItem>
-      </List>
+      </StyledList>
     </>
   );
   return <Navigation Outlet={<DiscoveryList />} />;
 };
+
+const StyledList = styled(List)`
+  padding: 0.5rem 1rem;
+`;
 
 const StyledButton = styled(ListItemButton)`
   background-color: #ec407a;

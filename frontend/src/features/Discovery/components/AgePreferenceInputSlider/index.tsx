@@ -4,16 +4,21 @@ import Grid from "@mui/material/Grid";
 import Slider from "@mui/material/Slider";
 import MuiInput from "@mui/material/Input";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { ListItemGrid } from "../LIstItemGrid/ListItemGrid";
+import Switch from "@mui/material/Switch";
 
 interface AgePreferenceInputSliderProps {
   ageRange: number[];
   onChange: (value: number[]) => void;
+  checked: boolean;
+  onCheckedChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const AgePreferenceInputSlider = ({
   ageRange,
   onChange,
+  checked,
+  onCheckedChange,
 }: AgePreferenceInputSliderProps) => {
   const handleSliderChange = (event: Event, newValue: any) => {
     onChange(newValue);
@@ -42,10 +47,21 @@ export const AgePreferenceInputSlider = ({
   // };
 
   return (
-    <Box sx={{ width: 250 }}>
-      <Typography id="input-slider" gutterBottom>
-        Age Preference
-      </Typography>
+    <Box sx={{ width: "100%" }}>
+      <ListItemGrid
+        title={
+          <Typography id="input-slider" gutterBottom>
+            Age Preference
+          </Typography>
+        }
+        switches={
+          <Switch
+            checked={checked}
+            onChange={onCheckedChange}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+        }
+      />
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <Input
@@ -66,7 +82,6 @@ export const AgePreferenceInputSlider = ({
         <Grid item xs>
           <Slider
             value={ageRange}
-            // value={typeof value === "number" ? value : 0}
             onChange={handleSliderChange}
             aria-labelledby="input-slider"
           />
