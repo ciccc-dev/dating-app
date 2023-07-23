@@ -1,8 +1,10 @@
-import { Toolbar } from "@mui/material";
+import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
 import { ProfileClient } from "../features/Discovery/api/profile";
 import ProfileCard from "../features/Discovery/components/ProfileCard";
+import { navigationWidth } from "../constants/navigation";
+import { DiscoveryNavigation } from "../features/Discovery/components/Navigation";
 
 export interface Profile {
   id: string;
@@ -34,23 +36,59 @@ export const Discovery = () => {
 
   return (
     <>
-      <Toolbar />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          "& > :not(style)": {
-            m: 3,
-            width: 300,
-            height: 400,
-          },
-        }}
-      >
-        {profiles.map((profile) => (
-          <ProfileCard profile={profile} key={profile.id} />
-        ))}
-      </Box>
+      <StyledWrapper>
+        <StyledNavigationWrapper component="nav">
+          <DiscoveryNavigation />
+        </StyledNavigationWrapper>
+        <StyledContent component="main">
+          {/* <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            "& > :not(style)": {
+              m: 2,
+              width: 300,
+              height: 400,
+            },
+          }}
+        > */}
+          {profiles.map((profile) => (
+            <ProfileCard profile={profile} key={profile.id} />
+          ))}
+          {/* </Box> */}
+        </StyledContent>
+      </StyledWrapper>
     </>
   );
 };
+
+const StyledWrapper = styled(Box)`
+  display: flex;
+`;
+
+const StyledNavigationWrapper = styled(Box)`
+  width: ${navigationWidth}px;
+  flex-shrink: 0;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
+const StyledContent = styled(Box)`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 3px;
+  width: calc(100% - ${navigationWidth}px);
+  & > :not(style) {
+    margin: 1.5rem;
+    width: 300px;
+    height: 400px;
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+`;
