@@ -1,5 +1,25 @@
 import { PrismaClient } from "@prisma/client";
 
+interface Profile {
+  id: string;
+  userId: string;
+  userName: string;
+  birthday: Date;
+  gender: string;
+  sexualOrientation: string;
+  aboutMe: string;
+  registeredAt: Date;
+  updatedAt: Date;
+}
+
+interface SentLike {
+  receiver: Profile;
+}
+
+interface ReceivedLike {
+  sender: Profile;
+}
+
 class _LikesRepository {
   private db: PrismaClient;
 
@@ -7,46 +27,49 @@ class _LikesRepository {
     this.db = db;
   }
 
-  fetchSentLikesByUserId = async (userId: string) => {
-    const likes = await this.db.like.findMany({
+  fetchLikeProrilesByUserId = async (userId: string) => {
+    const sentLikes = await this.db.like.findMany({
       select: { receiver: true, likedAt: true },
       where: { sentBy: userId },
     });
-    const partners = likes.filter(
-      (x, idx, self) =>
-        idx === self.findIndex((y) => y.receiver.userId === x.receiver.userId)
-    );
-    return partners.map((partner) => partner.receiver);
-  };
-
-  fetchReceivedLikesByUserId = async (userId: string) => {
-    const likes = await this.db.like.findMany({
+    const receivedLikes = await this.db.like.findMany({
       select: { sender: true, likedAt: true },
       where: { receivedBy: userId },
     });
-    return likes.map((like) => like.sender);
+
+    const sentTo = this.createProfilesFromSentLikes(sentLikes);
+    const receivedFrom = this.createProfilesFromReceivedLikes(receivedLikes);
+    const matched = this.createMatchedProfiles(sentTo, receivedFrom);
+
+    return { sentTo, receivedFrom, matched };
   };
 
-  fetchMatchedLikesByUserId = async (userId: string) => {
-    const userIdsSentLike = await this.db.like
-      .findMany({
-        select: { receivedBy: true },
-        where: { sentBy: userId },
-      })
-      .then((res) => res.map((res) => res.receivedBy));
-
-    const receivedLikes = await this.db.like.findMany({
-      include: { receiver: true },
-      where: { receivedBy: userId },
-    });
-
-    const matchedLikes = receivedLikes
-      .filter((like) => userIdsSentLike.includes(like.sentBy))
-      .map((like) => like.receiver);
-    return matchedLikes;
+  private createProfilesFromSentLikes = (sentLikes: SentLike[]) => {
+    const profiles = sentLikes.filter(
+      (x, idx, self) =>
+        idx === self.findIndex((y) => y.receiver.userId === x.receiver.userId)
+    );
+    return profiles.map((partner) => partner.receiver);
   };
 
-  private createPartners = () => {};
+  private createProfilesFromReceivedLikes = (receivedLikes: ReceivedLike[]) => {
+    const profiles = receivedLikes.filter(
+      (x, idx, self) =>
+        idx === self.findIndex((y) => y.sender.userId === x.sender.userId)
+    );
+    return profiles.map((partner) => partner.sender);
+  };
+
+  private createMatchedProfiles = (
+    sentLikeProfiles: Profile[],
+    receivedLikeProfiles: Profile[]
+  ) => {
+    const sentUserIds = sentLikeProfiles.map((x) => x.userId);
+    const matchedProfiles = receivedLikeProfiles.filter((x) =>
+      sentUserIds.includes(x.userId)
+    );
+    return matchedProfiles;
+  };
 }
 
 const db = new PrismaClient();
