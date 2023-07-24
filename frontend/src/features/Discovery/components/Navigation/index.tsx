@@ -255,7 +255,7 @@ export const DiscoveryNavigation = () => {
       </StyledList>
     </>
   );
-  return <Navigation Outlet={<DiscoveryList />} />;
+  return <Navigation Outlet={DiscoveryList()} />;
 };
 
 const StyledList = styled(List)`

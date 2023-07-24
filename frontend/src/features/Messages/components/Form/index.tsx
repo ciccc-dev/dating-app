@@ -34,7 +34,10 @@ export const Form = ({ message, onChange, onClickEnter, onSubmit }: Props) => {
 };
 
 const StyledPaper = styled(Paper)`
-  padding: 16;
+  margin-left: 16px;
+  position: absolute;
+  bottom: 10px;
+  width: 80%;
 `;
 
 const StyledForm = styled("form")`
