@@ -192,7 +192,7 @@ export const DiscoveryNavigation = () => {
       </List>
     </>
   );
-  return <Navigation Outlet={<DiscoveryList />} />;
+  return <Navigation Outlet={DiscoveryList()} />;
 };
 
 const StyledButton = styled(ListItemButton)`
