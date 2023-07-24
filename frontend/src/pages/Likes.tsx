@@ -1,67 +1,44 @@
+import { useMemo, useState } from "react";
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import styled from "@emotion/styled";
 
 import { navigationWidth } from "../constants/navigation";
 import { LikesNavigation } from "../features/Likes/components/Navigation";
+import { LikePartnersTable } from "../features/Likes/components/Table";
 import {
   UseFetchLinkedProfilesResponse,
   useFetchLikedProfiles,
 } from "../hooks/useFetchLikedProfiles";
+import { Typography } from "@mui/material";
+
+interface State {
+  category: string;
+}
 
 export const Likes = () => {
+  const [state, update] = useState<State>({ category: "SENT" });
   const { sentTo, receivedFrom, matched }: UseFetchLinkedProfilesResponse =
     useFetchLikedProfiles();
+
+  const profiles = useMemo(() => {
+    if (state.category === "SENT") return sentTo;
+    if (state.category === "RECEIVED") return receivedFrom;
+    return matched;
+  }, [matched, receivedFrom, sentTo, state.category]);
+
+  const handleChangeCategory = (e: any) =>
+    update(() => ({
+      category: e.currentTarget.dataset.item as string,
+    }));
 
   return (
     <StyledWrapper>
       <StyledNavigationWrapper>
-        <LikesNavigation />
+        <LikesNavigation onClick={handleChangeCategory} />
       </StyledNavigationWrapper>
       <StyledContent>
-        <TableContainer component={Paper}>
-          <StyledTable sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Age</TableCell>
-                <TableCell>Gender</TableCell>
-                <TableCell>About Me</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <>
-                {sentTo.length !== 0
-                  ? sentTo.map((profile: any) => {
-                      return (
-                        <TableRow
-                          key={profile.id}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                        >
-                          <TableCell component="th" scope="row">
-                            {profile.userId}
-                          </TableCell>
-                          <TableCell>{profile.userName}</TableCell>
-                          <TableCell>{profile.birthday}</TableCell>
-                          <TableCell>{profile.gender}</TableCell>
-                          <TableCell>{profile.aboutMe}</TableCell>
-                        </TableRow>
-                      );
-                    })
-                  : null}
-              </>
-            </TableBody>
-          </StyledTable>
-        </TableContainer>
+        <Typography variant="h5">{state.category}</Typography>
+        <LikePartnersTable profiles={profiles} />
       </StyledContent>
     </StyledWrapper>
   );
@@ -88,10 +65,4 @@ const StyledContent = styled(Box)`
   @media (max-width: 600px) {
     width: 100%;
   }
-`;
-
-const StyledTable = styled(Table)`
-  padding: 5;
-  margin: 10px;
-  width: 1000px;
 `;
