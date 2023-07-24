@@ -3,14 +3,14 @@ import { NextFunction, Request, Response } from "express";
 import { LikeRepository } from "./repository";
 
 export const getSentLikes = async (
-  req: Request<{ userId: string }>,
+  req: Request<{ auth: any }>,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const profiles = await LikeRepository.fetchSentLikesByUserId(
-      req.params.userId
-    );
+    const userId = req.auth?.payload?.sub;
+    if (!userId) throw new Error("auth failed");
+    const profiles = await LikeRepository.fetchSentLikesByUserId(userId);
     res.json({ profiles });
   } catch (err) {
     next(err);

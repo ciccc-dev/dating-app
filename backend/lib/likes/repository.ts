@@ -7,23 +7,27 @@ class _LikesRepository {
     this.db = db;
   }
 
-  async fetchSentLikesByUserId(userId: string) {
+  fetchSentLikesByUserId = async (userId: string) => {
     const likes = await this.db.like.findMany({
       select: { receiver: true, likedAt: true },
       where: { sentBy: userId },
     });
-    return likes.map((like) => like.receiver);
-  }
+    const partners = likes.filter(
+      (x, idx, self) =>
+        idx === self.findIndex((y) => y.receiver.userId === x.receiver.userId)
+    );
+    return partners.map((partner) => partner.receiver);
+  };
 
-  async fetchReceivedLikesByUserId(userId: string) {
+  fetchReceivedLikesByUserId = async (userId: string) => {
     const likes = await this.db.like.findMany({
       select: { sender: true, likedAt: true },
       where: { receivedBy: userId },
     });
     return likes.map((like) => like.sender);
-  }
+  };
 
-  async fetchMatchedLikesByUserId(userId: string) {
+  fetchMatchedLikesByUserId = async (userId: string) => {
     const userIdsSentLike = await this.db.like
       .findMany({
         select: { receivedBy: true },
@@ -40,7 +44,9 @@ class _LikesRepository {
       .filter((like) => userIdsSentLike.includes(like.sentBy))
       .map((like) => like.receiver);
     return matchedLikes;
-  }
+  };
+
+  private createPartners = () => {};
 }
 
 const db = new PrismaClient();
