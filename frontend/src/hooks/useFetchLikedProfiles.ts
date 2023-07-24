@@ -15,15 +15,22 @@ interface Profile {
   userName: string;
 }
 
-export interface IUseFetchLinkedProfilesResponse {}
+export interface UseFetchLinkedProfilesResponse {
+  sentTo: Profile[];
+  receivedFrom: Profile[];
+  matched: Profile[];
+}
 
-export const useFetchLikedProfiles = ({
-  category = "sent",
-}: {
-  category: string;
-}): [Profile[]] => {
+const initialValue = {
+  sentTo: [],
+  receivedFrom: [],
+  matched: [],
+};
+
+export const useFetchLikedProfiles = (): UseFetchLinkedProfilesResponse => {
   const { getAccessTokenSilently } = useAuth0();
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [profiles, setProfiles] =
+    useState<UseFetchLinkedProfilesResponse>(initialValue);
 
   useEffect(() => {
     (async () => {
@@ -33,11 +40,11 @@ export const useFetchLikedProfiles = ({
           process.env.REACT_APP_SERVER_URL ?? "",
           token
         );
-        const profiles = await LikesAPI.FetchSentLikes();
+        const profiles = await LikesAPI.FetchLikeProfiles();
         setProfiles(profiles);
       }
     })();
   }, [getAccessTokenSilently]);
 
-  return [profiles];
+  return profiles;
 };

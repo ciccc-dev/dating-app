@@ -9,30 +9,15 @@ export class _LikesAPI {
     this.accessToken = accesToken;
   }
 
-  FetchSentLikes = async () => {
+  FetchLikeProfiles = async () => {
     const res = await axios({
-      url: `${this.apiUrl}/api/likes/sent`,
+      url: `${this.apiUrl}/api/likes`,
       method: "GET",
       headers: {
         Authorization: `Bearer ${this.accessToken}`,
         "Content-Type": "application/json",
       },
     });
-    const profiles = res.data.profiles.map((profile: any) => profile);
-    return profiles;
-  };
-
-  FetchSentMeLikes = async () => {
-    const res = await axios({
-      url: `${this.apiUrl}/api/likes/sent`,
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const profiles = res.data.profiles.map((profile: any) => profile);
-    console.log(profiles);
-    return profiles;
+    return res.data;
   };
 }

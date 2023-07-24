@@ -10,12 +10,14 @@ import styled from "@emotion/styled";
 
 import { navigationWidth } from "../constants/navigation";
 import { LikesNavigation } from "../features/Likes/components/Navigation";
-import { useFetchLikedProfiles } from "../hooks/useFetchLikedProfiles";
+import {
+  UseFetchLinkedProfilesResponse,
+  useFetchLikedProfiles,
+} from "../hooks/useFetchLikedProfiles";
 
 export const Likes = () => {
-  const [profiles]: any = useFetchLikedProfiles({
-    category: "sent",
-  });
+  const { sentTo, receivedFrom, matched }: UseFetchLinkedProfilesResponse =
+    useFetchLikedProfiles();
 
   return (
     <StyledWrapper>
@@ -36,8 +38,8 @@ export const Likes = () => {
             </TableHead>
             <TableBody>
               <>
-                {profiles.length !== 0
-                  ? profiles.map((profile: any) => {
+                {sentTo.length !== 0
+                  ? sentTo.map((profile: any) => {
                       return (
                         <TableRow
                           key={profile.id}
