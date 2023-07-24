@@ -42,8 +42,7 @@ export const LikePartnersTable = ({ profiles }: { profiles: Profile[] }) => {
 const StyledTable = styled(Table)`
   padding: 5;
   margin: 10px;
-  width: 1000px;
-  min-width: 650;
+  width: 100%;
 `;
 
 const StyledTableRow = styled(TableRow)`
