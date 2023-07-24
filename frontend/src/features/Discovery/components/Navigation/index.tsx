@@ -61,8 +61,7 @@ export const DiscoveryNavigation = () => {
   const [sexualOrientationChecked, setSexualOrientationChecked] =
     useState(false);
   const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
-  const [sexualSelectedPurposeChecked, setSelectedPurposeChecked] =
-    useState(false);
+  const [purposeChecked, setPurposeChecked] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,14 +69,14 @@ export const DiscoveryNavigation = () => {
         const data = await FilterClient.getFilters();
         if (data) {
           setDistance(data.distance);
-          setSelectedPurposeChecked(data.isAgeFiltered);
+          setDistanceChecked(data.isDistanceFiltered);
           setAgeRange([data.minAge, data.maxAge]);
-          setSelectedPurposeChecked(data.isDistanceFiltered);
+          setAgeRangeChecked(data.isAgeFiltered);
           setSelectedLookingFor([data.showMe]);
           setSelectedSexualOrientations(data.sexualOrientations);
-          setSelectedPurposeChecked(data.isSexualOrientationFiltered);
+          setSexualOrientationChecked(data.isSexualOrientationFiltered);
           setSelectedPurposes(data.purposes);
-          setSelectedPurposeChecked(data.isPurposeFiltered);
+          setPurposeChecked(data.isPurposeFiltered);
           // setFilter(data);
         }
       } catch (error) {}
@@ -94,14 +93,6 @@ export const DiscoveryNavigation = () => {
   ) => {
     setDistanceChecked(event.target.checked);
   };
-
-  // const handleMinAgeChange = (value: number) => {
-  //   setMinAge(value);
-  // };
-
-  // const handleMaxAgeChange = (value: number) => {
-  //   setMaxAge(value);
-  // };
 
   const handleAgeRangeChange = (values: number[]) => {
     setAgeRange(values);
@@ -138,24 +129,25 @@ export const DiscoveryNavigation = () => {
   const handlePurposeCheckedChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setSelectedPurposeChecked(event.target.checked);
+    setPurposeChecked(event.target.checked);
   };
 
   const handleFilterClick = () => {
     const filterCondition = {
       profileId: "723e4567-e89b-12d3-a456-426614174000",
       showMe: selectedLookingFor[0],
-      ageRange: ageRange,
       distance: distance,
+      distanceChecked: distanceChecked,
+      ageRange: ageRange,
+      ageRangeChecked: ageRangeChecked,
       sexualOrientations: selectedSexualOrientations,
+      sexualOrientationChecked: sexualOrientationChecked,
       purposes: selectedPurposes,
+      purposeChecked: purposeChecked,
     };
     FilterClient.updateFilters(filterCondition);
   };
 
-  // if (isLoading) {
-  //   return <div style={{ color: "black" }}>Loading...</div>;
-  // } else {
   const DiscoveryList = () => (
     <>
       <StyledList>
@@ -235,7 +227,7 @@ export const DiscoveryNavigation = () => {
             }
             switchComponent={
               <Switch
-                checked={sexualSelectedPurposeChecked}
+                checked={purposeChecked}
                 onChange={handlePurposeCheckedChange}
                 inputProps={{ "aria-label": "controlled" }}
               />

@@ -20,9 +20,13 @@ router.post("/update", async (req, res) => {
   const {
     profileId,
     showMe,
-    ageRange,
     distance,
+    distanceChecked,
+    ageRange,
+    ageRangeChecked,
     sexualOrientations,
+    sexualOrientationChecked,
+    purposeChecked,
     purposes,
   } = req.body;
   const result = await client.filter.update({
@@ -33,9 +37,13 @@ router.post("/update", async (req, res) => {
       showMe: showMe,
       minAge: ageRange[0],
       maxAge: ageRange[1],
+      isAgeFiltered: ageRangeChecked,
       distance: distance,
+      isDistanceFiltered: distanceChecked,
       sexualOrientations: sexualOrientations,
+      isSexualOrientationFiltered: sexualOrientationChecked,
       purposes: purposes,
+      isPurposeFiltered: purposeChecked,
     },
   });
   console.log(result);
