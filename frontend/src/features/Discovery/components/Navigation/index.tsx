@@ -14,6 +14,7 @@ import { sexualOrientations } from "../../../../constants/sexualOrientations";
 import { purposes } from "../../../../constants/purposes";
 import { Navigation } from "../../../../components/Navigation";
 import { ListItemGrid } from "../LIstItemGrid";
+import { InterestClient } from "../../api/interest";
 
 export interface Filter {
   id: string;
@@ -34,27 +35,18 @@ export interface Item {
   name: string;
 }
 
+export interface Interest {
+  id: number;
+  name: string;
+}
+
 export const DiscoveryNavigation = () => {
-  // const [filter, setFilter] = useState<Filter>({
-  //   id: "",
-  //   profileId: "",
-  //   showMe: "",
-  //   minAge: 20,
-  //   maxAge: 40,
-  //   isAgeFiltered: false,
-  //   distance: 50,
-  //   isDistanceFiltered: false,
-  //   sexualOrientations: [],
-  //   isSexualOrientationFiltered: false,
-  //   purposes: [],
-  //   isPurposeFiltered: false,
-  // });
   const [distance, setDistance] = useState(50);
   const [distanceChecked, setDistanceChecked] = useState(false);
   const [ageRange, setAgeRange] = useState([20, 40]);
   const [ageRangeChecked, setAgeRangeChecked] = useState(false);
   const [selectedLookingFor, setSelectedLookingFor] = useState<string[]>([]);
-  // const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<Interest[]>([]);
   const [selectedSexualOrientations, setSelectedSexualOrientations] = useState<
     string[]
   >([]);
@@ -62,9 +54,15 @@ export const DiscoveryNavigation = () => {
     useState(false);
   const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
   const [purposeChecked, setPurposeChecked] = useState(false);
+  // const [interests, setInterests] = useState<Item[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInterests = async () => {
+      try {
+        const data = await InterestClient.getInterests();
+      } catch (error) {}
+    };
+    const fetchFilterData = async () => {
       try {
         const data = await FilterClient.getFilters();
         if (data) {
@@ -77,11 +75,13 @@ export const DiscoveryNavigation = () => {
           setSexualOrientationChecked(data.isSexualOrientationFiltered);
           setSelectedPurposes(data.purposes);
           setPurposeChecked(data.isPurposeFiltered);
+          setSelectedInterests(data.interests);
           // setFilter(data);
         }
       } catch (error) {}
     };
-    fetchData();
+    fetchFilterData();
+    fetchInterests();
   }, []);
 
   const handleDistanceChange = (value: number) => {
@@ -118,9 +118,9 @@ export const DiscoveryNavigation = () => {
     setSexualOrientationChecked(event.target.checked);
   };
 
-  // const handleSelectedInterestsChange = (values: string[]) => {
-  //   setSelectedInterests(values);
-  // };
+  const handleSelectedInterestsChange = (values: Interest[]) => {
+    setSelectedInterests(values);
+  };
 
   const handleSelectedPurposesChange = (values: string[]) => {
     setSelectedPurposes(values);
