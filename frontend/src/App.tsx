@@ -44,14 +44,6 @@ const router = createBrowserRouter([
             path: "/app/discovery",
             element: <Discovery />,
           },
-          {
-            path: "/app/likes",
-            element: <Profile />,
-          },
-          {
-            path: "/app/messages",
-            element: <Messages />,
-          },
         ],
       },
     ],
