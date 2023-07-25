@@ -1,49 +1,54 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
+import { parseISO } from "date-fns";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
 import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import styled from "@emotion/styled";
 
-import { Profile } from "../../../Messages/types";
+import { TableComponent } from "../../../../components/Table";
+import { calculateAge } from "../../../../utils/calculateAge";
+
+interface Profile {
+  id: string;
+  userName: string;
+  birthday: string;
+  gender: string;
+  aboutMe: string;
+}
 
 export const LikePartnersTable = ({ profiles }: { profiles: Profile[] }) => {
-  return (
-    <TableContainer component={Paper}>
-      <StyledTable>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Age</TableCell>
-            <TableCell>Gender</TableCell>
-            <TableCell>About Me</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <>
-            {profiles.length !== 0 &&
-              profiles.map((profile: any) => (
-                <StyledTableRow key={profile.id}>
-                  <TableCell>{profile.userName}</TableCell>
-                  <TableCell>{profile.birthday}</TableCell>
-                  <TableCell>{profile.gender}</TableCell>
-                  <TableCell>{profile.aboutMe}</TableCell>
-                </StyledTableRow>
-              ))}
-          </>
-        </TableBody>
-      </StyledTable>
-    </TableContainer>
+  const header = (
+    <TableRow>
+      <TableCell sx={{ width: "20%" }}>Name</TableCell>
+      <TableCell sx={{ width: "10%" }}>Age</TableCell>
+      <TableCell sx={{ width: "10%" }}>Gender</TableCell>
+      <TableCell sx={{ width: "40%" }}>About Me</TableCell>
+      <TableCell sx={{ width: "10%" }}></TableCell>
+      <TableCell sx={{ width: "10%" }}></TableCell>
+    </TableRow>
   );
-};
 
-const StyledTable = styled(Table)`
-  padding: 5;
-  margin: 10px;
-  width: 100%;
-`;
+  const body = profiles.map((profile) => (
+    <StyledTableRow key={profile.id}>
+      <TableCell>{profile.userName}</TableCell>
+      {/* TODO: Move parseISO to hooks */}
+      <TableCell>{calculateAge(parseISO(profile.birthday))}</TableCell>
+      <TableCell>{profile.gender}</TableCell>
+      <TableCell>{profile.aboutMe}</TableCell>
+      <TableCell>
+        <Button variant="contained">Message</Button>
+      </TableCell>
+      <TableCell>
+        <IconButton>
+          <MenuIcon />
+        </IconButton>
+      </TableCell>
+    </StyledTableRow>
+  ));
+
+  return <TableComponent header={header} body={body} />;
+};
 
 const StyledTableRow = styled(TableRow)`
   &:last-child td,

@@ -37,7 +37,7 @@ export const Likes = () => {
         <LikesNavigation onClick={handleChangeCategory} />
       </StyledNavigationWrapper>
       <StyledContent>
-        <Typography variant="h5">{state.category}</Typography>
+        <StyleTableTitle variant="h5">{`${state.category} LIKES`}</StyleTableTitle>
         <LikePartnersTable profiles={profiles} />
       </StyledContent>
     </StyledWrapper>
@@ -65,4 +65,9 @@ const StyledContent = styled(Box)`
   @media (max-width: 600px) {
     width: 100%;
   }
+`;
+
+const StyleTableTitle = styled(Typography)`
+  margin-top: 20px;
+  margin-left: 20px;
 `;
