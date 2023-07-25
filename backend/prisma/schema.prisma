@@ -88,7 +88,7 @@ model Filter {
   purposes                    String[]   @db.VarChar(20)
   isPurposeFiltered           Boolean    @default(false) @map("is_purpose_filtered")
   interests                   Interest[]
-  isInteretFiltered           Boolean    @default(false) @map("is_interest_filtered")
+  isInterestFiltered          Boolean    @default(false) @map("is_interest_filtered")
 
   @@map("filter")
 }
