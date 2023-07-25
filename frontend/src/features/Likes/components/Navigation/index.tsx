@@ -6,21 +6,16 @@ import ListItemText from "@mui/material/ListItemText";
 import styled from "@emotion/styled";
 
 import { Navigation } from "../../../../components/Navigation";
-import { Profile } from "../../types";
 
-interface Props {
-  partners: Profile[];
-  onClick: (e: any) => void;
-}
-
-export const MessagesNavigation = ({ partners, onClick }: Props) => {
-  const PartnerList = () => (
+const NavigationItems = ({ onClick }: { onClick: (e: any) => void }) => {
+  const items = ["SENT", "RECEIVED", "MATCHED"];
+  return (
     <>
-      {partners.map((partner) => (
-        <List key={partner.userId}>
-          <ListItem disablePadding onClick={onClick} data-id={partner.userId}>
+      {items.map((item, idx) => (
+        <List key={idx}>
+          <ListItem disablePadding onClick={onClick} data-item={item}>
             <ListItemButton>
-              <StyledListItemText primary={partner.userName} />
+              <StyledListItemText primary={item} />
             </ListItemButton>
           </ListItem>
           <Divider />
@@ -28,7 +23,10 @@ export const MessagesNavigation = ({ partners, onClick }: Props) => {
       ))}
     </>
   );
-  return <Navigation Outlet={<PartnerList />} />;
+};
+
+export const LikesNavigation = ({ onClick }: { onClick: (e: any) => void }) => {
+  return <Navigation Outlet={<NavigationItems onClick={onClick} />} />;
 };
 
 const StyledListItemText = styled(ListItemText)`

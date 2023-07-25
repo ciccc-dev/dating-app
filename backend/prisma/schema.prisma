@@ -31,6 +31,8 @@ model Profile {
   UnselectedProfile ProfileUnselected[] @relation("UnselectedProfile")
   BlockedBy         ProfileBlocked[]    @relation("BlockedBy")
   BlockedProfile    ProfileBlocked[]    @relation("BlockedProfile")
+  LikeSender        Like[]              @relation("sender")
+  LikeReceiver      Like[]              @relation("receiver")
 
   @@index([birthday])
   @@index([gender])
@@ -141,4 +143,17 @@ model Geolocation {
   @@index([latitude])
   @@index([longtitude])
   @@map("geolocation")
+}
+
+model Like {
+  id         String   @id @db.Uuid
+  sender     Profile  @relation("sender", fields: [sentBy], references: [userId])
+  receiver   Profile  @relation("receiver", fields: [receivedBy], references: [userId])
+  sentBy     String   @map("sent_by")
+  receivedBy String   @map("received_by")
+  likedAt    DateTime @map("liked_at") @db.Timestamptz(3)
+
+  @@index([sentBy])
+  @@index([receivedBy])
+  @@map("likes")
 }

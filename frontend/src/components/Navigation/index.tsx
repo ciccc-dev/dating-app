@@ -44,7 +44,8 @@ export const Navigation = ({ Outlet }: { Outlet: any }) => {
           <StyledTab label="messages" />
         </Tabs>
       </Box>
-      {Outlet}
+
+      <StyledNavigationItemWrapper>{Outlet}</StyledNavigationItemWrapper>
       <StyledLogoutBox>
         <Button onClick={handleLogout}>LOGOUT</Button>
       </StyledLogoutBox>
@@ -62,6 +63,10 @@ const StyledAccountBox = styled(Box)`
 
 const StyledTab = styled(Tab)`
   font-size: 10px;
+`;
+
+const StyledNavigationItemWrapper = styled("div")`
+  margin-top: 20px;
 `;
 
 const StyledLogoutBox = styled(Box)`
