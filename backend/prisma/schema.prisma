@@ -76,16 +76,17 @@ model Filter {
   profile                     Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
   profileId                   String     @unique @map("profile_id") @db.Uuid
   showMe                      String     @map("show_me") @db.VarChar(10)
-  minAge                      Int        @map("min_age")
-  maxAge                      Int        @map("max_age")
-  isAgeFiltered               Boolean    @map("is_age_filtered")
-  distance                    Int
-  isDistanceFiltered          Boolean    @map("is_distance_filtered")
+  minAge                      Int        @default(0) @map("min_age")
+  maxAge                      Int        @default(100) @map("max_age")
+  isAgeFiltered               Boolean    @default(false) @map("is_age_filtered")
+  distance                    Int        @default(50)
+  isDistanceFiltered          Boolean    @default(false) @map("is_distance_filtered")
   sexualOrientations          String[]   @map("sexual_orientations") @db.VarChar(30)
-  isSexualOrientationFiltered Boolean    @map("is_sexual_orientation_filtered")
+  isSexualOrientationFiltered Boolean    @default(false) @map("is_sexual_orientation_filtered")
   purposes                    String[]   @db.VarChar(20)
-  isPurposeFiltered           Boolean    @map("is_purpose_filtered")
+  isPurposeFiltered           Boolean    @default(false) @map("is_purpose_filtered")
   interests                   Interest[]
+  isInteretFiltered           Boolean    @default(false) @map("is_interest_filtered")
 
   @@map("filter")
 }

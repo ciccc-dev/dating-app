@@ -35,18 +35,15 @@ export interface Item {
   name: string;
 }
 
-export interface Interest {
-  id: number;
-  name: string;
-}
-
 export const DiscoveryNavigation = () => {
+  const [interests, setInterests] = useState<Item[]>([]);
   const [distance, setDistance] = useState(50);
   const [distanceChecked, setDistanceChecked] = useState(false);
   const [ageRange, setAgeRange] = useState([20, 40]);
   const [ageRangeChecked, setAgeRangeChecked] = useState(false);
   const [selectedLookingFor, setSelectedLookingFor] = useState<string[]>([]);
-  const [selectedInterests, setSelectedInterests] = useState<Interest[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [interestChecked, setInterestChecked] = useState(false);
   const [selectedSexualOrientations, setSelectedSexualOrientations] = useState<
     string[]
   >([]);
@@ -54,12 +51,14 @@ export const DiscoveryNavigation = () => {
     useState(false);
   const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
   const [purposeChecked, setPurposeChecked] = useState(false);
-  // const [interests, setInterests] = useState<Item[]>([]);
 
   useEffect(() => {
     const fetchInterests = async () => {
       try {
         const data = await InterestClient.getInterests();
+        if (data) {
+          setInterests(data);
+        }
       } catch (error) {}
     };
     const fetchFilterData = async () => {
@@ -75,8 +74,10 @@ export const DiscoveryNavigation = () => {
           setSexualOrientationChecked(data.isSexualOrientationFiltered);
           setSelectedPurposes(data.purposes);
           setPurposeChecked(data.isPurposeFiltered);
-          setSelectedInterests(data.interests);
-          // setFilter(data);
+          setSelectedInterests(
+            data.interests.map((interest: Item) => interest.name)
+          );
+          setInterestChecked(data.isInterestFiltered);
         }
       } catch (error) {}
     };
@@ -118,10 +119,6 @@ export const DiscoveryNavigation = () => {
     setSexualOrientationChecked(event.target.checked);
   };
 
-  const handleSelectedInterestsChange = (values: Interest[]) => {
-    setSelectedInterests(values);
-  };
-
   const handleSelectedPurposesChange = (values: string[]) => {
     setSelectedPurposes(values);
   };
@@ -130,6 +127,16 @@ export const DiscoveryNavigation = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setPurposeChecked(event.target.checked);
+  };
+
+  const handleSelectedInterestsChange = (values: string[]) => {
+    setSelectedInterests(values);
+  };
+
+  const handleInterestCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setInterestChecked(event.target.checked);
   };
 
   const handleFilterClick = () => {
@@ -144,6 +151,8 @@ export const DiscoveryNavigation = () => {
       sexualOrientationChecked: sexualOrientationChecked,
       purposes: selectedPurposes,
       purposeChecked: purposeChecked,
+      interests: selectedInterests.map((interest) => ({ name: interest })),
+      interestChecked: interestChecked,
     };
     FilterClient.updateFilters(filterCondition);
   };
@@ -206,15 +215,6 @@ export const DiscoveryNavigation = () => {
             )}
           </StyledListBlock>
         </StyledListItem>
-        {/* <StyledListItem key="interests" disablePadding>
-              <StyledDialog
-                title="Interests"
-                items={purposes}
-                selectedItems={selectedInterests}
-                onChange={handleSelectedInterestsChange}
-              />
-              <StyledTypography>Hello</StyledTypography>
-            </StyledListItem> */}
         <StyledListItem key="purposes" disablePadding>
           <ListItemGrid
             titleComponent={
@@ -236,6 +236,30 @@ export const DiscoveryNavigation = () => {
           <StyledListBlock>
             {selectedPurposes.map((purpose, index) => (
               <StyledListSpan key={index}>{purpose}</StyledListSpan>
+            ))}
+          </StyledListBlock>
+        </StyledListItem>
+        <StyledListItem key="interests" disablePadding>
+          <ListItemGrid
+            titleComponent={
+              <StyledDialog
+                title="Interests"
+                items={interests}
+                selectedItems={selectedInterests}
+                onChange={handleSelectedInterestsChange}
+              />
+            }
+            switchComponent={
+              <Switch
+                checked={interestChecked}
+                onChange={handleInterestCheckedChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
+          />
+          <StyledListBlock>
+            {selectedInterests.map((interest, index) => (
+              <StyledListSpan key={index}>{interest}</StyledListSpan>
             ))}
           </StyledListBlock>
         </StyledListItem>

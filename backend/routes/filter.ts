@@ -30,6 +30,7 @@ router.post("/update", async (req, res) => {
     purposeChecked,
     purposes,
     interests,
+    interestChecked,
   } = req.body;
   const result = await client.filter.update({
     where: {
@@ -46,7 +47,8 @@ router.post("/update", async (req, res) => {
       isSexualOrientationFiltered: sexualOrientationChecked,
       purposes: purposes,
       isPurposeFiltered: purposeChecked,
-      interests: { set: [{ name: "Yoga" }, { name: "Reading" }] },
+      interests: { set: interests },
+      isInterestFiltered: interestChecked,
     },
   });
   console.log(result);
