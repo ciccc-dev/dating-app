@@ -3,6 +3,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import styled from "@emotion/styled";
 
 import { Navigation } from "../../../../components/Navigation";
 import { Profile } from "../../types";
@@ -19,7 +20,7 @@ export const MessagesNavigation = ({ partners, onClick }: Props) => {
         <List key={partner.userId}>
           <ListItem disablePadding onClick={onClick} data-id={partner.userId}>
             <ListItemButton>
-              <ListItemText primary={partner.userName} />
+              <StyledListItemText primary={partner.userName} />
             </ListItemButton>
           </ListItem>
           <Divider />
@@ -29,3 +30,7 @@ export const MessagesNavigation = ({ partners, onClick }: Props) => {
   );
   return <Navigation Outlet={<PartnerList />} />;
 };
+
+const StyledListItemText = styled(ListItemText)`
+  text-align: center;
+`;
