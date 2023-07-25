@@ -1,3 +1,4 @@
+import { MouseEventHandler } from "react";
 import { parseISO } from "date-fns";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -8,9 +9,11 @@ import styled from "@emotion/styled";
 
 import { TableComponent } from "../../../../components/Table";
 import { calculateAge } from "../../../../utils/calculateAge";
+import { useNavigate } from "react-router-dom";
 
 interface Profile {
   id: string;
+  userId: string;
   userName: string;
   birthday: string;
   gender: string;
@@ -18,6 +21,11 @@ interface Profile {
 }
 
 export const LikePartnersTable = ({ profiles }: { profiles: Profile[] }) => {
+  const navigate = useNavigate();
+  const handleClickMessageButton: MouseEventHandler<HTMLButtonElement> = (
+    event
+  ) => navigate(`/messages?userId=${event.currentTarget.id}`);
+
   const header = (
     <TableRow>
       <TableCell sx={{ width: "20%" }}>Name</TableCell>
@@ -37,7 +45,13 @@ export const LikePartnersTable = ({ profiles }: { profiles: Profile[] }) => {
       <TableCell>{profile.gender}</TableCell>
       <TableCell>{profile.aboutMe}</TableCell>
       <TableCell>
-        <Button variant="contained">Message</Button>
+        <Button
+          id={profile.userId}
+          variant="contained"
+          onClick={handleClickMessageButton}
+        >
+          Message
+        </Button>
       </TableCell>
       <TableCell>
         <IconButton>
