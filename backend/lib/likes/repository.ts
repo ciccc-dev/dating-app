@@ -70,7 +70,37 @@ class _LikesRepository {
     );
     return matchedProfiles;
   };
+
+  exists = async ({
+    sentBy,
+    receivedBy,
+  }: {
+    sentBy: string;
+    receivedBy: string;
+  }): Promise<boolean> => {
+    const count = await this.db.like.count({
+      where: { sentBy, receivedBy },
+    });
+    return count > 0;
+  };
+
+  create = async ({
+    sentBy,
+    receivedBy,
+    id,
+    likedAt,
+  }: {
+    sentBy: string;
+    receivedBy: string;
+    id: string;
+    likedAt: Date;
+    // }): Promise<boolean> => {
+  }) => {
+    await this.db.like.create({ data: { sentBy, receivedBy, id, likedAt } });
+  };
 }
 
-const db = new PrismaClient();
+const db = new PrismaClient({
+  log: ["query"],
+});
 export const LikeRepository = new _LikesRepository(db);
