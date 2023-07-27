@@ -4,7 +4,10 @@ import styled from "@emotion/styled";
 
 import { navigationWidth } from "../constants/navigation";
 import { LikesNavigation } from "../features/Likes/components/Navigation";
-import { LikePartnersTable } from "../features/Likes/components/Table";
+import {
+  ReceivedLikesTable,
+  SentLikesTable,
+} from "../features/Likes/components/Table";
 import {
   UseFetchLinkedProfilesResponse,
   useFetchLikedProfiles,
@@ -37,8 +40,12 @@ export const Likes = () => {
         <LikesNavigation onClick={handleChangeCategory} />
       </StyledNavigationWrapper>
       <StyledContent>
-        <StyleTableTitle variant="h5">{`${state.category} LIKES`}</StyleTableTitle>
-        <LikePartnersTable profiles={profiles} />
+        <StyleTableTitle variant='h5'>{`${state.category} LIKES`}</StyleTableTitle>
+        {state.category === "SENT" && <SentLikesTable profiles={profiles} />}
+        {state.category === "RECEIVED" && (
+          <ReceivedLikesTable profiles={profiles} />
+        )}
+        {state.category === "MATCHED" && <SentLikesTable profiles={profiles} />}
       </StyledContent>
     </StyledWrapper>
   );
