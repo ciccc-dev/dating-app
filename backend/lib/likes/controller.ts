@@ -35,7 +35,7 @@ export const postLike = async (
 
     const like = new Like(req.auth?.payload?.sub, req.body.like_to);
     await LikeRepository.create(like.toHash());
-    res.status(201);
+    res.status(201).json();
   } catch (err) {
     next(err);
   }
