@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
 
+import { validate } from "../../middleware/validateRequest";
 import { LikeRepository } from "./repository";
 import { Like } from "./like";
 
@@ -19,13 +19,12 @@ export const getLikedProfiles = async (
 };
 
 export const postLike = async (
-  req: Request<{ auth: any; body: { like_to: string } }>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const isValidReq = validationResult(req).isEmpty();
-    if (!isValidReq) throw "Request body is invalid";
+    validate(req);
 
     const exists = await LikeRepository.exists({
       sentBy: req.auth?.payload?.sub,
