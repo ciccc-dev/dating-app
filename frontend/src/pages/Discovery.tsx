@@ -1,10 +1,11 @@
 import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
-import { ProfileClient } from "../features/Discovery/api/profile";
+import { _profileClient } from "../features/Discovery/api/profile";
 import ProfileCard from "../features/Discovery/components/ProfileCard";
 import { navigationWidth } from "../constants/navigation";
 import { DiscoveryNavigation } from "../features/Discovery/components/Navigation";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export interface Profile {
   id: string;
@@ -19,12 +20,18 @@ export interface Profile {
 }
 
 export const Discovery = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await ProfileClient.getProfiles();
-        if (data) {
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const ProfileClient = new _profileClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          const data = await ProfileClient.getProfiles();
           setProfiles(data);
         }
       } catch (error) {
@@ -32,7 +39,7 @@ export const Discovery = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [getAccessTokenSilently]);
 
   return (
     <>
