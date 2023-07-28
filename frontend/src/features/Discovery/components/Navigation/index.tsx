@@ -38,10 +38,12 @@ export interface Item {
 
 export interface DiscoveryNavigationProps {
   profileId: string;
+  onClick: () => void;
 }
 
 export const DiscoveryNavigation = ({
   profileId,
+  onClick,
 }: DiscoveryNavigationProps) => {
   const { getAccessTokenSilently } = useAuth0();
   const [interests, setInterests] = useState<Item[]>([]);
@@ -190,6 +192,7 @@ export const DiscoveryNavigation = ({
         interestChecked: interestChecked,
       };
       FilterClient.updateFilter(filterCondition);
+      onClick();
     }
   };
 

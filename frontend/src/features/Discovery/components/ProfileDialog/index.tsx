@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import GradeRoundedIcon from "@mui/icons-material/GradeRounded";
 import { useState } from "react";
-import { Grid, styled } from "@mui/material";
+import { Box, Grid, styled } from "@mui/material";
 import { Profile } from "../../../../pages/Discovery";
 
 interface ProfileDialogProps {
@@ -35,7 +35,14 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
                   src="https://swiperjs.com/demos/images/nature-1.jpg"
                   alt="profile1"
                 />
-                <StyleTitle>{`${profile.userName}  ${profile.birthday}`}</StyleTitle>
+                <StyleGrid container>
+                  <Grid item xs={10}>
+                    <div>{profile.userName}</div>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <div>{profile.age}</div>
+                  </Grid>
+                </StyleGrid>
               </StyleCardContainer>
             </DialogContent>
           </Grid>
@@ -88,11 +95,11 @@ const StyleImg = styled("img")`
   height: 400px;
 `;
 
-const StyleTitle = styled("h5")`
+const StyleGrid = styled(Grid)`
   position: relative;
   width: 80%;
   left: 10%;
-  bottom: 30%;
+  bottom: 18%;
   color: white;
-  font-size: 1rem;
+  font-size: 1.8rem;
 `;

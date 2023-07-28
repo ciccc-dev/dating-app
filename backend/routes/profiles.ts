@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
-import { convertAgetoDate } from "../utils/caluculateAge";
+import { calculateAge, convertAgetoDate } from "../utils/caluculateAge";
 
 const router = express.Router();
 
@@ -27,7 +27,6 @@ router.post("/profileId", async (req, res) => {
     },
   });
   return res.json(result);
-
 });
 
 router.post("/", async (req, res) => {
@@ -70,7 +69,16 @@ router.post("/", async (req, res) => {
         purposes: { select: { name: true } },
       },
     });
-    return res.json(profiles);
+
+    // const convertedProfiles = profiles.map((profile) => ({...profile, age: calculateAge(profile.birthday)}));
+    const convertedProfiles = profiles.map(({ birthday, ...rest }) => ({
+      ...rest,
+      age: calculateAge(birthday),
+    }));
+
+    console.log(convertedProfiles);
+
+    return res.json(convertedProfiles);
   }
 });
 

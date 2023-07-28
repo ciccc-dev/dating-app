@@ -11,12 +11,14 @@ export interface Profile {
   id: string;
   userId: string;
   userName: string;
-  birthday: Date;
+  age: number;
   gender: string;
   sexualOrientation: string;
   aboutMe: string;
   registeredAt: Date;
   updatedAt: Date;
+  purposes: string[];
+  interests: string[];
 }
 
 export const Discovery = () => {
@@ -42,10 +44,7 @@ export const Discovery = () => {
         throw error;
       }
     };
-    fetchProfileId();
-  }, [getAccessTokenSilently, user, profileId]);
 
-  useEffect(() => {
     const fetchData = async () => {
       try {
         if (profileId) {
@@ -63,14 +62,35 @@ export const Discovery = () => {
         throw error;
       }
     };
+    fetchProfileId();
     fetchData();
-  }, [getAccessTokenSilently, profileId]);
+  }, [getAccessTokenSilently, user, profileId]);
+
+  const fetchData = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const ProfileClient = new _profileClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        const data = await ProfileClient.getProfiles(profileId);
+        setProfiles(data);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleClick = () => {
+    fetchData();
+  };
 
   return (
     <>
       <StyledWrapper>
         <StyledNavigationWrapper component="nav">
-          <DiscoveryNavigation profileId={profileId} />
+          <DiscoveryNavigation profileId={profileId} onClick={handleClick} />
         </StyledNavigationWrapper>
         <StyledContent component="main">
           {profiles.map((profile) => (

@@ -70,7 +70,7 @@ const StyledNavigationItemWrapper = styled("div")`
 `;
 
 const StyledLogoutBox = styled(Box)`
-  width: 256px;
+  width: 300px;
   text-align: center;
   border-bottom: 1px;
   position: fixed;
