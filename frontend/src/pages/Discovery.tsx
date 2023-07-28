@@ -11,19 +11,20 @@ export interface Profile {
   id: string;
   userId: string;
   userName: string;
-  birthday: Date;
+  age: number;
   gender: string;
   sexualOrientation: string;
   aboutMe: string;
   registeredAt: Date;
   updatedAt: Date;
+  purposes: string[];
+  interests: string[];
 }
 
 export const Discovery = () => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [isFiltered, setIsFiltered] = useState(false);
 
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -43,10 +44,7 @@ export const Discovery = () => {
         throw error;
       }
     };
-    fetchProfileId();
-  }, [getAccessTokenSilently, user, profileId]);
 
-  useEffect(() => {
     const fetchData = async () => {
       try {
         if (profileId) {
@@ -58,18 +56,34 @@ export const Discovery = () => {
             );
             const data = await ProfileClient.getProfiles(profileId);
             setProfiles(data);
-            setIsFiltered(!isFiltered);
           }
         }
       } catch (error) {
         throw error;
       }
     };
+    fetchProfileId();
     fetchData();
-  }, [getAccessTokenSilently, profileId, isFiltered]);
+  }, [getAccessTokenSilently, user, profileId]);
+
+  const fetchData = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const ProfileClient = new _profileClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        const data = await ProfileClient.getProfiles(profileId);
+        setProfiles(data);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 
   const handleClick = () => {
-    setIsFiltered(!isFiltered);
+    fetchData();
   };
 
   return (

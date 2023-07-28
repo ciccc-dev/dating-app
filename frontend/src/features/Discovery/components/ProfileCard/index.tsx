@@ -5,7 +5,7 @@ import "swiper/css/effect-flip";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Profile } from "../../../../pages/Discovery";
-import { styled } from "@mui/material";
+import { Grid, styled } from "@mui/material";
 import { ProfileDialog } from "../ProfileDialog";
 
 interface ProfileCardProps {
@@ -29,7 +29,14 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
               src="https://swiperjs.com/demos/images/nature-1.jpg"
               alt="profile1"
             />
-            <StyleTitle>{`${profile.userName}  ${profile.birthday}`}</StyleTitle>
+            <StyleGrid container>
+              <Grid item xs={10}>
+                <div>{profile.userName}</div>
+              </Grid>
+              <Grid item xs={2}>
+                <div>{profile.age}</div>
+              </Grid>
+            </StyleGrid>
           </StyleSwiperSlide>
           <StyleSwiperSlide>
             <StyleImg
@@ -43,7 +50,10 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
               src="https://swiperjs.com/demos/images/nature-3.jpg"
               alt="profile3"
             />
-            <StyleTitle>{`${profile.aboutMe}`}</StyleTitle>
+            <StyleSpan>{`${profile.sexualOrientation}`}</StyleSpan>
+            {profile.purposes.map((purpose, index) => (
+              <StyleSpan key={index}>{`${purpose}`}</StyleSpan>
+            ))}
           </StyleSwiperSlide>
           <StyleSwiperSlide>
             <StyleImg
@@ -72,11 +82,31 @@ const StyleCardContainer = styled("div")`
   background-color: lightgrey;
 `;
 
+const StyleGrid = styled(Grid)`
+  position: relative;
+  width: 80%;
+  left: 10%;
+  bottom: 18%;
+  color: white;
+  font-size: 1.8rem;
+`;
+
 const StyleTitle = styled("h5")`
   position: relative;
   width: 80%;
   left: 10%;
   bottom: 30%;
+  color: white;
+  font-size: 1.2rem;
+`;
+
+const StyleSpan = styled("span")`
+  position: relative;
+  left: 10%;
+  bottom: 18%;
+  border: 1px solid white;
+  border-radius: 1rem;
+  padding: 0.25rem 0.5rem;
   color: white;
   font-size: 1rem;
 `;
