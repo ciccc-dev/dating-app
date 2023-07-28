@@ -1,22 +1,29 @@
-class _interestClient {
+import axios from "axios";
+
+export class _interestClient {
+  private apiUrl: string;
+  private accessToken: string;
+
+  constructor(apiUrl: string, accesToken: string) {
+    this.apiUrl = apiUrl;
+    this.accessToken = accesToken;
+  }
+
   getInterests = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/interests", {
+      const res = await axios({
+        url: `${this.apiUrl}/api/interests`,
         method: "GET",
-        mode: "cors",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
+        },
       });
+      return res.data;
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        return data;
-      } else {
-        throw new Error();
-      }
     } catch (error) {
       throw error;
     }
   };
 }
 
-export const InterestClient = new _interestClient();

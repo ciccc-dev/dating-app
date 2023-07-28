@@ -1,38 +1,97 @@
-import * as React from "react";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectFlip, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-flip";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 import { Profile } from "../../../../pages/Discovery";
+import { styled } from "@mui/material";
+import { ProfileDialog } from "../ProfileDialog";
 
 interface ProfileCardProps {
   profile: Profile;
 }
 
-export default function ProfileCard({ profile }: ProfileCardProps) {
+export const ProfileCard = ({ profile }: ProfileCardProps) => {
   return (
-    <Card sx={{ maxWidth: 345 }}>
-      <CardMedia
-        component="img"
-        alt="green iguana"
-        height="140"
-        image="/static/images/cards/contemplative-reptile.jpg"
-      />
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {`${profile.userName}  ${profile.birthday}`}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
-      </CardActions>
-    </Card>
+    <>
+      <StyleCardContainer>
+        <ProfileDialog profile={profile} />
+        <StyleSwiper
+          effect={"flip"}
+          grabCursor={true}
+          pagination={true}
+          modules={[EffectFlip, Pagination]}
+          className="mySwiper"
+        >
+          <StyleSwiperSlide>
+            <StyleImg
+              src="https://swiperjs.com/demos/images/nature-1.jpg"
+              alt="profile1"
+            />
+            <StyleTitle>{`${profile.userName}  ${profile.birthday}`}</StyleTitle>
+          </StyleSwiperSlide>
+          <StyleSwiperSlide>
+            <StyleImg
+              src="https://swiperjs.com/demos/images/nature-2.jpg"
+              alt="profile2"
+            />
+            <StyleTitle>{`${profile.aboutMe}`}</StyleTitle>
+          </StyleSwiperSlide>
+          <StyleSwiperSlide>
+            <StyleImg
+              src="https://swiperjs.com/demos/images/nature-3.jpg"
+              alt="profile3"
+            />
+            <StyleTitle>{`${profile.aboutMe}`}</StyleTitle>
+          </StyleSwiperSlide>
+          <StyleSwiperSlide>
+            <StyleImg
+              src="https://swiperjs.com/demos/images/nature-4.jpg"
+              alt="profile4"
+            />
+            <StyleTitle>{`${profile.aboutMe}`}</StyleTitle>
+          </StyleSwiperSlide>
+          <StyleSwiperSlide>
+            <StyleImg
+              src="https://swiperjs.com/demos/images/nature-5.jpg"
+              alt="profile5"
+            />
+            <StyleTitle>{`${profile.aboutMe}`}</StyleTitle>
+          </StyleSwiperSlide>
+        </StyleSwiper>
+      </StyleCardContainer>
+    </>
   );
-}
+};
+
+const StyleCardContainer = styled("div")`
+  position: relative;
+  width: 300px;
+  height: 400px;
+`;
+
+const StyleTitle = styled("h5")`
+  position: relative;
+  width: 80%;
+  left: 10%;
+  bottom: 30%;
+  color: white;
+  font-size: 1rem;
+`;
+
+const StyleSwiper = styled(Swiper)`
+  width: 300px;
+  height: 400px;
+`;
+
+const StyleSwiperSlide = styled(SwiperSlide)`
+  background-position: center;
+  background-size: cover;
+`;
+
+const StyleImg = styled("img")`
+  display: block;
+  width: 300px;
+  height: 400px;
+`;

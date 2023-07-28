@@ -1,46 +1,44 @@
-class _filterClient {
-  getFilters = async () => {
-    const user = { id: "723e4567-e89b-12d3-a456-426614174000" };
-    try {
-      const response = await fetch("http://localhost:8000/api/filter", {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
-      });
+import axios from "axios";
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        return data;
-      } else {
-        throw new Error();
-      }
+export class _filterClient {
+  private apiUrl: string;
+  private accessToken: string;
+
+  constructor(apiUrl: string, accesToken: string) {
+    this.apiUrl = apiUrl;
+    this.accessToken = accesToken;
+  }
+  getFilter = async (profileId: string) => {
+    try {
+      const res = await axios({
+        url: `${this.apiUrl}/api/filter`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify({ profileId: profileId }),
+      });
+      return res.data;
     } catch (error) {
       throw error;
     }
   };
 
-  updateFilters = async (filterdata: any) => {
+  updateFilter = async (filterdata: any) => {
     try {
-      const response = await fetch("http://localhost:8000/api/filter/update", {
+      const res = await axios({
+        url: `${this.apiUrl}/api/filter/update`,
         method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(filterdata),
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify(filterdata),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        return data;
-      } else {
-        throw new Error();
-      }
+      return res.data;
     } catch (error) {
       throw error;
     }
   };
 }
-
-export const FilterClient = new _filterClient();

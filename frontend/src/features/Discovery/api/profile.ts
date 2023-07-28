@@ -1,28 +1,45 @@
-class _profileClient {
-  getProfiles = async () => {
-    const filters = {
-      age: 20,
-      gender: "Male",
-    };
-    try {
-      const response = await fetch("http://localhost:8000/api/profiles", {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(filters),
-      });
+import axios from "axios";
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        return data;
-      } else {
-        throw new Error();
-      }
+export class _profileClient {
+  private apiUrl: string;
+  private accessToken: string;
+
+  constructor(apiUrl: string, accesToken: string) {
+    this.apiUrl = apiUrl;
+    this.accessToken = accesToken;
+  }
+
+  getProfileId = async (userId: string) => {
+    try {
+      const res = await axios({
+        url: `${this.apiUrl}/api/profiles/profileId`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify({ userId: userId }),
+      });
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  getProfiles = async (profileId: string) => {
+    try {
+      const res = await axios({
+        url: `${this.apiUrl}/api/profiles`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify({ profileId: profileId }),
+      });
+      return res.data;
     } catch (error: any) {
       throw error;
     }
   };
 }
-
-export const ProfileClient = new _profileClient();

@@ -1,10 +1,11 @@
 import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
-import { ProfileClient } from "../features/Discovery/api/profile";
-import ProfileCard from "../features/Discovery/components/ProfileCard";
+import { _profileClient } from "../features/Discovery/api/profile";
 import { navigationWidth } from "../constants/navigation";
 import { DiscoveryNavigation } from "../features/Discovery/components/Navigation";
+import { useAuth0 } from "@auth0/auth0-react";
+import { ProfileCard } from "../features/Discovery/components/ProfileCard";
 
 export interface Profile {
   id: string;
@@ -19,26 +20,57 @@ export interface Profile {
 }
 
 export const Discovery = () => {
+  const { user, getAccessTokenSilently } = useAuth0();
+  const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
+
+  useEffect(() => {
+    const fetchProfileId = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const ProfileClient = new _profileClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          if (user?.sub) {
+            const data = await ProfileClient.getProfileId(user.sub);
+            setProfileId(data.id);
+          }
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
+    fetchProfileId();
+  }, [getAccessTokenSilently, user, profileId]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await ProfileClient.getProfiles();
-        if (data) {
-          setProfiles(data);
+        if (profileId) {
+          const token = await getAccessTokenSilently();
+          if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+            const ProfileClient = new _profileClient(
+              process.env.REACT_APP_SERVER_URL ?? "",
+              token
+            );
+            const data = await ProfileClient.getProfiles(profileId);
+            setProfiles(data);
+          }
         }
       } catch (error) {
-        // Handle errors
+        throw error;
       }
     };
     fetchData();
-  }, []);
+  }, [getAccessTokenSilently, profileId]);
 
   return (
     <>
       <StyledWrapper>
         <StyledNavigationWrapper component="nav">
-          <DiscoveryNavigation />
+          <DiscoveryNavigation profileId={profileId} />
         </StyledNavigationWrapper>
         <StyledContent component="main">
           {profiles.map((profile) => (
@@ -65,7 +97,9 @@ const StyledNavigationWrapper = styled(Box)`
 
 const StyledContent = styled(Box)`
   display: flex;
+  flex-direction: row;
   justify-content: center;
+  align-item: center;
   flex-wrap: wrap;
   padding: 3px;
   width: calc(100% - ${navigationWidth}px);
