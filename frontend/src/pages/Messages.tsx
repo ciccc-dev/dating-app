@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
 import { styled } from "@mui/system";
@@ -37,9 +38,16 @@ export const Messages = () => {
   const [state, update] = useState<State>(initialState);
   const [message, setMessage] = useState("");
   const { isLoading, user } = useAuth0();
+  const queryParms = new URLSearchParams(useLocation().search);
 
   useEffect(() => {
     if (!isLoading && user) WebsocketClient.initialLoad(user);
+    if (queryParms) {
+      update((prev) => ({
+        ...prev,
+        selectedPartnerId: queryParms.get("userId") ?? "",
+      }));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
@@ -101,16 +109,16 @@ export const Messages = () => {
   return (
     <>
       <StyledWrapper>
-        <StyledNavigationWrapper component="nav">
+        <StyledNavigationWrapper component='nav'>
           <MessagesNavigation
             partners={state.partners}
             onClick={handleChangePartner}
           />
         </StyledNavigationWrapper>
-        <StyledContent component="main">
+        <StyledContent component='main'>
           {state.selectedPartnerId.length ? (
             <>
-              <StyledPartnerName variant="h5">
+              <StyledPartnerName variant='h5'>
                 {selectedPartner?.userName ?? ""}
               </StyledPartnerName>
               <Chats messages={currentMessages} />
@@ -122,7 +130,7 @@ export const Messages = () => {
               />
             </>
           ) : (
-            <StyledText variant="h4">Please choose a partner!</StyledText>
+            <StyledText variant='h4'>Please choose a partner!</StyledText>
           )}
         </StyledContent>
       </StyledWrapper>
