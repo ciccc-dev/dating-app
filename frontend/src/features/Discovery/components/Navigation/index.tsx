@@ -76,6 +76,10 @@ export const DiscoveryNavigation = ({
         throw error;
       }
     };
+    fetchInterests();
+  }, [getAccessTokenSilently]);
+
+  useEffect(() => {
     const fetchFilterData = async () => {
       try {
         if (profileId) {
@@ -108,7 +112,6 @@ export const DiscoveryNavigation = ({
       }
     };
     fetchFilterData();
-    fetchInterests();
   }, [getAccessTokenSilently, profileId]);
 
   const handleDistanceChange = (value: number) => {
@@ -188,7 +191,6 @@ export const DiscoveryNavigation = ({
       };
       FilterClient.updateFilter(filterCondition);
     }
-
   };
 
   const DiscoveryList = () => (
