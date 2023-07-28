@@ -69,6 +69,7 @@ const StyleCardContainer = styled("div")`
   position: relative;
   width: 300px;
   height: 400px;
+  background-color: lightgrey;
 `;
 
 const StyleTitle = styled("h5")`
