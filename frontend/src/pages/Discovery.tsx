@@ -2,10 +2,10 @@ import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
-import ProfileCard from "../features/Discovery/components/ProfileCard";
 import { navigationWidth } from "../constants/navigation";
 import { DiscoveryNavigation } from "../features/Discovery/components/Navigation";
 import { useAuth0 } from "@auth0/auth0-react";
+import { ProfileCard } from "../features/Discovery/components/ProfileCard";
 
 export interface Profile {
   id: string;
@@ -72,7 +72,9 @@ const StyledNavigationWrapper = styled(Box)`
 
 const StyledContent = styled(Box)`
   display: flex;
+  flex-direction: row;
   justify-content: center;
+  align-item: center;
   flex-wrap: wrap;
   padding: 3px;
   width: calc(100% - ${navigationWidth}px);
