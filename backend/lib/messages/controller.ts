@@ -50,7 +50,7 @@ export const postMessage = async (
       message: req.body.message,
     });
     // Later:
-    // Does the userId exist?
+    // Check whether userId exists
     // Validate message length
 
     res.status(201).json();
