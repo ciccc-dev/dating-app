@@ -20,10 +20,12 @@ export interface Profile {
 }
 
 export const Discovery = () => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
+  const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProfileId = async () => {
       try {
         const token = await getAccessTokenSilently();
         if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
@@ -31,21 +33,44 @@ export const Discovery = () => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          const data = await ProfileClient.getProfiles();
-          setProfiles(data);
+          if (user?.sub) {
+            const data = await ProfileClient.getProfileId(user.sub);
+            setProfileId(data.id);
+          }
         }
       } catch (error) {
-        // Handle errors
+        throw error;
+      }
+    };
+    fetchProfileId();
+  }, [getAccessTokenSilently, user, profileId]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (profileId) {
+          const token = await getAccessTokenSilently();
+          if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+            const ProfileClient = new _profileClient(
+              process.env.REACT_APP_SERVER_URL ?? "",
+              token
+            );
+            const data = await ProfileClient.getProfiles(profileId);
+            setProfiles(data);
+          }
+        }
+      } catch (error) {
+        throw error;
       }
     };
     fetchData();
-  }, [getAccessTokenSilently]);
+  }, [getAccessTokenSilently, profileId]);
 
   return (
     <>
       <StyledWrapper>
         <StyledNavigationWrapper component="nav">
-          <DiscoveryNavigation />
+          <DiscoveryNavigation profileId={profileId} />
         </StyledNavigationWrapper>
         <StyledContent component="main">
           {profiles.map((profile) => (

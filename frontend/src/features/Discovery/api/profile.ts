@@ -9,15 +9,16 @@ export class _profileClient {
     this.accessToken = accesToken;
   }
 
-  getProfileById = async () => {
+  getProfileId = async (userId: string) => {
     try {
       const res = await axios({
-        url: `${this.apiUrl}/api/profile`,
+        url: `${this.apiUrl}/api/profiles/profileId`,
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
           "Content-Type": "application/json",
         },
+        data: JSON.stringify({ userId: userId }),
       });
       return res.data;
     } catch (error: any) {
@@ -25,7 +26,7 @@ export class _profileClient {
     }
   };
 
-  getProfiles = async () => {
+  getProfiles = async (profileId: string) => {
     try {
       const res = await axios({
         url: `${this.apiUrl}/api/profiles`,
@@ -34,6 +35,7 @@ export class _profileClient {
           Authorization: `Bearer ${this.accessToken}`,
           "Content-Type": "application/json",
         },
+        data: JSON.stringify({ profileId: profileId }),
       });
       return res.data;
     } catch (error: any) {

@@ -36,8 +36,14 @@ export interface Item {
   name: string;
 }
 
-export const DiscoveryNavigation = () => {
-  const { user, getAccessTokenSilently } = useAuth0();
+export interface DiscoveryNavigationProps {
+  profileId: string;
+}
+
+export const DiscoveryNavigation = ({
+  profileId,
+}: DiscoveryNavigationProps) => {
+  const { getAccessTokenSilently } = useAuth0();
   const [interests, setInterests] = useState<Item[]>([]);
   const [distance, setDistance] = useState(50);
   const [distanceChecked, setDistanceChecked] = useState(false);
@@ -73,27 +79,29 @@ export const DiscoveryNavigation = () => {
 
     const fetchFilterData = async () => {
       try {
-        const token = await getAccessTokenSilently();
-        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
-          const FilterClient = new _filterClient(
-            process.env.REACT_APP_SERVER_URL ?? "",
-            token
-          );
-          const data = await FilterClient.getFilter();
-          if (data) {
-            setDistance(data.distance);
-            setDistanceChecked(data.isDistanceFiltered);
-            setAgeRange([data.minAge, data.maxAge]);
-            setAgeRangeChecked(data.isAgeFiltered);
-            setSelectedLookingFor([data.showMe]);
-            setSelectedSexualOrientations(data.sexualOrientations);
-            setSexualOrientationChecked(data.isSexualOrientationFiltered);
-            setSelectedPurposes(data.purposes);
-            setPurposeChecked(data.isPurposeFiltered);
-            setSelectedInterests(
-              data.interests.map((interest: Item) => interest.name)
+        if (profileId) {
+          const token = await getAccessTokenSilently();
+          if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+            const FilterClient = new _filterClient(
+              process.env.REACT_APP_SERVER_URL ?? "",
+              token
             );
-            setInterestChecked(data.isInterestFiltered);
+            const data = await FilterClient.getFilter(profileId);
+            if (data) {
+              setDistance(data.distance);
+              setDistanceChecked(data.isDistanceFiltered);
+              setAgeRange([data.minAge, data.maxAge]);
+              setAgeRangeChecked(data.isAgeFiltered);
+              setSelectedLookingFor([data.showMe]);
+              setSelectedSexualOrientations(data.sexualOrientations);
+              setSexualOrientationChecked(data.isSexualOrientationFiltered);
+              setSelectedPurposes(data.purposes);
+              setPurposeChecked(data.isPurposeFiltered);
+              setSelectedInterests(
+                data.interests.map((interest: Item) => interest.name)
+              );
+              setInterestChecked(data.isInterestFiltered);
+            }
           }
         }
       } catch (error) {
@@ -102,7 +110,7 @@ export const DiscoveryNavigation = () => {
     };
     fetchFilterData();
     fetchInterests();
-  }, []);
+  }, [getAccessTokenSilently, profileId]);
 
   const handleDistanceChange = (value: number) => {
     setDistance(value);
@@ -166,7 +174,7 @@ export const DiscoveryNavigation = () => {
         token
       );
       const filterCondition = {
-        profileId: "723e4567-e89b-12d3-a456-426614174000",
+        profileId: profileId,
         showMe: selectedLookingFor[0],
         distance: distance,
         distanceChecked: distanceChecked,

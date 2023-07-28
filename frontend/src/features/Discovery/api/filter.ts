@@ -8,8 +8,7 @@ export class _filterClient {
     this.apiUrl = apiUrl;
     this.accessToken = accesToken;
   }
-  getFilter = async () => {
-    const param = { id: "723e4567-e89b-12d3-a456-426614174000" };
+  getFilter = async (profileId: string) => {
     try {
       const res = await axios({
         url: `${this.apiUrl}/api/filter`,
@@ -18,7 +17,7 @@ export class _filterClient {
           Authorization: `Bearer ${this.accessToken}`,
           "Content-Type": "application/json",
         },
-        data: JSON.stringify(param),
+        data: JSON.stringify({ profileId: profileId }),
       });
       return res.data;
     } catch (error) {
