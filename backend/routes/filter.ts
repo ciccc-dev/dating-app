@@ -5,14 +5,13 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const client = new PrismaClient();
-  const { id } = req.body;
+  const { profileId } = req.body;
   const result = await client.filter.findUnique({
     where: {
-      profileId: "c7d9879a-0c49-41e8-9e86-373d7232a2b9",
+      profileId: profileId,
     },
     include: { interests: { select: { name: true } } },
   });
-  console.log(result);
   return res.json(result);
 });
 
@@ -34,7 +33,7 @@ router.post("/update", async (req, res) => {
   } = req.body;
   const result = await client.filter.update({
     where: {
-      profileId: "c7d9879a-0c49-41e8-9e86-373d7232a2b9",
+      profileId: profileId,
     },
     data: {
       showMe: showMe,

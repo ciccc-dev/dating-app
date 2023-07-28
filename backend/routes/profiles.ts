@@ -4,11 +4,37 @@ import { convertAgetoDate } from "../utils/caluculateAge";
 
 const router = express.Router();
 
+const convertLookingForToGender = (lookingFor: string) => {
+  switch (lookingFor) {
+    case "Men":
+      return "Man";
+    case "Women":
+      return "Woman";
+    default:
+      return undefined;
+  }
+};
+
+router.post("/profileId", async (req, res) => {
+  const client = new PrismaClient();
+  const { userId } = req.body;
+  const result = await client.profile.findUnique({
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  return res.json(result);
+});
+
 router.post("/", async (req, res) => {
   const client = new PrismaClient();
+  const { profileId } = req.body;
   const filter = await client.filter.findUnique({
     where: {
-      profileId: "c7d9879a-0c49-41e8-9e86-373d7232a2b9",
+      profileId: profileId,
     },
     include: { interests: { select: { name: true } } },
   });
@@ -16,6 +42,8 @@ router.post("/", async (req, res) => {
   if (filter) {
     const profiles = await client.profile.findMany({
       where: {
+        id: { not: profileId },
+        gender: convertLookingForToGender(filter.showMe),
         birthday: filter.isAgeFiltered
           ? {
               gte: convertAgetoDate(filter.maxAge),
@@ -41,10 +69,6 @@ router.post("/", async (req, res) => {
         purposes: { select: { name: true } },
       },
     });
-    console.log(filter.minAge);
-    console.log(filter.maxAge);
-    console.log(convertAgetoDate(filter.minAge));
-    console.log(convertAgetoDate(filter.maxAge));
     return res.json(profiles);
   }
 });
