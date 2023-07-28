@@ -24,7 +24,7 @@ const OwnText = ({
   message: string;
   timestamp: string;
 }) => (
-  <StyledGrid item xs={12} justifyContent="flex-end">
+  <StyledGrid item xs={12} justifyContent='flex-end'>
     <StyledSnackbarContent message={message} />
     <StyledOwnTimestamp>{timestamp}</StyledOwnTimestamp>
   </StyledGrid>
@@ -78,15 +78,15 @@ const StyledPaper = styled(Paper)`
   margin: 20px;
 
   @media (min-width: 600px) {
-    height: 350px;
+    height: 650px;
   }
 
   @media (min-width: 960px) {
-    height: 450px;
+    height: 650px;
   }
 
   @media (min-width: 1300px) {
-    height: 600px;
+    height: 700px;
   }
 `;
 

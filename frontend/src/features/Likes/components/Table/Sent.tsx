@@ -20,7 +20,7 @@ interface Profile {
   aboutMe: string;
 }
 
-export const LikePartnersTable = ({ profiles }: { profiles: Profile[] }) => {
+export const SentLikesTable = ({ profiles }: { profiles: Profile[] }) => {
   const navigate = useNavigate();
   const handleClickMessageButton: MouseEventHandler<HTMLButtonElement> = (
     event
@@ -47,7 +47,7 @@ export const LikePartnersTable = ({ profiles }: { profiles: Profile[] }) => {
       <TableCell>
         <Button
           id={profile.userId}
-          variant="contained"
+          variant='contained'
           onClick={handleClickMessageButton}
         >
           Message

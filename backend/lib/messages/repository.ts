@@ -34,6 +34,15 @@ class _MessageRepository {
     return messages;
   };
 
+  fetchMessagesBySrcAndRcv = async (src: string, rcv: string) => {
+    const messages = await this.db.chat.findMany({
+      include: { sender: true, receiver: true },
+      where: { OR: [{ sentBy: src }, { receivedBy: rcv }] },
+      orderBy: { timestamp: "asc" },
+    });
+    return messages;
+  };
+
   createMessage = async ({
     message,
     sentBy,

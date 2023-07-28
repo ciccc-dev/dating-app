@@ -24,6 +24,9 @@ webscoketConnect(io);
 
 app.use(cors(corsOptions));
 app.use(jwtCheck);
+// When fetching /api/likes with curl, you will get a status 304. Adds etag to avoid this.
+// https://stackoverflow.com/questions/18811286/nodejs-express-cache-and-304-status-code
+app.disable("etag");
 app.use("/api", apiRoutes);
 app.get("/", (_: Request, res: Response, next: NextFunction) => {
   try {
