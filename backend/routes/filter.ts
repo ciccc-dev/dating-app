@@ -33,7 +33,7 @@ router.post("/update", async (req, res) => {
   } = req.body;
   const result = await client.filter.update({
     where: {
-      profileId: profileId,
+      profileId: "c7d9879a-0c49-41e8-9e86-373d7232a2b9",
     },
     data: {
       showMe: showMe,

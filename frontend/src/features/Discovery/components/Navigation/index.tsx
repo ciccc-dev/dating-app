@@ -76,7 +76,6 @@ export const DiscoveryNavigation = ({
         throw error;
       }
     };
-
     const fetchFilterData = async () => {
       try {
         if (profileId) {
@@ -189,6 +188,7 @@ export const DiscoveryNavigation = ({
       };
       FilterClient.updateFilter(filterCondition);
     }
+
   };
 
   const DiscoveryList = () => (
