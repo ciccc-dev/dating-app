@@ -6,6 +6,7 @@ import { navigationWidth } from "../constants/navigation";
 import { DiscoveryNavigation } from "../features/Discovery/components/Navigation";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileCard } from "../features/Discovery/components/ProfileCard";
+import { Item } from "../features/Discovery/components/FilterDialog";
 
 export interface Profile {
   id: string;
@@ -17,8 +18,8 @@ export interface Profile {
   aboutMe: string;
   registeredAt: Date;
   updatedAt: Date;
-  purposes: string[];
-  interests: string[];
+  purposes: Item[];
+  interests: Item[];
 }
 
 export const Discovery = () => {

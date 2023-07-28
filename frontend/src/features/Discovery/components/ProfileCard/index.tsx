@@ -52,7 +52,7 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
             />
             <StyleSpan>{`${profile.sexualOrientation}`}</StyleSpan>
             {profile.purposes.map((purpose, index) => (
-              <StyleSpan key={index}>{`${purpose}`}</StyleSpan>
+              <StyleSpan key={index}>{`${purpose.name}`}</StyleSpan>
             ))}
           </StyleSwiperSlide>
           <StyleSwiperSlide>
@@ -60,14 +60,15 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
               src="https://swiperjs.com/demos/images/nature-4.jpg"
               alt="profile4"
             />
-            <StyleTitle>{`${profile.aboutMe}`}</StyleTitle>
+            {profile.interests.map((interest, index) => (
+              <StyleSpan key={index}>{`${interest.name}`}</StyleSpan>
+            ))}
           </StyleSwiperSlide>
           <StyleSwiperSlide>
             <StyleImg
               src="https://swiperjs.com/demos/images/nature-5.jpg"
               alt="profile5"
             />
-            <StyleTitle>{`${profile.aboutMe}`}</StyleTitle>
           </StyleSwiperSlide>
         </StyleSwiper>
       </StyleCardContainer>
@@ -102,13 +103,15 @@ const StyleTitle = styled("h5")`
 
 const StyleSpan = styled("span")`
   position: relative;
-  left: 10%;
+  left: 5%;
   bottom: 18%;
   border: 1px solid white;
   border-radius: 1rem;
   padding: 0.25rem 0.5rem;
   color: white;
   font-size: 1rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
 `;
 
 const StyleSwiper = styled(Swiper)`
