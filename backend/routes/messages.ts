@@ -4,7 +4,7 @@ import { getMessages, getSpecificMessages } from "../lib/messages";
 
 const router = express.Router();
 
+router.get("/", getMessages);
 router.get("/:userId", getSpecificMessages);
-router.get("", getMessages);
 
 export default router;
