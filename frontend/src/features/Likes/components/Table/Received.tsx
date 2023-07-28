@@ -1,14 +1,17 @@
-import { MouseEventHandler } from "react";
+import { forwardRef, MouseEventHandler, useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { isAfter, parseISO } from "date-fns";
 import Button from "@mui/material/Button";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import styled from "@emotion/styled";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
 import { TableComponent } from "../../../../components/Table";
-import { useNavigate } from "react-router-dom";
 import { useFetchMessages } from "../../../../hooks/useFetchMessages";
 import { Message } from "../../../Messages/types";
+import { _LikesAPI } from "../../api";
 
 interface Profile {
   id: string;
@@ -19,17 +22,38 @@ interface Profile {
   aboutMe: string;
 }
 
+const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
+});
+
 export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
-  const navigate = useNavigate();
+  const { getAccessTokenSilently } = useAuth0();
   const messages = useFetchMessages();
   const initialMessages = createInitialMessages(
     profiles.map((p) => p.userId),
     messages.messages
   );
+  const [token, setToken] = useState("");
+  const LikeAPI = new _LikesAPI(process.env.REACT_APP_SERVER_URL ?? "", token);
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
 
-  const handleClickMessageButton: MouseEventHandler<HTMLButtonElement> = (
+  useEffect(() => {
+    (async () => {
+      setToken(await getAccessTokenSilently());
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleClickApproveButton: MouseEventHandler<HTMLButtonElement> = async (
     event
-  ) => navigate(`/messages?userId=${event.currentTarget.id}`);
+  ) => {
+    setOpen(true);
+    await LikeAPI.CreateLike(event.currentTarget.id);
+  };
 
   const header = (
     <TableRow>
@@ -41,27 +65,38 @@ export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
   );
 
   const body = profiles.map((profile) => (
-    <StyledTableRow key={profile.id}>
-      <TableCell>{profile.userName}</TableCell>
-      <TableCell>{profile.aboutMe}</TableCell>
-      <TableCell>
-        {profile.userId in initialMessages
-          ? initialMessages[profile.userId].message
-          : null}
-      </TableCell>
-      <TableCell>
-        <Button
-          id={profile.userId}
-          variant='contained'
-          onClick={handleClickMessageButton}
-        >
-          Approve
-        </Button>
-      </TableCell>
-    </StyledTableRow>
+    <>
+      <StyledTableRow key={profile.id}>
+        <TableCell>{profile.userName}</TableCell>
+        <TableCell>{profile.aboutMe}</TableCell>
+        <TableCell>
+          {profile.userId in initialMessages
+            ? initialMessages[profile.userId].message
+            : null}
+        </TableCell>
+        <TableCell>
+          <Button
+            id={profile.userId}
+            variant='contained'
+            onClick={handleClickApproveButton}
+          >
+            Approve
+          </Button>
+        </TableCell>
+      </StyledTableRow>
+    </>
   ));
 
-  return <TableComponent header={header} body={body} />;
+  return (
+    <>
+      <TableComponent header={header} body={body} />
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity='success' sx={{ width: "100%" }}>
+          This is a success message!
+        </Alert>
+      </Snackbar>
+    </>
+  );
 };
 
 const createInitialMessages = (partnerIds: string[], messages: Message[]) => {

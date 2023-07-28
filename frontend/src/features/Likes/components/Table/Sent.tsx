@@ -1,8 +1,8 @@
 import { MouseEventHandler } from "react";
 import { parseISO } from "date-fns";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
+// import IconButton from "@mui/material/IconButton";
+// import MenuIcon from "@mui/icons-material/Menu";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import styled from "@emotion/styled";
@@ -33,7 +33,7 @@ export const SentLikesTable = ({ profiles }: { profiles: Profile[] }) => {
       <TableCell sx={{ width: "10%" }}>Gender</TableCell>
       <TableCell sx={{ width: "40%" }}>About Me</TableCell>
       <TableCell sx={{ width: "10%" }}></TableCell>
-      <TableCell sx={{ width: "10%" }}></TableCell>
+      {/* <TableCell sx={{ width: "10%" }}></TableCell> */}
     </TableRow>
   );
 
@@ -53,11 +53,11 @@ export const SentLikesTable = ({ profiles }: { profiles: Profile[] }) => {
           Message
         </Button>
       </TableCell>
-      <TableCell>
+      {/* <TableCell>
         <IconButton>
           <MenuIcon />
         </IconButton>
-      </TableCell>
+      </TableCell> */}
     </StyledTableRow>
   ));
 
