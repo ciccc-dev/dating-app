@@ -8,8 +8,9 @@ router.post("/", async (req, res) => {
   const { id } = req.body;
   const result = await client.filter.findUnique({
     where: {
-      profileId: id,
+      profileId: "c7d9879a-0c49-41e8-9e86-373d7232a2b9",
     },
+    include: { interests: { select: { name: true } } },
   });
   console.log(result);
   return res.json(result);
@@ -20,22 +21,34 @@ router.post("/update", async (req, res) => {
   const {
     profileId,
     showMe,
-    ageRange,
     distance,
+    distanceChecked,
+    ageRange,
+    ageRangeChecked,
     sexualOrientations,
+    sexualOrientationChecked,
+    purposeChecked,
     purposes,
+    interests,
+    interestChecked,
   } = req.body;
   const result = await client.filter.update({
     where: {
-      profileId: profileId,
+      profileId: "c7d9879a-0c49-41e8-9e86-373d7232a2b9",
     },
     data: {
       showMe: showMe,
       minAge: ageRange[0],
       maxAge: ageRange[1],
+      isAgeFiltered: ageRangeChecked,
       distance: distance,
+      isDistanceFiltered: distanceChecked,
       sexualOrientations: sexualOrientations,
+      isSexualOrientationFiltered: sexualOrientationChecked,
       purposes: purposes,
+      isPurposeFiltered: purposeChecked,
+      interests: { set: interests },
+      isInterestFiltered: interestChecked,
     },
   });
   console.log(result);

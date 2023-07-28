@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Typography } from "@mui/material";
+import { Grid, Switch, Typography } from "@mui/material";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -8,11 +8,13 @@ import { styled } from "@mui/system";
 import { DistanceInputSlider } from "../../../Discovery/components/DistanceInputSlider";
 import { AgePreferenceInputSlider } from "../../../Discovery/components/AgePreferenceInputSlider";
 import { FilterClient } from "../../../Discovery/api/filter";
-import { FilterDialog } from "../../../Discovery/components/FilterDialog/FilterDialog";
+import { FilterDialog } from "../FilterDialog";
 import { lookingFor } from "../../../../constants/lookingfor";
 import { sexualOrientations } from "../../../../constants/sexualOrientations";
 import { purposes } from "../../../../constants/purposes";
 import { Navigation } from "../../../../components/Navigation";
+import { ListItemGrid } from "../LIstItemGrid";
+import { InterestClient } from "../../api/interest";
 
 export interface Filter {
   id: string;
@@ -34,60 +36,73 @@ export interface Item {
 }
 
 export const DiscoveryNavigation = () => {
-  // const [filter, setFilter] = useState<Filter>({
-  //   id: "",
-  //   profileId: "",
-  //   showMe: "",
-  //   minAge: 20,
-  //   maxAge: 40,
-  //   isAgeFiltered: false,
-  //   distance: 50,
-  //   isDistanceFiltered: false,
-  //   sexualOrientations: [],
-  //   isSexualOrientationFiltered: false,
-  //   purposes: [],
-  //   isPurposeFiltered: false,
-  // });
+  const [interests, setInterests] = useState<Item[]>([]);
   const [distance, setDistance] = useState(50);
+  const [distanceChecked, setDistanceChecked] = useState(false);
   const [ageRange, setAgeRange] = useState([20, 40]);
+  const [ageRangeChecked, setAgeRangeChecked] = useState(false);
   const [selectedLookingFor, setSelectedLookingFor] = useState<string[]>([]);
-  // const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [interestChecked, setInterestChecked] = useState(false);
   const [selectedSexualOrientations, setSelectedSexualOrientations] = useState<
     string[]
   >([]);
+  const [sexualOrientationChecked, setSexualOrientationChecked] =
+    useState(false);
   const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
+  const [purposeChecked, setPurposeChecked] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInterests = async () => {
+      try {
+        const data = await InterestClient.getInterests();
+        if (data) {
+          setInterests(data);
+        }
+      } catch (error) {}
+    };
+    const fetchFilterData = async () => {
       try {
         const data = await FilterClient.getFilters();
         if (data) {
           setDistance(data.distance);
+          setDistanceChecked(data.isDistanceFiltered);
           setAgeRange([data.minAge, data.maxAge]);
+          setAgeRangeChecked(data.isAgeFiltered);
           setSelectedLookingFor([data.showMe]);
           setSelectedSexualOrientations(data.sexualOrientations);
+          setSexualOrientationChecked(data.isSexualOrientationFiltered);
           setSelectedPurposes(data.purposes);
-          // setFilter(data);
+          setPurposeChecked(data.isPurposeFiltered);
+          setSelectedInterests(
+            data.interests.map((interest: Item) => interest.name)
+          );
+          setInterestChecked(data.isInterestFiltered);
         }
       } catch (error) {}
     };
-    fetchData();
+    fetchFilterData();
+    fetchInterests();
   }, []);
 
   const handleDistanceChange = (value: number) => {
     setDistance(value);
   };
 
-  // const handleMinAgeChange = (value: number) => {
-  //   setMinAge(value);
-  // };
-
-  // const handleMaxAgeChange = (value: number) => {
-  //   setMaxAge(value);
-  // };
+  const handleDistanceCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDistanceChecked(event.target.checked);
+  };
 
   const handleAgeRangeChange = (values: number[]) => {
     setAgeRange(values);
+  };
+
+  const handleAgeRangeCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAgeRangeChecked(event.target.checked);
   };
 
   const handleSelectedLookingForChange = (values: string[]) => {
@@ -98,59 +113,97 @@ export const DiscoveryNavigation = () => {
     setSelectedSexualOrientations(values);
   };
 
-  // const handleSelectedInterestsChange = (values: string[]) => {
-  //   setSelectedInterests(values);
-  // };
+  const handleSexualOrientationCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSexualOrientationChecked(event.target.checked);
+  };
 
   const handleSelectedPurposesChange = (values: string[]) => {
     setSelectedPurposes(values);
+  };
+
+  const handlePurposeCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPurposeChecked(event.target.checked);
+  };
+
+  const handleSelectedInterestsChange = (values: string[]) => {
+    setSelectedInterests(values);
+  };
+
+  const handleInterestCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setInterestChecked(event.target.checked);
   };
 
   const handleFilterClick = () => {
     const filterCondition = {
       profileId: "723e4567-e89b-12d3-a456-426614174000",
       showMe: selectedLookingFor[0],
-      ageRange: ageRange,
       distance: distance,
+      distanceChecked: distanceChecked,
+      ageRange: ageRange,
+      ageRangeChecked: ageRangeChecked,
       sexualOrientations: selectedSexualOrientations,
+      sexualOrientationChecked: sexualOrientationChecked,
       purposes: selectedPurposes,
+      purposeChecked: purposeChecked,
+      interests: selectedInterests.map((interest) => ({ name: interest })),
+      interestChecked: interestChecked,
     };
     FilterClient.updateFilters(filterCondition);
   };
 
-  // if (isLoading) {
-  //   return <div style={{ color: "black" }}>Loading...</div>;
-  // } else {
   const DiscoveryList = () => (
     <>
-      <List>
+      <StyledList>
         <ListItem key="distance" disablePadding>
           <DistanceInputSlider
             distance={distance}
             onChange={handleDistanceChange}
+            checked={distanceChecked}
+            onCheckedChange={handleDistanceCheckedChange}
           />
         </ListItem>
         <ListItem key="age-preference" disablePadding>
           <AgePreferenceInputSlider
             ageRange={ageRange}
             onChange={handleAgeRangeChange}
+            checked={ageRangeChecked}
+            onCheckedChange={handleAgeRangeCheckedChange}
           />
         </ListItem>
         <StyledListItem key="looking-for" disablePadding>
-          <StyledDialog
-            title="Looking For"
-            items={lookingFor}
-            selectedItems={selectedLookingFor}
-            onChange={handleSelectedLookingForChange}
-          />
+          <Grid container>
+            <StyledDialog
+              title="Looking For"
+              items={lookingFor}
+              selectedItems={selectedLookingFor}
+              onChange={handleSelectedLookingForChange}
+            />
+          </Grid>
           <StyledTypography>{selectedLookingFor}</StyledTypography>
         </StyledListItem>
         <StyledListItem key="sexual-orientation" disablePadding>
-          <StyledDialog
-            title="Sexual Orientation"
-            items={sexualOrientations}
-            selectedItems={selectedSexualOrientations}
-            onChange={handleSelectedsexualOrientationsChange}
+          <ListItemGrid
+            titleComponent={
+              <StyledDialog
+                title="Sexual Orientation"
+                items={sexualOrientations}
+                selectedItems={selectedSexualOrientations}
+                onChange={handleSelectedsexualOrientationsChange}
+              />
+            }
+            switchComponent={
+              <Switch
+                checked={sexualOrientationChecked}
+                onChange={handleSexualOrientationCheckedChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
           />
           <StyledListBlock>
             {selectedSexualOrientations.map(
@@ -162,25 +215,51 @@ export const DiscoveryNavigation = () => {
             )}
           </StyledListBlock>
         </StyledListItem>
-        {/* <StyledListItem key="interests" disablePadding>
-              <StyledDialog
-                title="Interests"
-                items={purposes}
-                selectedItems={selectedInterests}
-                onChange={handleSelectedInterestsChange}
-              />
-              <StyledTypography>Hello</StyledTypography>
-            </StyledListItem> */}
         <StyledListItem key="purposes" disablePadding>
-          <StyledDialog
-            title="Purposes"
-            items={purposes}
-            selectedItems={selectedPurposes}
-            onChange={handleSelectedPurposesChange}
+          <ListItemGrid
+            titleComponent={
+              <StyledDialog
+                title="Purposes"
+                items={purposes}
+                selectedItems={selectedPurposes}
+                onChange={handleSelectedPurposesChange}
+              />
+            }
+            switchComponent={
+              <Switch
+                checked={purposeChecked}
+                onChange={handlePurposeCheckedChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
           />
           <StyledListBlock>
             {selectedPurposes.map((purpose, index) => (
               <StyledListSpan key={index}>{purpose}</StyledListSpan>
+            ))}
+          </StyledListBlock>
+        </StyledListItem>
+        <StyledListItem key="interests" disablePadding>
+          <ListItemGrid
+            titleComponent={
+              <StyledDialog
+                title="Interests"
+                items={interests}
+                selectedItems={selectedInterests}
+                onChange={handleSelectedInterestsChange}
+              />
+            }
+            switchComponent={
+              <Switch
+                checked={interestChecked}
+                onChange={handleInterestCheckedChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
+          />
+          <StyledListBlock>
+            {selectedInterests.map((interest, index) => (
+              <StyledListSpan key={index}>{interest}</StyledListSpan>
             ))}
           </StyledListBlock>
         </StyledListItem>
@@ -189,11 +268,15 @@ export const DiscoveryNavigation = () => {
             <ListItemText primary="Filter" />
           </StyledButton>
         </StyledListItem>
-      </List>
+      </StyledList>
     </>
   );
   return <Navigation Outlet={DiscoveryList()} />;
 };
+
+const StyledList = styled(List)`
+  padding: 0.5rem 1rem;
+`;
 
 const StyledButton = styled(ListItemButton)`
   background-color: #ec407a;

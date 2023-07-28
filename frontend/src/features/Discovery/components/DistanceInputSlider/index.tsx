@@ -5,15 +5,21 @@ import Grid from "@mui/material/Grid";
 import Slider from "@mui/material/Slider";
 import MuiInput from "@mui/material/Input";
 import Typography from "@mui/material/Typography";
+import { Switch } from "@mui/material";
+import { ListItemGrid } from "../LIstItemGrid";
 
 interface DistanceInputSliderProps {
   distance: number;
   onChange: (value: number) => void;
+  checked: boolean;
+  onCheckedChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const DistanceInputSlider = ({
   distance,
   onChange,
+  checked,
+  onCheckedChange,
 }: DistanceInputSliderProps) => {
   const handleSliderChange = (event: Event, newValue: any) => {
     onChange(newValue);
@@ -36,20 +42,26 @@ export const DistanceInputSlider = ({
   };
 
   return (
-    <Box sx={{ width: 250 }}>
-      <Typography id="input-slider" gutterBottom>
-        Distance
-      </Typography>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item></Grid>
-        <Grid item xs>
-          <Slider
+    <Box sx={{ width: "100%" }}>
+      <ListItemGrid
+        titleComponent={<Typography id="input-slider">Distance</Typography>}
+        switchComponent={
+          <Switch
+            checked={checked}
+            onChange={onCheckedChange}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+        }
+      />
+      <Grid container alignItems="center" spacing={2}>
+        <Grid item xs={9}>
+          <StyledSlider
             value={typeof distance === "number" ? distance : 0}
             onChange={handleSliderChange}
             aria-labelledby="input-slider"
           />
         </Grid>
-        <Grid item>
+        <Grid item xs={3}>
           <Input
             value={distance}
             size="small"
@@ -72,3 +84,5 @@ export const DistanceInputSlider = ({
 const Input = styled(MuiInput)`
   width: 42px;
 `;
+
+const StyledSlider = styled(Slider)``;

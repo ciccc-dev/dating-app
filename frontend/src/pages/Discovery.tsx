@@ -41,22 +41,9 @@ export const Discovery = () => {
           <DiscoveryNavigation />
         </StyledNavigationWrapper>
         <StyledContent component="main">
-          {/* <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            "& > :not(style)": {
-              m: 2,
-              width: 300,
-              height: 400,
-            },
-          }}
-        > */}
           {profiles.map((profile) => (
             <ProfileCard profile={profile} key={profile.id} />
           ))}
-          {/* </Box> */}
         </StyledContent>
       </StyledWrapper>
     </>
