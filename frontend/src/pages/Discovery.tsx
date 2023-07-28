@@ -23,6 +23,7 @@ export const Discovery = () => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [isFiltered, setIsFiltered] = useState(false);
 
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -57,6 +58,7 @@ export const Discovery = () => {
             );
             const data = await ProfileClient.getProfiles(profileId);
             setProfiles(data);
+            setIsFiltered(!isFiltered);
           }
         }
       } catch (error) {
@@ -64,13 +66,17 @@ export const Discovery = () => {
       }
     };
     fetchData();
-  }, [getAccessTokenSilently, profileId]);
+  }, [getAccessTokenSilently, profileId, isFiltered]);
+
+  const handleClick = () => {
+    setIsFiltered(!isFiltered);
+  };
 
   return (
     <>
       <StyledWrapper>
         <StyledNavigationWrapper component="nav">
-          <DiscoveryNavigation profileId={profileId} />
+          <DiscoveryNavigation profileId={profileId} onClick={handleClick} />
         </StyledNavigationWrapper>
         <StyledContent component="main">
           {profiles.map((profile) => (
