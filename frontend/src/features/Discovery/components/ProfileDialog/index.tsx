@@ -5,15 +5,20 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import GradeRoundedIcon from "@mui/icons-material/GradeRounded";
 import { useState } from "react";
-import { Box, Grid, styled } from "@mui/material";
+import { Grid, styled } from "@mui/material";
 import { Profile } from "../../../../pages/Discovery";
+import { useAuth0 } from "@auth0/auth0-react";
+import { _likeClient } from "../../api/like";
+import { _messageClient } from "../../api/messages";
 
 interface ProfileDialogProps {
   profile: Profile;
 }
 
 export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
+  const { user, getAccessTokenSilently } = useAuth0();
   const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -21,6 +26,53 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleChangeMessage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(event.target.value);
+  };
+
+  const handleClickSend = () => {
+    if (message.trim() !== "") {
+      sendLike();
+      sendMessage();
+      alert("Message has been sent!");
+      setOpen(false);
+    }
+  };
+
+  const sendLike = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const LikeClient = new _likeClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        if (user?.sub) {
+          await LikeClient.sendLike(profile.userId);
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const sendMessage = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const MessageClient = new _messageClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        if (user?.sub) {
+          await MessageClient.sendMessage(profile.userId, message);
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (
@@ -53,14 +105,15 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
                 margin="dense"
                 id="name"
                 label="Message"
-                type="email"
+                type="text"
                 fullWidth
                 variant="standard"
+                onChange={handleChangeMessage}
               />
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
-              <Button onClick={handleClose}>Send</Button>
+              <Button onClick={handleClickSend}>Send</Button>
             </DialogActions>
           </Grid>
         </Grid>
