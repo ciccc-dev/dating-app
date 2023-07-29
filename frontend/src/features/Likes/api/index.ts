@@ -20,4 +20,17 @@ export class _LikesAPI {
     });
     return res.data;
   };
+
+  CreateLike = async (userId: string) => {
+    const res = await axios({
+      url: `${this.apiUrl}/api/likes`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify({ like_to: userId }),
+    });
+    return res.data;
+  };
 }
