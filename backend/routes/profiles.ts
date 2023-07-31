@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 import { calculateAge, convertAgetoDate } from "../utils/caluculateAge";
-import { randomPick } from "../utils/randomPick";
+// import { randomPick } from "../utils/randomPick";
 
 const router = express.Router();
 

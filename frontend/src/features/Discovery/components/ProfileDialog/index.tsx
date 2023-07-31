@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import GradeRoundedIcon from "@mui/icons-material/GradeRounded";
 import { useState } from "react";
-import { Grid, styled } from "@mui/material";
+import { Box, Grid, styled } from "@mui/material";
 import { Profile } from "../../../../pages/Discovery";
 import { useAuth0 } from "@auth0/auth0-react";
 import { _likeClient } from "../../api/like";
@@ -98,7 +98,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
               </StyleCardContainer>
             </DialogContent>
           </Grid>
-          <Grid item xs={7}>
+          <StyleMessageWrapper item xs={7}>
             <DialogContent>
               <TextField
                 autoFocus
@@ -107,15 +107,15 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
                 label="Message"
                 type="text"
                 fullWidth
-                variant="standard"
+                variant="outlined"
                 onChange={handleChangeMessage}
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>Cancel</Button>
-              <Button onClick={handleClickSend}>Send</Button>
+              <StyledButton onClick={handleClose}>Cancel</StyledButton>
+              <StyledButton onClick={handleClickSend}>Send</StyledButton>
             </DialogActions>
-          </Grid>
+          </StyleMessageWrapper>
         </Grid>
       </Dialog>
     </>
@@ -155,4 +155,14 @@ const StyleGrid = styled(Grid)`
   bottom: 18%;
   color: white;
   font-size: 1.8rem;
+`;
+
+const StyleMessageWrapper = styled(Grid)`
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledButton = styled(Button)`
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
 `;
