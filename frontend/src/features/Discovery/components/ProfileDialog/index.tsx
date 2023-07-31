@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import GradeRoundedIcon from "@mui/icons-material/GradeRounded";
 import { useState } from "react";
-import { Box, Grid, styled } from "@mui/material";
+import { Grid, styled } from "@mui/material";
 import { Profile } from "../../../../pages/Discovery";
 import { useAuth0 } from "@auth0/auth0-react";
 import { _likeClient } from "../../api/like";
