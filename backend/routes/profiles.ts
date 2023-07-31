@@ -70,14 +70,10 @@ router.post("/", async (req, res) => {
       },
     });
 
-    // const convertedProfiles = profiles.map((profile) => ({...profile, age: calculateAge(profile.birthday)}));
     const convertedProfiles = profiles.map(({ birthday, ...rest }) => ({
       ...rest,
       age: calculateAge(birthday),
     }));
-
-    console.log(convertedProfiles);
-
     return res.json(convertedProfiles);
   }
 });

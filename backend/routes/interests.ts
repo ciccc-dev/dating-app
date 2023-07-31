@@ -11,7 +11,6 @@ router.get("/", async (req, res) => {
     },
     select: { id: true, name: true },
   });
-  console.log(result);
   return res.json(result);
 });
 
