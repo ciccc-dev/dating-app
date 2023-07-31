@@ -1,17 +1,16 @@
-import { forwardRef, MouseEventHandler, useEffect, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { MouseEventHandler } from "react";
 import { isAfter, parseISO } from "date-fns";
 import Button from "@mui/material/Button";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import styled from "@emotion/styled";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
 import { TableComponent } from "../../../../components/Table";
+import { NotificationBar } from "../../../../components/NotificationBar";
 import { useFetchMessages } from "../../../../hooks/useFetchMessages";
+import { useDialogState } from "../../../../hooks/useDialogState";
 import { Message } from "../../../Messages/types";
-import { _LikesAPI } from "../../api";
+import { useCreateLike } from "../../../../hooks/useCreateLike";
 
 interface Profile {
   id: string;
@@ -22,37 +21,21 @@ interface Profile {
   aboutMe: string;
 }
 
-const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref
-) {
-  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
-});
-
 export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
-  const { getAccessTokenSilently } = useAuth0();
   const messages = useFetchMessages();
+  const [isOpen, { open, close }] = useDialogState();
+  const [{ result, message }, CreateLike] = useCreateLike();
+
   const initialMessages = createInitialMessages(
     profiles.map((p) => p.userId),
     messages.messages
   );
-  const [token, setToken] = useState("");
-  const LikeAPI = new _LikesAPI(process.env.REACT_APP_SERVER_URL ?? "", token);
-  const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
-
-  useEffect(() => {
-    (async () => {
-      setToken(await getAccessTokenSilently());
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleClickApproveButton: MouseEventHandler<HTMLButtonElement> = async (
     event
   ) => {
-    setOpen(true);
-    await LikeAPI.CreateLike(event.currentTarget.id);
+    await CreateLike(event.currentTarget.id);
+    open();
   };
 
   const header = (
@@ -90,11 +73,12 @@ export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
   return (
     <>
       <TableComponent header={header} body={body} />
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity='success' sx={{ width: "100%" }}>
-          This is a success message!
-        </Alert>
-      </Snackbar>
+      <NotificationBar
+        isOpen={isOpen}
+        onClose={close}
+        isSuccess={result}
+        message={message}
+      />
     </>
   );
 };
