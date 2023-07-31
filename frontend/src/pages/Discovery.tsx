@@ -46,8 +46,11 @@ export const Discovery = () => {
         throw error;
       }
     };
+    fetchProfileId();
+  }, [getAccessTokenSilently, user]);
 
-    const fetchData = async () => {
+  useEffect(() => {
+    const fetchProfiles = async () => {
       try {
         if (profileId) {
           const token = await getAccessTokenSilently();
@@ -64,8 +67,7 @@ export const Discovery = () => {
         throw error;
       }
     };
-    fetchProfileId();
-    fetchData();
+    fetchProfiles();
     setIsfiltered(false);
   }, [getAccessTokenSilently, user, profileId, isFiltered]);
 
