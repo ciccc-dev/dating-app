@@ -22,15 +22,19 @@ export class _LikesAPI {
   };
 
   CreateLike = async (userId: string) => {
-    const res = await axios({
-      url: `${this.apiUrl}/api/likes`,
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify({ like_to: userId }),
-    });
-    return res.data;
+    try {
+      const res = await axios({
+        url: `${this.apiUrl}/api/likes`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify({ like_to: userId }),
+      });
+      return { status: res.status, message: "Success" };
+    } catch (err: any) {
+      return { status: err.status, message: err.response.data.error.err };
+    }
   };
 }
