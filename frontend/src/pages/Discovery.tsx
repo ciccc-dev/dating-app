@@ -26,6 +26,7 @@ export const Discovery = () => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [isFiltered, setIsfiltered] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -65,26 +66,11 @@ export const Discovery = () => {
     };
     fetchProfileId();
     fetchData();
-  }, [getAccessTokenSilently, user, profileId]);
-
-  const fetchData = async () => {
-    try {
-      const token = await getAccessTokenSilently();
-      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
-        const ProfileClient = new _profileClient(
-          process.env.REACT_APP_SERVER_URL ?? "",
-          token
-        );
-        const data = await ProfileClient.getProfiles(profileId);
-        setProfiles(data);
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
+    setIsfiltered(false);
+  }, [getAccessTokenSilently, user, profileId, isFiltered]);
 
   const handleClick = () => {
-    fetchData();
+    setIsfiltered(true);
   };
 
   return (
