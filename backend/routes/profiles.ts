@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 import { calculateAge, convertAgetoDate } from "../utils/caluculateAge";
+import { randomPick } from "../utils/randomPick";
 
 const router = express.Router();
 
@@ -40,6 +41,8 @@ router.post("/", async (req, res) => {
   });
 
   if (filter) {
+    // const orderBy = randomPick(['id', 'field1', 'field2']);
+    // const orderDir = randomPick([`asc`, `desc`]);
     const profiles = await client.profile.findMany({
       where: {
         id: { not: profileId },
@@ -68,6 +71,7 @@ router.post("/", async (req, res) => {
         interests: { select: { name: true } },
         purposes: { select: { name: true } },
       },
+      take: 3,
     });
 
     const convertedProfiles = profiles.map(({ birthday, ...rest }) => ({
