@@ -26,6 +26,7 @@ export const Discovery = () => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [isFiltered, setIsfiltered] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -45,8 +46,11 @@ export const Discovery = () => {
         throw error;
       }
     };
+    fetchProfileId();
+  }, [getAccessTokenSilently, user]);
 
-    const fetchData = async () => {
+  useEffect(() => {
+    const fetchProfiles = async () => {
       try {
         if (profileId) {
           const token = await getAccessTokenSilently();
@@ -63,28 +67,12 @@ export const Discovery = () => {
         throw error;
       }
     };
-    fetchProfileId();
-    fetchData();
-  }, [getAccessTokenSilently, user, profileId]);
-
-  const fetchData = async () => {
-    try {
-      const token = await getAccessTokenSilently();
-      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
-        const ProfileClient = new _profileClient(
-          process.env.REACT_APP_SERVER_URL ?? "",
-          token
-        );
-        const data = await ProfileClient.getProfiles(profileId);
-        setProfiles(data);
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
+    fetchProfiles();
+    setIsfiltered(false);
+  }, [getAccessTokenSilently, user, profileId, isFiltered]);
 
   const handleClick = () => {
-    fetchData();
+    setIsfiltered(true);
   };
 
   return (
@@ -117,10 +105,11 @@ const StyledNavigationWrapper = styled(Box)`
 `;
 
 const StyledContent = styled(Box)`
+  height: 100vh;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-item: center;
+  align-items: center;
   flex-wrap: wrap;
   padding: 3px;
   width: calc(100% - ${navigationWidth}px);

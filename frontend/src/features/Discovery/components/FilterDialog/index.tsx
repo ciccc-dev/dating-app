@@ -1,6 +1,5 @@
 import Button from "@mui/material/Button";
-import { styled as muiStyled } from "@mui/material/styles";
-import styled from "@emotion/styled";
+import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -11,7 +10,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Box } from "@mui/material";
 import { useState } from "react";
 
-const BootstrapDialog = muiStyled(Dialog)(({ theme }) => ({
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
   },
@@ -108,11 +107,11 @@ export const FilterDialog = ({
         </BootstrapDialogTitle>
         <DialogContent dividers>
           {title === "Looking For"
-            ? items.map((item, index) => (
-                <Box key={index}>
+            ? items.map((item) => (
+                <Box key={item.name}>
                   <StyledCheckBox
                     type="radio"
-                    id={index.toString()}
+                    id={item.name}
                     name="lookingFor"
                     checked={
                       !!selectedItems.find(
@@ -123,16 +122,14 @@ export const FilterDialog = ({
                       handleRadioChange(item.name, event.target.checked)
                     }
                   />
-                  <StyledLabel htmlFor={index.toString()}>
-                    {item.name}
-                  </StyledLabel>
+                  <StyledLabel htmlFor={item.name}>{item.name}</StyledLabel>
                 </Box>
               ))
-            : items.map((item, index) => (
-                <Box key={index}>
+            : items.map((item) => (
+                <Box key={item.name}>
                   <StyledCheckBox
                     type="checkbox"
-                    id={index.toString()}
+                    id={item.name}
                     checked={
                       !!selectedItems.find(
                         (selectedItem) => selectedItem === item.name
@@ -142,9 +139,7 @@ export const FilterDialog = ({
                       handleCheckBoxChange(item.name, event.target.checked)
                     }
                   />
-                  <StyledLabel htmlFor={index.toString()}>
-                    {item.name}
-                  </StyledLabel>
+                  <StyledLabel htmlFor={item.name}>{item.name}</StyledLabel>
                 </Box>
               ))}
         </DialogContent>
@@ -162,11 +157,16 @@ const StyledButton = styled(Button)`
   padding: 0.5rem 0;
 `;
 
-const StyledCheckBox = styled.input`
-  // display: none;
+const StyledCheckBox = styled("input")`
+  display: none;
+  &:checked + label {
+    color: white;
+    background-color: #ec407a;
+    border-color: #ec407a;
+  }
 `;
 
-const StyledLabel = styled.label`
+const StyledLabel = styled("label")`
   display: inline-block;
   width: 100%;
   border: 1px solid grey;

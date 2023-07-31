@@ -50,7 +50,6 @@ router.post("/update", async (req, res) => {
       isInterestFiltered: interestChecked,
     },
   });
-  console.log(result);
   return res.json(result);
 });
 
