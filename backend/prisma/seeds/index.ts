@@ -4,14 +4,20 @@ import { seedInterests } from "./interests";
 import { seedChats } from "./chats";
 import { seedLikes } from "./likes";
 import { seedProfiles } from "./profiles";
+import { seedProfileInterests } from "./profileInterests";
+import { seedFilters } from "./filter";
+import { seedProfilePurposes } from "./profilePurposes";
 
 const prisma = new PrismaClient();
 
 async function main() {
   await seedInterests(prisma);
+  await seedProfiles(prisma);
+  await seedProfileInterests(prisma);
+  await seedFilters(prisma);
+  await seedProfilePurposes(prisma);
   await seedChats(prisma);
   await seedLikes(prisma);
-  await seedProfiles(prisma);
 }
 
 main()
