@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Grid, Switch, Typography } from "@mui/material";
+import { Button, Grid, Switch, Typography } from "@mui/material";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -303,8 +303,8 @@ export const DiscoveryNavigation = ({
           </StyledListBlock>
         </StyledListItem>
         <StyledListItem key="filter" disablePadding>
-          <StyledButton onClick={handleFilterClick}>
-            <ListItemText primary="Filter" />
+          <StyledButton variant="contained" onClick={handleFilterClick}>
+            Filter
           </StyledButton>
         </StyledListItem>
       </StyledList>
@@ -317,10 +317,14 @@ const StyledList = styled(List)`
   padding: 0.5rem 1rem;
 `;
 
-const StyledButton = styled(ListItemButton)`
-  background-color: #ec407a;
+const StyledButton = styled(Button)`
+  width: 100%;
+  margin: 1.5rem 0;
   text-align: center;
   color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.25rem;
 `;
 
 const StyledListItem = styled(ListItem)`

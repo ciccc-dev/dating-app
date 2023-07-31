@@ -105,10 +105,11 @@ const StyledNavigationWrapper = styled(Box)`
 `;
 
 const StyledContent = styled(Box)`
+  height: 100vh;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-item: center;
+  align-items: center;
   flex-wrap: wrap;
   padding: 3px;
   width: calc(100% - ${navigationWidth}px);
