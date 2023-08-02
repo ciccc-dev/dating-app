@@ -33,6 +33,10 @@ const router = createBrowserRouter([
         element: <Messages />,
       },
       {
+        path: "/profile",
+        element: <Profile />,
+      },
+      {
         path: "/app",
         element: <DatingApp />,
         children: [
