@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { Button, Grid, Switch, Typography } from "@mui/material";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import { styled } from "@mui/system";
 import { DistanceInputSlider } from "../../../Discovery/components/DistanceInputSlider";
 import { AgePreferenceInputSlider } from "../../../Discovery/components/AgePreferenceInputSlider";
