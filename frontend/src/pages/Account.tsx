@@ -5,6 +5,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Item } from "../features/Discovery/components/Navigation";
 import { ProfilePhotos } from "../features/Account/components/ProfilePhotos";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
+import SaveIcon from "@mui/icons-material/Save";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { parseISO } from "date-fns";
@@ -13,7 +15,6 @@ import { FilterDialog } from "../features/Discovery/components/FilterDialog";
 import { purposes } from "../constants/purposes";
 import { _interestClient } from "../features/Discovery/api/interest";
 import { sexualOrientations } from "../constants/sexualOrientations";
-import { lookingFor } from "../constants/lookingfor";
 import { gender } from "../constants/gender";
 
 export interface Profile {
@@ -32,7 +33,7 @@ export interface Profile {
 
 export const Account = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [isBasicInfoEditable, setIsBasicInfoEditable] = useState(false);
+  const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [interests, setInterests] = useState<Item[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -82,8 +83,8 @@ export const Account = () => {
     fetchInterests();
   }, [getAccessTokenSilently]);
 
-  const handleEditBasicInfoClick = () => {
-    setIsBasicInfoEditable(!isBasicInfoEditable);
+  const handleEditUserAccountClick = () => {
+    setIsUserAccountEditable(!isUserAccountEditable);
   };
 
   const handleEditProfileClick = () => {
@@ -108,13 +109,22 @@ export const Account = () => {
           <StyledForm component="form">
             <StyledTitleWrapper>
               <StyledTitle>Basic Information</StyledTitle>
-              <StlyedEditNoteIcon onClick={handleEditBasicInfoClick} />
+              {isUserAccountEditable ? (
+                <StlyedIconsWrapper>
+                  <StyledSaveIcon onClick={handleEditUserAccountClick} />
+                  <StyledCancelPresentationIcon
+                    onClick={handleEditUserAccountClick}
+                  />
+                </StlyedIconsWrapper>
+              ) : (
+                <StlyedEditNoteIcon onClick={handleEditUserAccountClick} />
+              )}
             </StyledTitleWrapper>
             <StyledDivder />
             <StyledSection>
               <StyledSubTitle>Name</StyledSubTitle>
               <StyledSubDivder />
-              {isBasicInfoEditable ? (
+              {isUserAccountEditable ? (
                 <StyledTextField
                   id="outlined-basic"
                   variant="outlined"
@@ -125,7 +135,7 @@ export const Account = () => {
               )}
               <StyledSubTitle>Email</StyledSubTitle>
               <StyledSubDivder />
-              {isBasicInfoEditable ? (
+              {isUserAccountEditable ? (
                 <StyledTextField
                   id="outlined-basic"
                   variant="outlined"
@@ -139,7 +149,16 @@ export const Account = () => {
           <StyledForm component="form">
             <StyledTitleWrapper>
               <StyledTitle>Profile</StyledTitle>
-              <StlyedEditNoteIcon onClick={handleEditProfileClick} />
+              {isProfileEditable ? (
+                <StlyedIconsWrapper>
+                  <StyledSaveIcon onClick={handleEditProfileClick} />
+                  <StyledCancelPresentationIcon
+                    onClick={handleEditProfileClick}
+                  />
+                </StlyedIconsWrapper>
+              ) : (
+                <StlyedEditNoteIcon onClick={handleEditProfileClick} />
+              )}
             </StyledTitleWrapper>
             <StyledDivder />
             <StyledSection>
@@ -282,7 +301,22 @@ const StyledTitleWrapper = styled(Box)`
   align-items: center;
 `;
 
+const StlyedIconsWrapper = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+`;
+
 const StlyedEditNoteIcon = styled(EditNoteIcon)`
+  font-size: 3rem;
+`;
+
+const StyledCancelPresentationIcon = styled(CancelPresentationIcon)`
+  font-size: 3rem;
+`;
+
+const StyledSaveIcon = styled(SaveIcon)`
   font-size: 3rem;
 `;
 
@@ -303,6 +337,7 @@ const StyledReadOnly = styled(Box)`
 `;
 
 const StyledDatePicker = styled(DatePicker)`
+  width: 40%;
   & .MuiOutlinedInput-root {
     margin-top: 0.5rem;
   }
@@ -313,6 +348,7 @@ const StyledDatePicker = styled(DatePicker)`
 `;
 
 const StyledTextarea = styled(TextareaAutosize)`
+  width: 40%;
   margin-top: 0.5rem;
   padding: 0.5rem 1rem;
   font-size: 1.5rem;
@@ -326,6 +362,7 @@ const StyledValue = styled(Box)`
 `;
 
 const StyledTextField = styled(TextField)`
+  width: 40%;
   & .MuiOutlinedInput-root {
     margin-top: 0.5rem;
   }
