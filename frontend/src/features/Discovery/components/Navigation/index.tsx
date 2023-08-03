@@ -216,6 +216,7 @@ export const DiscoveryNavigation = ({
         <StyledListItem key="looking-for" disablePadding>
           <Grid container>
             <StyledDialog
+              type="radio"
               title="Looking For"
               items={lookingFor}
               selectedItems={selectedLookingFor}
@@ -228,6 +229,7 @@ export const DiscoveryNavigation = ({
           <ListItemGrid
             titleComponent={
               <StyledDialog
+                type="checkbox"
                 title="Sexual Orientation"
                 items={sexualOrientations}
                 selectedItems={selectedSexualOrientations}
@@ -256,6 +258,7 @@ export const DiscoveryNavigation = ({
           <ListItemGrid
             titleComponent={
               <StyledDialog
+                type="checkbox"
                 title="Purposes"
                 items={purposes}
                 selectedItems={selectedPurposes}
@@ -280,6 +283,7 @@ export const DiscoveryNavigation = ({
           <ListItemGrid
             titleComponent={
               <StyledDialog
+                type="checkbox"
                 title="Interests"
                 items={interests}
                 selectedItems={selectedInterests}

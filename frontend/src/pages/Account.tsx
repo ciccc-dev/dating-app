@@ -12,6 +12,9 @@ import TextareaAutosize from "@mui/base/TextareaAutosize";
 import { FilterDialog } from "../features/Discovery/components/FilterDialog";
 import { purposes } from "../constants/purposes";
 import { _interestClient } from "../features/Discovery/api/interest";
+import { sexualOrientations } from "../constants/sexualOrientations";
+import { lookingFor } from "../constants/lookingfor";
+import { gender } from "../constants/gender";
 
 export interface Profile {
   id: string;
@@ -95,12 +98,6 @@ export const Account = () => {
     setSelectedInterests(values);
   };
 
-  const handleInterestCheckedChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setInterestChecked(event.target.checked);
-  };
-
   return (
     <>
       <StyledContainer>
@@ -170,6 +167,15 @@ export const Account = () => {
               <StyledSubDivder />
               <StyledValue>
                 <StyledItem>{profile?.gender}</StyledItem>
+                {isProfileEditable && (
+                  <FilterDialog
+                    type="radio"
+                    title=""
+                    items={gender}
+                    selectedItems={profile?.gender ? [profile?.gender] : []}
+                    onChange={handleSelectedPurposesChange}
+                  />
+                )}
               </StyledValue>
               <StyledSubTitle>About Me</StyledSubTitle>
               <StyledSubDivder />
@@ -187,6 +193,19 @@ export const Account = () => {
               <StyledSubDivder />
               <StyledValue>
                 <StyledItem>{profile?.sexualOrientation}</StyledItem>
+                {isProfileEditable && (
+                  <FilterDialog
+                    type="radio"
+                    title=""
+                    items={sexualOrientations}
+                    selectedItems={
+                      profile?.sexualOrientation
+                        ? [profile.sexualOrientation]
+                        : []
+                    }
+                    onChange={handleSelectedPurposesChange}
+                  />
+                )}
               </StyledValue>
               <StyledSubTitle>Interests</StyledSubTitle>
               <StyledSubDivder />
@@ -196,6 +215,7 @@ export const Account = () => {
                 ))}
                 {isProfileEditable && (
                   <FilterDialog
+                    type="checkbox"
                     title=""
                     items={interests}
                     selectedItems={
@@ -213,6 +233,7 @@ export const Account = () => {
                 ))}
                 {isProfileEditable && (
                   <FilterDialog
+                    type="checkbox"
                     title=""
                     items={purposes}
                     selectedItems={
