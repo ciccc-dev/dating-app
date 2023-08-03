@@ -33,7 +33,7 @@ const router = createBrowserRouter([
         element: <Messages />,
       },
       {
-        path: "/acount",
+        path: "/account",
         element: <Account />,
       },
       {
