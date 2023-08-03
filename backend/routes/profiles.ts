@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 import { calculateAge, convertAgetoDate } from "../utils/caluculateAge";
-// import { randomPick } from "../utils/randomPick";
 
 const router = express.Router();
+
+// router.get("/:userId", getProfileByUserId);
 
 const convertLookingForToGender = (lookingFor: string) => {
   switch (lookingFor) {
@@ -16,6 +17,7 @@ const convertLookingForToGender = (lookingFor: string) => {
   }
 };
 
+// @deprecated
 router.post("/profileId", async (req, res) => {
   const client = new PrismaClient();
   const { userId } = req.body;
@@ -30,6 +32,22 @@ router.post("/profileId", async (req, res) => {
   return res.json(result);
 });
 
+router.get("/:userId", async (req, res) => {
+  const client = new PrismaClient();
+  const { userId } = req.params;
+  const result = await client.profile.findUnique({
+    where: {
+      userId: userId,
+    },
+    include: {
+      interests: { select: { name: true } },
+      purposes: { select: { name: true } },
+    },
+  });
+  return res.json(result);
+});
+
+// @deprecated TODO: Move to GET /
 router.post("/", async (req, res) => {
   const client = new PrismaClient();
   const { profileId } = req.body;

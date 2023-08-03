@@ -6,7 +6,7 @@ import { Discovery } from "./pages/Discovery";
 import { Home } from "./pages/Home";
 import { Likes } from "./pages/Likes";
 import { Messages } from "./pages/Messages";
-import { Profile } from "./pages/Profile";
+import { Account } from "./pages/Account";
 import { Root } from "./pages/Root";
 
 const router = createBrowserRouter([
@@ -34,16 +34,12 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: <Account />,
       },
       {
         path: "/app",
         element: <DatingApp />,
         children: [
-          {
-            path: "/app/profile",
-            element: <Profile />,
-          },
           {
             path: "/app/discovery",
             element: <Discovery />,
