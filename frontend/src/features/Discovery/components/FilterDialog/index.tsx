@@ -9,6 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Box } from "@mui/material";
 import { useState } from "react";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -89,10 +90,16 @@ export const FilterDialog = ({
   };
 
   return (
-    <div>
-      <StyledButton onClick={handleClickOpen}>
-        {title}
-        <KeyboardArrowRightIcon />
+    <Box sx={{ display: title === "" ? "inline" : "block" }}>
+      <StyledButton
+        onClick={handleClickOpen}
+        sx={{ padding: title === "" ? "0.8rem 0 0.3rem 0" : "0.5rem 0" }}
+      >
+        {title !== "" ? (
+          <KeyboardArrowRightIcon />
+        ) : (
+          <StyledAddCircleOutlineIcon />
+        )}
       </StyledButton>
       <BootstrapDialog
         onClose={handleClose}
@@ -149,13 +156,11 @@ export const FilterDialog = ({
           </Button>
         </DialogActions>
       </BootstrapDialog>
-    </div>
+    </Box>
   );
 };
 
-const StyledButton = styled(Button)`
-  padding: 0.5rem 0;
-`;
+const StyledButton = styled(Button)``;
 
 const StyledCheckBox = styled("input")`
   display: none;
@@ -175,4 +180,8 @@ const StyledLabel = styled("label")`
   margin: 0 0 0.75rem 0;
   text-align: center;
   cursor: pointer;
+`;
+
+const StyledAddCircleOutlineIcon = styled(AddCircleOutlineIcon)`
+  font-size: 2rem;
 `;

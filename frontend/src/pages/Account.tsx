@@ -1,8 +1,17 @@
-import { Box, Divider, styled } from "@mui/material";
+import { Box, Divider, TextField, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Item } from "../features/Discovery/components/Navigation";
+import { ProfilePhotos } from "../features/Account/components/ProfilePhotos";
+import EditNoteIcon from "@mui/icons-material/EditNote";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { parseISO } from "date-fns";
+import TextareaAutosize from "@mui/base/TextareaAutosize";
+import { FilterDialog } from "../features/Discovery/components/FilterDialog";
+import { purposes } from "../constants/purposes";
+import { _interestClient } from "../features/Discovery/api/interest";
 
 export interface Profile {
   id: string;
@@ -20,6 +29,14 @@ export interface Profile {
 
 export const Account = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isBasicInfoEditable, setIsBasicInfoEditable] = useState(false);
+  const [isProfileEditable, setIsProfileEditable] = useState(false);
+  const [interests, setInterests] = useState<Item[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [interestChecked, setInterestChecked] = useState(false);
+  const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
+  const [purposeChecked, setPurposeChecked] = useState(false);
+
   const { user, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -43,104 +60,180 @@ export const Account = () => {
     fetchProfileId();
   }, [getAccessTokenSilently, user]);
 
+  useEffect(() => {
+    const fetchInterests = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const InterestClient = new _interestClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          const data = await InterestClient.getInterests();
+          setInterests(data);
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
+    fetchInterests();
+  }, [getAccessTokenSilently]);
+
+  const handleEditBasicInfoClick = () => {
+    setIsBasicInfoEditable(!isBasicInfoEditable);
+  };
+
+  const handleEditProfileClick = () => {
+    setIsProfileEditable(!isProfileEditable);
+  };
+
+  const handleSelectedPurposesChange = (values: string[]) => {
+    setSelectedPurposes(values);
+  };
+
+  const handleSelectedInterestsChange = (values: string[]) => {
+    setSelectedInterests(values);
+  };
+
+  const handleInterestCheckedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setInterestChecked(event.target.checked);
+  };
+
   return (
     <>
       <StyledContainer>
-        <StlyleAside>
-          <StyleImg
-            src="https://swiperjs.com/demos/images/nature-1.jpg"
-            alt="profile1"
-          />
-          <StyleImg
-            src="https://swiperjs.com/demos/images/nature-1.jpg"
-            alt="profile1"
-          />
-          <StyleImg
-            src="https://swiperjs.com/demos/images/nature-1.jpg"
-            alt="profile1"
-          />
-          <StyleImg
-            src="https://swiperjs.com/demos/images/nature-1.jpg"
-            alt="profile1"
-          />
-          <StyleImg
-            src="https://swiperjs.com/demos/images/nature-1.jpg"
-            alt="profile1"
-          />
-        </StlyleAside>
-        <StyleMain>
-          <div>
-            <StyleTitle>Basic Information</StyleTitle>
-            <StyleDivder />
-            <StyleSection>
-              <StyleSubTitle>Name</StyleSubTitle>
-              <StyleSubDivder />
+        <StyledAside>
+          <ProfilePhotos />
+        </StyledAside>
+        <StyledMain>
+          <StyledForm component="form">
+            <StyledTitleWrapper>
+              <StyledTitle>Basic Information</StyledTitle>
+              <StlyedEditNoteIcon onClick={handleEditBasicInfoClick} />
+            </StyledTitleWrapper>
+            <StyledDivder />
+            <StyledSection>
+              <StyledSubTitle>Name</StyledSubTitle>
+              <StyledSubDivder />
+              {isBasicInfoEditable ? (
+                <StyledTextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  value={user?.name}
+                />
+              ) : (
+                <StyledReadOnly>{user?.name}</StyledReadOnly>
+              )}
+              <StyledSubTitle>Email</StyledSubTitle>
+              <StyledSubDivder />
+              {isBasicInfoEditable ? (
+                <StyledTextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  value={user?.email}
+                />
+              ) : (
+                <StyledReadOnly>{user?.email}</StyledReadOnly>
+              )}
+            </StyledSection>
+          </StyledForm>
+          <StyledForm component="form">
+            <StyledTitleWrapper>
+              <StyledTitle>Profile</StyledTitle>
+              <StlyedEditNoteIcon onClick={handleEditProfileClick} />
+            </StyledTitleWrapper>
+            <StyledDivder />
+            <StyledSection>
+              <StyledSubTitle>User Name</StyledSubTitle>
+              <StyledSubDivder />
+              {isProfileEditable ? (
+                <StyledTextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  value={profile?.userName}
+                />
+              ) : (
+                <StyledReadOnly>{profile?.userName}</StyledReadOnly>
+              )}
+              <StyledSubTitle>Birthday</StyledSubTitle>
+              <StyledSubDivder />
+              {isProfileEditable ? (
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <StyledDatePicker value={parseISO(profile!.birthday)} />
+                </LocalizationProvider>
+              ) : (
+                <StyledReadOnly>{profile?.birthday}</StyledReadOnly>
+              )}
+              <StyledSubTitle>Gender</StyledSubTitle>
+              <StyledSubDivder />
               <StyledValue>
-                <span>{user?.name}</span>
+                <StyledItem>{profile?.gender}</StyledItem>
               </StyledValue>
-              <StyleSubTitle>Email</StyleSubTitle>
-              <StyleSubDivder />
+              <StyledSubTitle>About Me</StyledSubTitle>
+              <StyledSubDivder />
+              {isProfileEditable ? (
+                <StyledTextarea
+                  maxRows={4}
+                  aria-label="maximum height"
+                  placeholder="Maximum 4 rows"
+                  value={profile?.aboutMe}
+                />
+              ) : (
+                <StyledAboutMe>{profile?.aboutMe}</StyledAboutMe>
+              )}
+              <StyledSubTitle>Sexual Orientation</StyledSubTitle>
+              <StyledSubDivder />
               <StyledValue>
-                <span>{user?.email}</span>
+                <StyledItem>{profile?.sexualOrientation}</StyledItem>
               </StyledValue>
-            </StyleSection>
-            <StyleTitle>Profile</StyleTitle>
-            <StyleDivder />
-            <StyleSection>
-              <StyleSubTitle>User Name</StyleSubTitle>
-              <StyleSubDivder />
-              <StyledValue>
-                <span>{profile?.userName}</span>
-              </StyledValue>
-              <StyleSubTitle>Birthday</StyleSubTitle>
-              <StyleSubDivder />
-              <StyledValue>
-                <span>{profile?.birthday}</span>
-              </StyledValue>
-              <StyleSubTitle>Gender</StyleSubTitle>
-              <StyleSubDivder />
-              <StyledValue>
-                <StyleItem>{profile?.gender}</StyleItem>
-              </StyledValue>
-              <StyleSubTitle>About Me</StyleSubTitle>
-              <StyleSubDivder />
-              <StyledAboutMe>{profile?.aboutMe}</StyledAboutMe>
-              <StyleSubTitle>Sexual Orientation</StyleSubTitle>
-              <StyleSubDivder />
-              <StyledValue>
-                <StyleItem>{profile?.sexualOrientation}</StyleItem>
-              </StyledValue>
-              <StyleSubTitle>Interests</StyleSubTitle>
-              <StyleSubDivder />
+              <StyledSubTitle>Interests</StyledSubTitle>
+              <StyledSubDivder />
               <StyledValue>
                 {profile?.interests.map(({ name }) => (
-                  <StyleItem key={name}>{name}</StyleItem>
+                  <StyledItem key={name}>{name}</StyledItem>
                 ))}
+                {isProfileEditable && (
+                  <FilterDialog
+                    title=""
+                    items={interests}
+                    selectedItems={
+                      profile?.interests.map(({ name }) => name) || []
+                    }
+                    onChange={handleSelectedInterestsChange}
+                  />
+                )}
               </StyledValue>
-              <StyleSubTitle>Purpose</StyleSubTitle>
-              <StyleSubDivder />
+              <StyledSubTitle>Purposes</StyledSubTitle>
+              <StyledSubDivder />
               <StyledValue>
                 {profile?.purposes.map(({ name }) => (
-                  <StyleItem key={name}>{name}</StyleItem>
+                  <StyledItem key={name}>{name}</StyledItem>
                 ))}
+                {isProfileEditable && (
+                  <FilterDialog
+                    title=""
+                    items={purposes}
+                    selectedItems={
+                      profile?.purposes.map(({ name }) => name) || []
+                    }
+                    onChange={handleSelectedPurposesChange}
+                  />
+                )}
               </StyledValue>
-            </StyleSection>
-          </div>
-        </StyleMain>
+            </StyledSection>
+          </StyledForm>
+        </StyledMain>
       </StyledContainer>
     </>
   );
 };
 
-const StlyleAside = styled(Box)`
-  width: 500px;
+const StyledAside = styled(Box)`
+  width: 400px;
+  padding: 50px 25px 0 25px;
   border-right: 3px solid rgba(0, 0, 0, 0.12);
-`;
-
-const StyleImg = styled("img")`
-  display: block;
-  width: 300px;
-  height: 400px;
 `;
 
 const StyledContainer = styled(Box)`
@@ -150,23 +243,58 @@ const StyledContainer = styled(Box)`
   box-sizing: border-box;
 `;
 
-const StyleMain = styled(Box)`
+const StyledMain = styled(Box)`
   display: flex;
   flex-direction: column;
-  padding: 0.5rem 2rem;
+  padding: 1rem 2rem;
   width: 100%;
   height: 100vh;
   overflow: scroll;
 `;
 
-const StyleDivder = styled(Divider)`
+const StyledForm = styled(Box)``;
+
+const StyledTitleWrapper = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const StlyedEditNoteIcon = styled(EditNoteIcon)`
+  font-size: 3rem;
+`;
+
+const StyledDivder = styled(Divider)`
   border-bottom-width: medium;
 `;
 
-const StyleSubDivder = styled(Divider)``;
+const StyledSubDivder = styled(Divider)``;
 
-const StyleSection = styled("section")`
+const StyledSection = styled("section")`
   padding: 0 1.5rem;
+`;
+
+const StyledReadOnly = styled(Box)`
+  padding: 0 1rem 0.5rem 1rem;
+  font-size: 1.5rem;
+  margin-top: 1rem;
+`;
+
+const StyledDatePicker = styled(DatePicker)`
+  & .MuiOutlinedInput-root {
+    margin-top: 0.5rem;
+  }
+  & .MuiOutlinedInput-input {
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+  }
+`;
+
+const StyledTextarea = styled(TextareaAutosize)`
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
 `;
 
 const StyledValue = styled(Box)`
@@ -176,19 +304,29 @@ const StyledValue = styled(Box)`
   margin-top: 0.7rem;
 `;
 
-const StyledAboutMe = styled("p")`
-  font-size: 1.2rem;
+const StyledTextField = styled(TextField)`
+  & .MuiOutlinedInput-root {
+    margin-top: 0.5rem;
+  }
+  & .MuiOutlinedInput-input {
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+  }
 `;
 
-const StyleTitle = styled("h1")`
+const StyledAboutMe = styled("p")`
+  font-size: 1.5rem;
+`;
+
+const StyledTitle = styled("h1")`
   margin: 1rem 0 0.5rem 0;
 `;
 
-const StyleSubTitle = styled("h2")`
+const StyledSubTitle = styled("h2")`
   margin: 1rem 0 0.3rem 0;
 `;
 
-const StyleItem = styled("span")`
+const StyledItem = styled("span")`
   border: 1px solid black;
   border-radius: 1.2rem;
   font-size: 1.2rem;
