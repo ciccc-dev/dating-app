@@ -43,7 +43,7 @@ export const getProfilesByUserId = async (
   }
 };
 
-export const createProfile = async (
+export const postProfile = async (
   req: Request,
   res: Response,
   next: NextFunction

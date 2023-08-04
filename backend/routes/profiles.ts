@@ -2,7 +2,7 @@ import express from "express";
 import { body } from "express-validator";
 
 import {
-  createProfile,
+  postProfile,
   getProfilesByUserId,
   getProfileIdByUserId,
 } from "../lib/profiles";
@@ -18,7 +18,7 @@ const validateCreateProfileRequest = [
 ];
 
 router.get("", getProfilesByUserId);
-router.post("", validateCreateProfileRequest, createProfile);
+router.post("", validateCreateProfileRequest, postProfile);
 router.get("/:userId", getProfileIdByUserId);
 
 export default router;
