@@ -9,12 +9,9 @@ class _FilterRepository {
     this.db = db;
   }
 
-  fetchFilterByUserId = async (userId: string) => {
-    const profile = await this.db.profile.findUnique({ where: { userId } });
-    if (!profile) return;
-
+  fetchFilterByProfileId = async (profileId: string) => {
     const response = await this.db.filter.findUnique({
-      where: { profileId: profile.id },
+      where: { profileId: profileId },
       include: {
         interests: { select: { name: true } },
         profile: { select: { id: true } },
