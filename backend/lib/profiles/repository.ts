@@ -64,7 +64,7 @@ class _ProfileRepository {
       age: calculateAge(birthday),
     }));
 
-    return profiles;
+    return convertedProfiles;
   };
 }
 
