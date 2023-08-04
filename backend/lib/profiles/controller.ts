@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
 import { validate } from "../../middleware/validateRequest";
+import { Profile } from "./profile";
 import { ProfileRepository } from "./repository";
 import { FilterRepository } from "../filters";
-import { Profile } from "./profile";
 
 export const getProfileIdByUserId = async (
   req: Request,
@@ -52,12 +52,12 @@ export const postProfile = async (
     validate(req);
 
     const profile = new Profile(req.body);
+    const result = await ProfileRepository.createProfile(
+      profile,
+      req.auth?.payload?.sub as string
+    );
 
-    console.log(profile);
-    console.log(profile.gender());
-
-    res.status(201).json({ result: req.body });
-    // res.status(201).json({ result: "success" });
+    res.status(201).json({ result });
   } catch (err) {
     next(err);
   }
