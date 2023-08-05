@@ -16,6 +16,7 @@ import { purposes } from "../constants/purposes";
 import { _interestClient } from "../features/Discovery/api/interest";
 import { sexualOrientations } from "../constants/sexualOrientations";
 import { gender } from "../constants/gender";
+import { useForm } from "react-hook-form";
 
 export interface Profile {
   id: string;
@@ -37,10 +38,12 @@ export const Account = () => {
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [interests, setInterests] = useState<Item[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [interestChecked, setInterestChecked] = useState(false);
   const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
-  const [purposeChecked, setPurposeChecked] = useState(false);
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const { user, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -99,6 +102,8 @@ export const Account = () => {
     setSelectedInterests(values);
   };
 
+  const onSubmit = () => console.log("data");
+
   return (
     <>
       <StyledContainer>
@@ -106,9 +111,9 @@ export const Account = () => {
           <ProfilePhotos />
         </StyledAside>
         <StyledMain>
-          <StyledForm component="form">
+          <StyledForm component="form" onSubmit={handleSubmit(onSubmit)}>
             <StyledTitleWrapper>
-              <StyledTitle>Basic Information</StyledTitle>
+              <StyledTitle>User Account</StyledTitle>
               {isUserAccountEditable ? (
                 <StlyedIconsWrapper>
                   <StyledSaveIcon onClick={handleEditUserAccountClick} />
@@ -128,7 +133,10 @@ export const Account = () => {
                 <StyledTextField
                   id="outlined-basic"
                   variant="outlined"
-                  value={user?.name}
+                  defaultValue={user?.name}
+                  {...register("name", {
+                    required: "please enter a valid name",
+                  })}
                 />
               ) : (
                 <StyledReadOnly>{user?.name}</StyledReadOnly>
@@ -136,17 +144,25 @@ export const Account = () => {
               <StyledSubTitle>Email</StyledSubTitle>
               <StyledSubDivder />
               {isUserAccountEditable ? (
-                <StyledTextField
-                  id="outlined-basic"
-                  variant="outlined"
-                  value={user?.email}
-                />
+                <>
+                  <StyledTextField
+                    id="outlined-basic"
+                    variant="outlined"
+                    defaultValue={user?.email}
+                    {...register("email", {
+                      required: "please enter a valid email address",
+                    })}
+                  />
+                  {errors.email?.message && (
+                    <p>{String(errors.email.message)}</p>
+                  )}
+                </>
               ) : (
                 <StyledReadOnly>{user?.email}</StyledReadOnly>
               )}
             </StyledSection>
           </StyledForm>
-          <StyledForm component="form">
+          <StyledForm component="form" onSubmit={handleSubmit(onSubmit)}>
             <StyledTitleWrapper>
               <StyledTitle>Profile</StyledTitle>
               {isProfileEditable ? (
@@ -168,7 +184,10 @@ export const Account = () => {
                 <StyledTextField
                   id="outlined-basic"
                   variant="outlined"
-                  value={profile?.userName}
+                  defaultValue={profile?.userName}
+                  {...register("userName", {
+                    required: "please enter a valid user name",
+                  })}
                 />
               ) : (
                 <StyledReadOnly>{profile?.userName}</StyledReadOnly>
@@ -203,7 +222,10 @@ export const Account = () => {
                   maxRows={4}
                   aria-label="maximum height"
                   placeholder="Maximum 4 rows"
-                  value={profile?.aboutMe}
+                  defaultValue={profile?.aboutMe}
+                  {...register("name", {
+                    required: "please enter a valid about me",
+                  })}
                 />
               ) : (
                 <StyledAboutMe>{profile?.aboutMe}</StyledAboutMe>
