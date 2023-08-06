@@ -11,12 +11,20 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { parseISO } from "date-fns";
 import TextareaAutosize from "@mui/base/TextareaAutosize";
-import { FilterDialog } from "../features/Discovery/components/FilterDialog";
 import { purposes } from "../constants/purposes";
 import { _interestClient } from "../features/Discovery/api/interest";
 import { sexualOrientations } from "../constants/sexualOrientations";
 import { gender } from "../constants/gender";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { FilterDialog } from "../features/Discovery/components/FilterDialog";
+
+export interface ProfileHookForm {
+  name: string;
+  email: string;
+  userName: string;
+  aboutMe: string;
+  birthday: string;
+}
 
 export interface Profile {
   id: string;
@@ -32,18 +40,36 @@ export interface Profile {
   interests: Item[];
 }
 
+const defaultAccount = {
+  name: "",
+  email: "",
+};
+
+const defaultProfile = {
+  id: "",
+  userId: "",
+  userName: "",
+  birthday: "",
+  gender: "",
+  sexualOrientation: "",
+  aboutMe: "",
+  registeredAt: new Date(),
+  updatedAt: new Date(),
+  purposes: [],
+  interests: [],
+};
+
 export const Account = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [interests, setInterests] = useState<Item[]>([]);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+    control,
+  } = useForm<ProfileHookForm>();
   const { user, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -58,6 +84,7 @@ export const Account = () => {
             const data = await ProfileClient.getProfile(user.sub);
             setProfile(data);
             console.log(user);
+            console.log(data);
           }
         }
       } catch (error) {
@@ -94,15 +121,11 @@ export const Account = () => {
     setIsProfileEditable(!isProfileEditable);
   };
 
-  const handleSelectedPurposesChange = (values: string[]) => {
-    setSelectedPurposes(values);
+  const handleChange = <T,>(title: string, value: T) => {
+    setProfile({ ...profile, [title]: value });
   };
 
-  const handleSelectedInterestsChange = (values: string[]) => {
-    setSelectedInterests(values);
-  };
-
-  const onSubmit = () => console.log("data");
+  const onSubmit = () => console.log();
 
   return (
     <>
@@ -131,7 +154,7 @@ export const Account = () => {
               <StyledSubDivder />
               {isUserAccountEditable ? (
                 <StyledTextField
-                  id="outlined-basic"
+                  id="name"
                   variant="outlined"
                   defaultValue={user?.name}
                   {...register("name", {
@@ -146,7 +169,7 @@ export const Account = () => {
               {isUserAccountEditable ? (
                 <>
                   <StyledTextField
-                    id="outlined-basic"
+                    id="email"
                     variant="outlined"
                     defaultValue={user?.email}
                     {...register("email", {
@@ -182,7 +205,7 @@ export const Account = () => {
               <StyledSubDivder />
               {isProfileEditable ? (
                 <StyledTextField
-                  id="outlined-basic"
+                  id="userName"
                   variant="outlined"
                   defaultValue={profile?.userName}
                   {...register("userName", {
@@ -195,9 +218,18 @@ export const Account = () => {
               <StyledSubTitle>Birthday</StyledSubTitle>
               <StyledSubDivder />
               {isProfileEditable ? (
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <StyledDatePicker value={parseISO(profile!.birthday)} />
-                </LocalizationProvider>
+                <Controller
+                  control={control}
+                  name="birthday"
+                  render={({ field: { onChange } }) => (
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <StyledDatePicker
+                        defaultValue={parseISO(profile!.birthday)}
+                        onChange={onChange}
+                      />
+                    </LocalizationProvider>
+                  )}
+                />
               ) : (
                 <StyledReadOnly>{profile?.birthday}</StyledReadOnly>
               )}
@@ -208,10 +240,10 @@ export const Account = () => {
                 {isProfileEditable && (
                   <FilterDialog
                     type="radio"
-                    title=""
+                    title="gender"
                     items={gender}
-                    selectedItems={profile?.gender ? [profile?.gender] : []}
-                    onChange={handleSelectedPurposesChange}
+                    selectedItems={[{ name: profile?.gender }]}
+                    onChange={handleChange}
                   />
                 )}
               </StyledValue>
@@ -223,7 +255,7 @@ export const Account = () => {
                   aria-label="maximum height"
                   placeholder="Maximum 4 rows"
                   defaultValue={profile?.aboutMe}
-                  {...register("name", {
+                  {...register("aboutMe", {
                     required: "please enter a valid about me",
                   })}
                 />
@@ -237,14 +269,10 @@ export const Account = () => {
                 {isProfileEditable && (
                   <FilterDialog
                     type="radio"
-                    title=""
+                    title="sexualOrientation"
                     items={sexualOrientations}
-                    selectedItems={
-                      profile?.sexualOrientation
-                        ? [profile.sexualOrientation]
-                        : []
-                    }
-                    onChange={handleSelectedPurposesChange}
+                    selectedItems={[{ name: profile?.sexualOrientation }]}
+                    onChange={handleChange}
                   />
                 )}
               </StyledValue>
@@ -257,12 +285,10 @@ export const Account = () => {
                 {isProfileEditable && (
                   <FilterDialog
                     type="checkbox"
-                    title=""
+                    title="interests"
                     items={interests}
-                    selectedItems={
-                      profile?.interests.map(({ name }) => name) || []
-                    }
-                    onChange={handleSelectedInterestsChange}
+                    selectedItems={profile?.interests}
+                    onChange={handleChange}
                   />
                 )}
               </StyledValue>
@@ -275,12 +301,10 @@ export const Account = () => {
                 {isProfileEditable && (
                   <FilterDialog
                     type="checkbox"
-                    title=""
+                    title="purposes"
                     items={purposes}
-                    selectedItems={
-                      profile?.purposes.map(({ name }) => name) || []
-                    }
-                    onChange={handleSelectedPurposesChange}
+                    selectedItems={profile?.purposes}
+                    onChange={handleChange}
                   />
                 )}
               </StyledValue>

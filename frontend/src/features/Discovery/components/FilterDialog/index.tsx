@@ -28,8 +28,8 @@ export interface FilterDialogProps {
   type: string;
   title: string;
   items: Item[];
-  selectedItems: string[];
-  onChange: (values: string[]) => void;
+  selectedItems: Item[];
+  onChange: <T>(title: string, values: T) => void;
 }
 
 export interface DialogTitleProps {
@@ -73,13 +73,16 @@ export const FilterDialog = ({
   const handleChange = (type: string, name: string, isChecked: boolean) => {
     if (type === "radio") {
       if (isChecked) {
-        onChange([name]);
+        onChange(title, name);
       }
     } else {
       if (isChecked) {
-        onChange([...selectedItems, name]);
+        onChange(title, [...selectedItems, { name: name }]);
       } else {
-        onChange(selectedItems.filter((selectedItem) => selectedItem !== name));
+        onChange(
+          title,
+          selectedItems.filter((selectedItem) => selectedItem.name !== name)
+        );
       }
     }
   };
@@ -123,7 +126,7 @@ export const FilterDialog = ({
                 name={title}
                 checked={
                   !!selectedItems.find(
-                    (selectedItem) => selectedItem === item.name
+                    (selectedItem) => selectedItem.name === item.name
                   )
                 }
                 onChange={(event) =>
