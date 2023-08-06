@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 import { calculateAge, convertAgetoDate } from "../utils/caluculateAge";
-import { profileEnd } from "console";
 
 const router = express.Router();
 
