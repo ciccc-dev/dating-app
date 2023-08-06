@@ -1,4 +1,4 @@
-import { Box, Divider, TextField, styled } from "@mui/material";
+import { Box, Button, Divider, TextField, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -125,7 +125,25 @@ export const Account = () => {
     setProfile({ ...profile, [title]: value });
   };
 
-  const onSubmit = () => console.log();
+  const onSubmit = (data: ProfileHookForm) => {
+    const updateProfile = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const ProfileClient = new _profileClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          const result = await ProfileClient.updateProfile(data, profile);
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
+    console.log("hello");
+    updateProfile();
+    console.log("afterhello");
+  };
 
   return (
     <>
@@ -189,12 +207,19 @@ export const Account = () => {
             <StyledTitleWrapper>
               <StyledTitle>Profile</StyledTitle>
               {isProfileEditable ? (
-                <StlyedIconsWrapper>
-                  <StyledSaveIcon onClick={handleEditProfileClick} />
-                  <StyledCancelPresentationIcon
+                <>
+                  <Button variant="contained" type="submit">
+                    Save
+                  </Button>
+                  <StlyedIconsWrapper>
+                    {/* <StyledSaveIcon
                     onClick={handleEditProfileClick}
-                  />
-                </StlyedIconsWrapper>
+                  /> */}
+                    <StyledCancelPresentationIcon
+                      onClick={handleEditProfileClick}
+                    />
+                  </StlyedIconsWrapper>
+                </>
               ) : (
                 <StlyedEditNoteIcon onClick={handleEditProfileClick} />
               )}
