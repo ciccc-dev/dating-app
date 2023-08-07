@@ -9,7 +9,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Box } from "@mui/material";
 import { useState } from "react";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -189,8 +188,4 @@ const StyledLabel = styled("label")`
   margin: 0 0 0.75rem 0;
   text-align: center;
   cursor: pointer;
-`;
-
-const StyledAddCircleOutlineIcon = styled(AddCircleOutlineIcon)`
-  font-size: 2rem;
 `;

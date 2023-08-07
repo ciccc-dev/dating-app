@@ -27,8 +27,12 @@ export const AgePreferenceInputSlider = ({
   isAgeFiltered,
 }: AgePreferenceInputSliderProps) => {
   const handleSliderChange = (event: Event, newValue: any) => {
-    onChange(minAge, Number(newValue[0]));
-    onChange(maxAge, Number(newValue[1]));
+    if (minAgeData !== newValue[0]) {
+      onChange(minAge, Number(newValue[0]));
+    }
+    if (maxAgeData !== newValue[1]) {
+      onChange(maxAge, Number(newValue[1]));
+    }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

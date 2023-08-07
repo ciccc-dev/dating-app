@@ -39,11 +39,6 @@ export interface Profile {
   interests: Item[];
 }
 
-const defaultAccount = {
-  name: "",
-  email: "",
-};
-
 const defaultProfile = {
   id: "",
   userId: "",

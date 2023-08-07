@@ -25,7 +25,7 @@ export class _filterClient {
     }
   };
 
-  updateFilter = async (filterdata: any) => {
+  updateFilter = async (filter: any) => {
     try {
       const res = await axios({
         url: `${this.apiUrl}/api/filter/update`,
@@ -34,7 +34,7 @@ export class _filterClient {
           Authorization: `Bearer ${this.accessToken}`,
           "Content-Type": "application/json",
         },
-        data: JSON.stringify(filterdata),
+        data: JSON.stringify({ filter }),
       });
       return res.data;
     } catch (error) {

@@ -17,37 +17,25 @@ router.post("/", async (req, res) => {
 
 router.post("/update", async (req, res) => {
   const client = new PrismaClient();
-  const {
-    profileId,
-    showMe,
-    distance,
-    distanceChecked,
-    ageRange,
-    ageRangeChecked,
-    sexualOrientations,
-    sexualOrientationChecked,
-    purposeChecked,
-    purposes,
-    interests,
-    interestChecked,
-  } = req.body;
+  const { filter } = req.body;
+  console.log(filter);
   const result = await client.filter.update({
     where: {
-      profileId: profileId,
+      id: filter.id,
     },
     data: {
-      showMe: showMe,
-      minAge: ageRange[0],
-      maxAge: ageRange[1],
-      isAgeFiltered: ageRangeChecked,
-      distance: distance,
-      isDistanceFiltered: distanceChecked,
-      sexualOrientations: sexualOrientations,
-      isSexualOrientationFiltered: sexualOrientationChecked,
-      purposes: purposes,
-      isPurposeFiltered: purposeChecked,
-      interests: { set: interests },
-      isInterestFiltered: interestChecked,
+      showMe: filter.showMe,
+      minAge: filter.minAge,
+      maxAge: filter.maxAge,
+      isAgeFiltered: filter.isAgeFiltered,
+      distance: filter.distance,
+      isDistanceFiltered: filter.isDistanceFiltered,
+      sexualOrientations: filter.sexualOrientations,
+      isSexualOrientationFiltered: filter.isSexualOrientationFiltered,
+      purposes: filter.purposes,
+      isPurposeFiltered: filter.isPurposeFiltered,
+      interests: { set: filter.interests },
+      isInterestFiltered: filter.isInterestFiltered,
     },
   });
   return res.json(result);
