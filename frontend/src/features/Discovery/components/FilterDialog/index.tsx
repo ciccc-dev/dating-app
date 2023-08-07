@@ -114,7 +114,7 @@ export const FilterDialog = <T extends string | (string | Item)[]>({
         onClick={handleClickOpen}
         sx={{ padding: title === "" ? "0" : "0.5rem 0" }}
       >
-        {title === "" ? title : null}
+        {title !== "" ? title : null}
         <KeyboardArrowRightIcon
           sx={{ fontSize: title === "" ? "2.5rem" : "1.5rem" }}
         />

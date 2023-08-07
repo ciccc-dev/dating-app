@@ -6,7 +6,6 @@ import { Item } from "../features/Discovery/components/Navigation";
 import { ProfilePhotos } from "../features/Account/components/ProfilePhotos";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
-import SaveIcon from "@mui/icons-material/Save";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { parseISO } from "date-fns";

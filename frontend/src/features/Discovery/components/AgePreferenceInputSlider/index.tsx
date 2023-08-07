@@ -8,32 +8,38 @@ import { ListItemGrid } from "../LIstItemGrid";
 import Switch from "@mui/material/Switch";
 
 interface AgePreferenceInputSliderProps {
-  ageRange: number[];
-  onChange: (value: number[]) => void;
+  minAgeData: number;
+  maxAgeData: number;
+  minAge: string;
+  maxAge: string;
+  onChange: <T>(title: string, value: T) => void;
   checked: boolean;
-  onCheckedChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isAgeFiltered: string;
 }
 
 export const AgePreferenceInputSlider = ({
-  ageRange,
+  minAgeData,
+  maxAgeData,
+  minAge,
+  maxAge,
   onChange,
   checked,
-  onCheckedChange,
+  isAgeFiltered,
 }: AgePreferenceInputSliderProps) => {
   const handleSliderChange = (event: Event, newValue: any) => {
-    onChange(newValue);
+    onChange(minAge, Number(newValue[0]));
+    onChange(maxAge, Number(newValue[1]));
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newArray = [...ageRange];
-    if (event.target.id === "min") {
-      newArray[0] = Number(event.target.value);
-    } else {
-      newArray[1] = Number(event.target.value);
-    }
-    onChange(newArray);
+    event.target.id === "min"
+      ? onChange(minAge, Number(event.target.value))
+      : onChange(maxAge, Number(event.target.value));
   };
 
+  const handleCheckedChange = () => {
+    onChange(isAgeFiltered, !checked);
+  };
   // const handleBlur = () => {
   //   if (typeof value === "number") {
   //     if (typeof value === "number" && value < 0) {
@@ -57,7 +63,7 @@ export const AgePreferenceInputSlider = ({
         switchComponent={
           <Switch
             checked={checked}
-            onChange={onCheckedChange}
+            onChange={handleCheckedChange}
             inputProps={{ "aria-label": "controlled" }}
           />
         }
@@ -66,7 +72,7 @@ export const AgePreferenceInputSlider = ({
         <Grid item>
           <Input
             id="min"
-            value={ageRange[0]}
+            value={minAgeData}
             size="small"
             onChange={handleInputChange}
             // onBlur={handleBlur}
@@ -81,7 +87,7 @@ export const AgePreferenceInputSlider = ({
         </Grid>
         <Grid item xs>
           <Slider
-            value={ageRange}
+            value={[minAgeData, maxAgeData]}
             onChange={handleSliderChange}
             aria-labelledby="input-slider"
           />
@@ -89,7 +95,7 @@ export const AgePreferenceInputSlider = ({
         <Grid item>
           <Input
             id="max"
-            value={ageRange[1]}
+            value={maxAgeData}
             size="small"
             onChange={handleInputChange}
             // onBlur={handleBlur}
