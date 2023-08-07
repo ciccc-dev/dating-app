@@ -125,7 +125,7 @@ export const Account = () => {
     setProfile({ ...profile, [title]: value });
   };
 
-  const onSubmit = (data: ProfileHookForm) => {
+  const onSubmit = async (data: ProfileHookForm) => {
     const updateProfile = async () => {
       try {
         const token = await getAccessTokenSilently();
@@ -134,15 +134,14 @@ export const Account = () => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          const result = await ProfileClient.updateProfile(data, profile);
+          return await ProfileClient.updateProfile(data, profile);
         }
       } catch (error) {
         throw error;
       }
     };
-    console.log("hello");
-    updateProfile();
-    console.log("afterhello");
+    const result = await updateProfile();
+    if (result) handleEditProfileClick();
   };
 
   return (
@@ -157,7 +156,9 @@ export const Account = () => {
               <StyledTitle>User Account</StyledTitle>
               {isUserAccountEditable ? (
                 <StlyedIconsWrapper>
-                  <StyledSaveIcon onClick={handleEditUserAccountClick} />
+                  <Button variant="outlined" type="submit">
+                    Save
+                  </Button>
                   <StyledCancelPresentationIcon
                     onClick={handleEditUserAccountClick}
                   />
@@ -168,7 +169,9 @@ export const Account = () => {
             </StyledTitleWrapper>
             <StyledDivder />
             <StyledSection>
-              <StyledSubTitle>Name</StyledSubTitle>
+              <StyledSubTitle>
+                <span>Name</span>
+              </StyledSubTitle>
               <StyledSubDivder />
               {isUserAccountEditable ? (
                 <StyledTextField
@@ -182,7 +185,9 @@ export const Account = () => {
               ) : (
                 <StyledReadOnly>{user?.name}</StyledReadOnly>
               )}
-              <StyledSubTitle>Email</StyledSubTitle>
+              <StyledSubTitle>
+                <span>Email</span>
+              </StyledSubTitle>
               <StyledSubDivder />
               {isUserAccountEditable ? (
                 <>
@@ -208,13 +213,10 @@ export const Account = () => {
               <StyledTitle>Profile</StyledTitle>
               {isProfileEditable ? (
                 <>
-                  <Button variant="contained" type="submit">
-                    Save
-                  </Button>
                   <StlyedIconsWrapper>
-                    {/* <StyledSaveIcon
-                    onClick={handleEditProfileClick}
-                  /> */}
+                    <Button variant="outlined" type="submit">
+                      Save
+                    </Button>
                     <StyledCancelPresentationIcon
                       onClick={handleEditProfileClick}
                     />
@@ -226,7 +228,9 @@ export const Account = () => {
             </StyledTitleWrapper>
             <StyledDivder />
             <StyledSection>
-              <StyledSubTitle>User Name</StyledSubTitle>
+              <StyledSubTitle>
+                <span>User Name</span>
+              </StyledSubTitle>
               <StyledSubDivder />
               {isProfileEditable ? (
                 <StyledTextField
@@ -240,7 +244,9 @@ export const Account = () => {
               ) : (
                 <StyledReadOnly>{profile?.userName}</StyledReadOnly>
               )}
-              <StyledSubTitle>Birthday</StyledSubTitle>
+              <StyledSubTitle>
+                <span>Birthday</span>
+              </StyledSubTitle>
               <StyledSubDivder />
               {isProfileEditable ? (
                 <Controller
@@ -258,21 +264,29 @@ export const Account = () => {
               ) : (
                 <StyledReadOnly>{profile?.birthday}</StyledReadOnly>
               )}
-              <StyledSubTitle>Gender</StyledSubTitle>
+              <StyledSubTitle>
+                <span>Gender</span>
+                <span>
+                  {isProfileEditable && (
+                    <FilterDialog
+                      type="radio"
+                      title=""
+                      property="gender"
+                      datatype="string"
+                      items={gender}
+                      selectedItems={profile?.gender}
+                      onChange={handleChange}
+                    />
+                  )}
+                </span>
+              </StyledSubTitle>
               <StyledSubDivder />
               <StyledValue>
                 <StyledItem>{profile?.gender}</StyledItem>
-                {isProfileEditable && (
-                  <FilterDialog
-                    type="radio"
-                    title="gender"
-                    items={gender}
-                    selectedItems={[{ name: profile?.gender }]}
-                    onChange={handleChange}
-                  />
-                )}
               </StyledValue>
-              <StyledSubTitle>About Me</StyledSubTitle>
+              <StyledSubTitle>
+                <span>About Me</span>
+              </StyledSubTitle>
               <StyledSubDivder />
               {isProfileEditable ? (
                 <StyledTextarea
@@ -287,51 +301,69 @@ export const Account = () => {
               ) : (
                 <StyledAboutMe>{profile?.aboutMe}</StyledAboutMe>
               )}
-              <StyledSubTitle>Sexual Orientation</StyledSubTitle>
+              <StyledSubTitle>
+                <span>Sexual Orientation</span>
+                <span>
+                  {isProfileEditable && (
+                    <FilterDialog
+                      type="radio"
+                      title=""
+                      property="sexualOrientation"
+                      datatype="string"
+                      items={sexualOrientations}
+                      selectedItems={profile?.sexualOrientation}
+                      onChange={handleChange}
+                    />
+                  )}
+                </span>
+              </StyledSubTitle>
               <StyledSubDivder />
               <StyledValue>
                 <StyledItem>{profile?.sexualOrientation}</StyledItem>
-                {isProfileEditable && (
-                  <FilterDialog
-                    type="radio"
-                    title="sexualOrientation"
-                    items={sexualOrientations}
-                    selectedItems={[{ name: profile?.sexualOrientation }]}
-                    onChange={handleChange}
-                  />
-                )}
               </StyledValue>
-              <StyledSubTitle>Interests</StyledSubTitle>
+              <StyledSubTitle>
+                <span>Interests</span>
+                <span>
+                  {isProfileEditable && (
+                    <FilterDialog
+                      type="checkbox"
+                      title=""
+                      property="interests"
+                      datatype="objectArray"
+                      items={interests}
+                      selectedItems={profile?.interests}
+                      onChange={handleChange}
+                    />
+                  )}
+                </span>
+              </StyledSubTitle>
               <StyledSubDivder />
               <StyledValue>
                 {profile?.interests.map(({ name }) => (
                   <StyledItem key={name}>{name}</StyledItem>
                 ))}
-                {isProfileEditable && (
-                  <FilterDialog
-                    type="checkbox"
-                    title="interests"
-                    items={interests}
-                    selectedItems={profile?.interests}
-                    onChange={handleChange}
-                  />
-                )}
               </StyledValue>
-              <StyledSubTitle>Purposes</StyledSubTitle>
+              <StyledSubTitle>
+                <span>Purposes</span>
+                <span>
+                  {isProfileEditable && (
+                    <FilterDialog
+                      type="checkbox"
+                      title=""
+                      property="purposes"
+                      datatype="objectArray"
+                      items={purposes}
+                      selectedItems={profile?.purposes}
+                      onChange={handleChange}
+                    />
+                  )}
+                </span>
+              </StyledSubTitle>
               <StyledSubDivder />
               <StyledValue>
                 {profile?.purposes.map(({ name }) => (
                   <StyledItem key={name}>{name}</StyledItem>
                 ))}
-                {isProfileEditable && (
-                  <FilterDialog
-                    type="checkbox"
-                    title="purposes"
-                    items={purposes}
-                    selectedItems={profile?.purposes}
-                    onChange={handleChange}
-                  />
-                )}
               </StyledValue>
             </StyledSection>
           </StyledForm>
@@ -384,10 +416,6 @@ const StlyedEditNoteIcon = styled(EditNoteIcon)`
 `;
 
 const StyledCancelPresentationIcon = styled(CancelPresentationIcon)`
-  font-size: 3rem;
-`;
-
-const StyledSaveIcon = styled(SaveIcon)`
   font-size: 3rem;
 `;
 
@@ -452,6 +480,7 @@ const StyledTitle = styled("h1")`
 `;
 
 const StyledSubTitle = styled("h2")`
+  vertical-align: middle;
   margin: 1rem 0 0.3rem 0;
 `;
 
