@@ -9,13 +9,40 @@ import { SexualOrientatins } from "../features/Signup/components/SexualOrientati
 import { ShowMe } from "../features/Signup/components/ShowMe";
 import { Username } from "../features/Signup/components/Username";
 
+interface Profile {
+  username: string;
+}
+
+type Phase =
+  | "username"
+  | "gender"
+  | "birthday"
+  | "showMe"
+  | "purpose"
+  | "sexual"
+  | "interest";
+
 export const Signup = () => {
-  const [phase, setPhase] = useState("interest");
-  const [profile, setProfile] = useState("");
+  const [phase, setPhase] = useState<Phase>("username");
+  const [profile, setProfile] = useState<Profile>({
+    username: "",
+  });
+
+  const handleChangeProfile = <T,>(key: string, value: T) => {
+    setProfile((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleChangePhase = (phase: Phase) => setPhase(phase);
 
   return (
     <>
-      {phase === "username" && <Username />}
+      {phase === "username" && (
+        <Username
+          name={profile.username}
+          onChange={handleChangeProfile}
+          onChangePhase={handleChangePhase}
+        />
+      )}
       {phase === "gender" && <Gender />}
       {phase === "birthday" && <Birthday />}
       {phase === "showMe" && <ShowMe />}
