@@ -6,17 +6,13 @@ export class Filter {
   private isAgeFiltered?: boolean;
   private distance?: number;
   private isDistanceFiltered?: boolean;
-  // sexualOrientations?: FilterCreatesexualOrientationsInput | Enumerable<string>;
   private sexualOrientations?: string[];
   private isSexualOrientationFiltered?: boolean;
-  // purposes?: FilterCreatepurposesInput | Enumerable<string>;
   private purposes?: string[];
   private isPurposeFiltered?: boolean;
   private interests?: string[];
   private isInterestFiltered?: boolean;
-  // profile: ProfileCreateNestedOneWithoutFilterInput;
   private profile_id: string;
-  // interests?: InterestCreateNestedManyWithoutFiltersInput;
 
   constructor(obj: any) {
     this.id = obj.id;

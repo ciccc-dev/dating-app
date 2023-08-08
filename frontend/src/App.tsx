@@ -8,6 +8,7 @@ import { Likes } from "./pages/Likes";
 import { Messages } from "./pages/Messages";
 import { Account } from "./pages/Account";
 import { Root } from "./pages/Root";
+import { Signup } from "./pages/Signup";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "/signup",
+        element: <Signup />,
+      },
+      {
         path: "/likes",
         element: <Likes />,
       },
@@ -27,7 +32,6 @@ const router = createBrowserRouter([
         path: "/discovery",
         element: <Discovery />,
       },
-
       {
         path: "/messages",
         element: <Messages />,

@@ -1,6 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 import { calculateAge, convertAgetoDate } from "../../utils/caluculateAge";
+import { Profile } from "./profile";
 
 class _ProfileRepository {
   private db: PrismaClient;
@@ -104,6 +105,21 @@ class _ProfileRepository {
       updateProfile,
     ]);
     return transaction;
+  };
+
+  createProfile = async (profile: Profile, userId: string) => {
+    const data: Prisma.ProfileCreateInput = {
+      id: profile.id(),
+      userId,
+      userName: profile.username(),
+      birthday: profile.birthday(),
+      gender: profile.gender() ?? "",
+      sexualOrientation: profile.sexualOrientation() ?? "",
+      aboutMe: profile.aboutMe() ?? "",
+      registeredAt: new Date(),
+      updatedAt: new Date(),
+    };
+    return await this.db.profile.create<Prisma.ProfileCreateArgs>({ data });
   };
 }
 
