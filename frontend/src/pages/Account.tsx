@@ -16,6 +16,7 @@ import { sexualOrientations } from "../constants/sexualOrientations";
 import { gender } from "../constants/gender";
 import { Controller, useForm } from "react-hook-form";
 import { FilterDialog } from "../features/Discovery/components/FilterDialog";
+import { _accountClient } from "../features/Discovery/api/account";
 
 export interface ProfileHookForm {
   name: string;
@@ -64,6 +65,7 @@ export const Account = () => {
     formState: { errors },
     control,
   } = useForm<ProfileHookForm>();
+
   const { user, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -138,6 +140,25 @@ export const Account = () => {
     if (result) handleEditProfileClick();
   };
 
+  const onAccountSubmit = async (data: ProfileHookForm) => {
+    const updateAccount = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const AccountClient = new _accountClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          return await AccountClient.updateAccount(data, profile.id);
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
+    const result = await updateAccount();
+    if (result) handleEditProfileClick();
+  };
+
   return (
     <>
       <StyledContainer>
@@ -145,7 +166,7 @@ export const Account = () => {
           <ProfilePhotos />
         </StyledAside>
         <StyledMain>
-          <StyledForm component="form" onSubmit={handleSubmit(onSubmit)}>
+          <StyledForm component="form" onSubmit={handleSubmit(onAccountSubmit)}>
             <StyledTitleWrapper>
               <StyledTitle>User Account</StyledTitle>
               {isUserAccountEditable ? (
