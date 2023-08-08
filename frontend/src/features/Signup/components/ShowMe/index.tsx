@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { MouseEvent } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -7,31 +7,55 @@ import { styled } from "@mui/material";
 
 const showMeGenders = ["Man", "Woman", "Other"];
 
-export const ShowMe = () => {
-  const [chosen, choose] = useState("");
+type Phase = "birthday" | "purpose";
+
+interface Props {
+  values: string[];
+  onChange: (category: string, values: string[]) => void;
+  onChangePhase: (phase: Phase) => void;
+}
+
+export const ShowMe = ({ values, onChange, onChangePhase }: Props) => {
+  const remove = (chosenGender: string) => {
+    const index = values.indexOf(chosenGender);
+    onChange(
+      "showMe",
+      values.filter((_, idx) => idx !== index)
+    );
+  };
+  const add = (chosenGender: string) =>
+    onChange("showMe", [...values, chosenGender]);
+
+  const handleClick = (e: MouseEvent<HTMLElement>) => {
+    const chosenGender = e.currentTarget.dataset.gender as string;
+    values.includes(chosenGender) ? remove(chosenGender) : add(chosenGender);
+  };
+
+  const navigatePrev = () => onChangePhase("birthday");
+  const navigateNext = () => onChangePhase("purpose");
 
   return (
     <StyledWrapper>
       <Wrapper>
-        <Typography variant='h2' gutterBottom align='center'>
+        <Typography variant='h2' align='center'>
           Show me for
         </Typography>
       </Wrapper>
       <Wrapper>
         <Grid container spacing={2}>
-          {showMeGenders.map((gender) => {
-            return (
-              <Grid item xs={4}>
-                <Button
-                  fullWidth
-                  key={gender}
-                  variant={gender === chosen ? "contained" : "outlined"}
-                >
-                  {gender}
-                </Button>
-              </Grid>
-            );
-          })}
+          {showMeGenders.map((gender) => (
+            <Grid item key={gender} xs={4}>
+              <Button
+                fullWidth
+                key={gender}
+                variant={values.includes(gender) ? "contained" : "outlined"}
+                data-gender={gender}
+                onClick={handleClick}
+              >
+                {gender}
+              </Button>
+            </Grid>
+          ))}
         </Grid>
       </Wrapper>
       <Wrapper
@@ -40,10 +64,10 @@ export const ShowMe = () => {
           justifyContent: "center",
         }}
       >
-        <Button variant='outlined' sx={{ margin: 1 }}>
+        <Button variant='outlined' sx={{ margin: 1 }} onClick={navigatePrev}>
           Back
         </Button>
-        <Button variant='contained' sx={{ margin: 1 }}>
+        <Button variant='contained' sx={{ margin: 1 }} onClick={navigateNext}>
           Next
         </Button>
       </Wrapper>

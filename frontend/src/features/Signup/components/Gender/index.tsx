@@ -21,7 +21,6 @@ export const Gender = ({ value, onChange, onChangePhase }: Props) => {
   };
 
   const navigateNext = () => onChangePhase("birthday");
-
   const navigatePrevious = () => onChangePhase("username");
 
   return (
