@@ -5,8 +5,10 @@ import "swiper/css/effect-flip";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Profile } from "../../../../pages/Discovery";
-import { Grid, styled } from "@mui/material";
+import { Box, Grid, styled } from "@mui/material";
 import { ProfileDialog } from "../ProfileDialog";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -15,68 +17,74 @@ interface ProfileCardProps {
 export const ProfileCard = ({ profile }: ProfileCardProps) => {
   return (
     <>
-      <StyleCardContainer>
+      <StyledCardContainer>
         <ProfileDialog profile={profile} />
-        <StyleSwiper
+        <StyledSwiper
           effect={"flip"}
           grabCursor={true}
           pagination={true}
           modules={[EffectFlip, Pagination]}
           className="mySwiper"
         >
-          <StyleSwiperSlide>
-            <StyleImg
+          <StyledSwiperSlide>
+            <StyledImg
               src="https://swiperjs.com/demos/images/nature-1.jpg"
               alt="profile1"
             />
-            <StyleGrid container>
+            <StyledGrid container>
               <Grid item xs={10}>
                 <div>{profile.userName}</div>
               </Grid>
               <Grid item xs={2}>
                 <div>{profile.age}</div>
               </Grid>
-            </StyleGrid>
-          </StyleSwiperSlide>
-          <StyleSwiperSlide>
-            <StyleImg
+            </StyledGrid>
+          </StyledSwiperSlide>
+          <StyledSwiperSlide>
+            <StyledImg
               src="https://swiperjs.com/demos/images/nature-2.jpg"
               alt="profile2"
             />
-            <StyleTitle>{`${profile.aboutMe}`}</StyleTitle>
-          </StyleSwiperSlide>
-          <StyleSwiperSlide>
-            <StyleImg
+            <StyledParagraph>{`${profile.aboutMe}`}</StyledParagraph>
+          </StyledSwiperSlide>
+          <StyledSwiperSlide>
+            <StyledImg
               src="https://swiperjs.com/demos/images/nature-3.jpg"
               alt="profile3"
             />
-            <StyleSpan>{`${profile.sexualOrientation}`}</StyleSpan>
-            {profile.purposes.map((purpose, index) => (
-              <StyleSpan key={index}>{`${purpose.name}`}</StyleSpan>
-            ))}
-          </StyleSwiperSlide>
-          <StyleSwiperSlide>
-            <StyleImg
+            <StyledBox>
+              <StyledPersonOutlineIcon />
+              <StyledSpan>{`${profile.sexualOrientation}`}</StyledSpan>
+              {profile.purposes.map((purpose, index) => (
+                <StyledSpan key={index}>{`${purpose.name}`}</StyledSpan>
+              ))}
+            </StyledBox>
+          </StyledSwiperSlide>
+          <StyledSwiperSlide>
+            <StyledImg
               src="https://swiperjs.com/demos/images/nature-4.jpg"
               alt="profile4"
             />
-            {profile.interests.map((interest, index) => (
-              <StyleSpan key={index}>{`${interest.name}`}</StyleSpan>
-            ))}
-          </StyleSwiperSlide>
-          <StyleSwiperSlide>
-            <StyleImg
+            <StyledBox>
+              <StyledFavoriteBorderIcon />
+              {profile.interests.map((interest, index) => (
+                <StyledSpan key={index}>{`${interest.name}`}</StyledSpan>
+              ))}
+            </StyledBox>
+          </StyledSwiperSlide>
+          <StyledSwiperSlide>
+            <StyledImg
               src="https://swiperjs.com/demos/images/nature-5.jpg"
               alt="profile5"
             />
-          </StyleSwiperSlide>
-        </StyleSwiper>
-      </StyleCardContainer>
+          </StyledSwiperSlide>
+        </StyledSwiper>
+      </StyledCardContainer>
     </>
   );
 };
 
-const StyleCardContainer = styled("div")`
+const StyledCardContainer = styled("div")`
   position: relative;
   width: 300px;
   height: 400px;
@@ -84,7 +92,7 @@ const StyleCardContainer = styled("div")`
   box-shadow: 4px 4px 6px grey;
 `;
 
-const StyleGrid = styled(Grid)`
+const StyledGrid = styled(Grid)`
   position: relative;
   width: 80%;
   left: 10%;
@@ -93,39 +101,64 @@ const StyleGrid = styled(Grid)`
   font-size: 1.8rem;
 `;
 
-const StyleTitle = styled("h5")`
+const StyledParagraph = styled("p")`
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.5rem 1rem;
   position: relative;
-  width: 80%;
-  left: 10%;
-  bottom: 30%;
+  width: 100%;
+  max-height: 25%;
+  bottom: 25%;
   color: white;
   font-size: 1.2rem;
 `;
 
-const StyleSpan = styled("span")`
+const StyledPersonOutlineIcon = styled(PersonOutlineIcon)`
+  font-size: 1.7rem;
+  margin-right: 0.25rem;
+`;
+
+const StyledFavoriteBorderIcon = styled(FavoriteBorderIcon)`
+  font-size: 1.7rem;
+  margin-right: 0.25rem;
+`;
+
+const StyledBox = styled(Box)`
+  box-sizing: border-box;
+  padding: 0.5rem 1rem;
   position: relative;
-  left: 5%;
-  bottom: 18%;
+  width: 100%;
+  bottom: 25%;
+  color: white;
+  max-height: 25%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: auto;
+  gap: 0.25rem;
+`;
+
+const StyledSpan = styled("span")`
   border: 1px solid white;
   border-radius: 1rem;
   padding: 0.25rem 0.5rem;
   color: white;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 600;
   margin-right: 0.5rem;
 `;
 
-const StyleSwiper = styled(Swiper)`
+const StyledSwiper = styled(Swiper)`
   width: 300px;
   height: 400px;
 `;
 
-const StyleSwiperSlide = styled(SwiperSlide)`
+const StyledSwiperSlide = styled(SwiperSlide)`
   background-position: center;
   background-size: cover;
 `;
 
-const StyleImg = styled("img")`
+const StyledImg = styled("img")`
   display: block;
   width: 300px;
   height: 400px;
