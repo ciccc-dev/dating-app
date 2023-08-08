@@ -121,7 +121,7 @@ export const DiscoveryNavigation = ({
         process.env.REACT_APP_SERVER_URL ?? "",
         token
       );
-      FilterClient.updateFilter(filter);
+      await FilterClient.updateFilter(filter);
       onClick();
     }
   };
