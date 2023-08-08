@@ -13,13 +13,12 @@ export class _profileClient {
   getProfileId = async (userId: string) => {
     try {
       const res = await axios({
-        url: `${this.apiUrl}/api/profiles/profileId`,
-        method: "POST",
+        url: `${this.apiUrl}/api/profiles/${userId}`,
+        method: "GET",
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
           "Content-Type": "application/json",
         },
-        data: JSON.stringify({ userId: userId }),
       });
       return res.data;
     } catch (error: any) {
@@ -27,16 +26,15 @@ export class _profileClient {
     }
   };
 
-  getProfiles = async (profileId: string) => {
+  getProfiles = async () => {
     try {
       const res = await axios({
         url: `${this.apiUrl}/api/profiles`,
-        method: "POST",
+        method: "GET",
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
           "Content-Type": "application/json",
         },
-        data: JSON.stringify({ profileId: profileId }),
       });
       return res.data;
     } catch (error: any) {

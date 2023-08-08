@@ -29,7 +29,7 @@ export const Discovery = () => {
   const [isFiltered, setIsfiltered] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchProfileId = async () => {
+    const fetchProfiles = async () => {
       try {
         const token = await getAccessTokenSilently();
         if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
@@ -37,6 +37,8 @@ export const Discovery = () => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
+          const data = await ProfileClient.getProfiles();
+          setProfiles(data);
           if (user?.sub) {
             const data = await ProfileClient.getProfileId(user.sub);
             setProfileId(data.id);
@@ -46,30 +48,9 @@ export const Discovery = () => {
         throw error;
       }
     };
-    fetchProfileId();
-  }, [getAccessTokenSilently, user]);
-
-  useEffect(() => {
-    const fetchProfiles = async () => {
-      try {
-        if (profileId) {
-          const token = await getAccessTokenSilently();
-          if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
-            const ProfileClient = new _profileClient(
-              process.env.REACT_APP_SERVER_URL ?? "",
-              token
-            );
-            const data = await ProfileClient.getProfiles(profileId);
-            setProfiles(data);
-          }
-        }
-      } catch (error) {
-        throw error;
-      }
-    };
     fetchProfiles();
     setIsfiltered(false);
-  }, [getAccessTokenSilently, user, profileId, isFiltered]);
+  }, [getAccessTokenSilently, user, isFiltered]);
 
   const handleClick = () => {
     setIsfiltered(true);
@@ -78,10 +59,10 @@ export const Discovery = () => {
   return (
     <>
       <StyledWrapper>
-        <StyledNavigationWrapper component="nav">
+        <StyledNavigationWrapper component='nav'>
           <DiscoveryNavigation profileId={profileId} onClick={handleClick} />
         </StyledNavigationWrapper>
-        <StyledContent component="main">
+        <StyledContent component='main'>
           {profiles.map((profile) => (
             <ProfileCard profile={profile} key={profile.id} />
           ))}
