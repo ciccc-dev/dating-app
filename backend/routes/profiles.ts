@@ -1,10 +1,14 @@
 import express from "express";
-
-import { getProfilesByUserId, getProfileIdByUserId } from "../lib/profiles";
+import {
+  getProfilesByUserId,
+  getProfileByUserId,
+  updateProfileByUserId,
+} from "../lib/profiles";
 
 const router = express.Router();
 
 router.get("", getProfilesByUserId);
-router.get("/:userId", getProfileIdByUserId);
+router.get("/:userId", getProfileByUserId);
+router.patch("/update", updateProfileByUserId);
 
 export default router;

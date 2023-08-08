@@ -12,7 +12,10 @@ class _ProfileRepository {
   fetchProfileByUserId = async (userId: string) => {
     const result = await this.db.profile.findUnique({
       where: { userId },
-      select: { id: true },
+      include: {
+        interests: { select: { name: true } },
+        purposes: { select: { name: true } },
+      },
     });
     return result;
   };
@@ -65,6 +68,42 @@ class _ProfileRepository {
     }));
 
     return convertedProfiles;
+  };
+
+  updateProfileByUserId = async (data: any, profile: any) => {
+    const deletepurposes = this.db.purpose.deleteMany({
+      where: {
+        profileId: profile.id,
+      },
+    });
+
+    const createPurposes = this.db.purpose.createMany({
+      data: profile.purposes.map(({ name }: any) => ({
+        profileId: profile.id,
+        name: name,
+      })),
+    });
+
+    const updateProfile = this.db.profile.update({
+      where: {
+        userId: profile.userId,
+      },
+      data: {
+        userName: data.userName,
+        birthday: data.birthday,
+        gender: profile.gender,
+        sexualOrientation: profile.sexualOrientation,
+        aboutMe: data.aboutMe,
+        updatedAt: new Date(),
+        interests: { set: profile.interests },
+      },
+    });
+    const transaction = await this.db.$transaction([
+      deletepurposes,
+      createPurposes,
+      updateProfile,
+    ]);
+    return transaction;
   };
 }
 
