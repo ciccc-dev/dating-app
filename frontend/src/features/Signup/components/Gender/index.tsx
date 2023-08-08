@@ -5,7 +5,6 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material";
 
 import { genders } from "../../../../constants/gender";
-import { NextButton } from "../NextButton";
 
 type Phase = "username" | "birthday";
 
