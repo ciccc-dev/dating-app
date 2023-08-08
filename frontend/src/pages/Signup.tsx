@@ -12,6 +12,7 @@ import { Username } from "../features/Signup/components/Username";
 interface Profile {
   username: string;
   gender: string;
+  birthday: string;
 }
 
 type Phase =
@@ -28,6 +29,7 @@ export const Signup = () => {
   const [profile, setProfile] = useState<Profile>({
     username: "",
     gender: "",
+    birthday: "",
   });
 
   const handleChangeProfile = <T,>(key: string, value: T) => {
@@ -52,7 +54,13 @@ export const Signup = () => {
           onChangePhase={handleChangePhase}
         />
       )}
-      {phase === "birthday" && <Birthday />}
+      {phase === "birthday" && (
+        <Birthday
+          value={profile.birthday}
+          onChange={handleChangeProfile}
+          onChangePhase={handleChangePhase}
+        />
+      )}
       {phase === "showMe" && <ShowMe />}
       {phase === "purpose" && <Purpose />}
       {phase === "sexual" && <SexualOrientatins />}
