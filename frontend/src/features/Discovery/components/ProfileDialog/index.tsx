@@ -4,12 +4,13 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import GradeRoundedIcon from "@mui/icons-material/GradeRounded";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Grid, styled } from "@mui/material";
-import { Profile } from "../../../../pages/Discovery";
+import { Profile, UserProfiles } from "../../../../pages/Discovery";
 import { useAuth0 } from "@auth0/auth0-react";
 import { _likeClient } from "../../api/like";
 import { _messageClient } from "../../api/messages";
+import { _profileUnselectedClient } from "../../api/profileUnselected";
 
 interface ProfileDialogProps {
   profile: Profile;
@@ -19,6 +20,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const profilesId = useContext(UserProfiles);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -35,6 +37,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
   const handleClickSend = () => {
     if (message.trim() !== "") {
       sendLike();
+      sendUnselected();
       sendMessage();
       alert("Message has been sent!");
       setOpen(false);
@@ -51,6 +54,27 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
         );
         if (user?.sub) {
           await LikeClient.sendLike(profile.userId);
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const sendUnselected = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const profileUnselected = profilesId.filter((id) => id !== profile.id);
+        const ProfileUnselectedClient = new _profileUnselectedClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        if (user?.sub) {
+          await ProfileUnselectedClient.postProfileUnselected(
+            profile.id,
+            profileUnselected
+          );
         }
       }
     } catch (error) {
