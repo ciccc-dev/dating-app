@@ -32,6 +32,9 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
               alt="profile1"
             />
             <StyledGrid container>
+              <Grid item xs={12}>
+                <StyledSpan>{profile.gender}</StyledSpan>
+              </Grid>
               <Grid item xs={10}>
                 <div>{profile.userName}</div>
               </Grid>
@@ -93,10 +96,11 @@ const StyledCardContainer = styled("div")`
 `;
 
 const StyledGrid = styled(Grid)`
+  padding: 0.5rem 1rem;
   position: relative;
-  width: 80%;
-  left: 10%;
-  bottom: 18%;
+  width: 100%;
+  max-height: 30%;
+  bottom: 30%;
   color: white;
   font-size: 1.8rem;
 `;
