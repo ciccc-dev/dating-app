@@ -58,6 +58,7 @@ export const Account = () => {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
   const [interests, setInterests] = useState<Item[]>([]);
   const {
     register,
@@ -79,8 +80,6 @@ export const Account = () => {
           if (user?.sub) {
             const data = await ProfileClient.getProfile(user.sub);
             setProfile(data);
-            console.log(user);
-            console.log(data);
           }
         }
       } catch (error) {
@@ -88,7 +87,8 @@ export const Account = () => {
       }
     };
     fetchProfileId();
-  }, [getAccessTokenSilently, user]);
+    setIsUpdated(false);
+  }, [getAccessTokenSilently, user, isUpdated]);
 
   useEffect(() => {
     const fetchInterests = async () => {
@@ -115,6 +115,7 @@ export const Account = () => {
 
   const handleEditProfileClick = () => {
     setIsProfileEditable(!isProfileEditable);
+    setIsUpdated(true);
   };
 
   const handleChange = <T,>(title: string, value: T) => {
