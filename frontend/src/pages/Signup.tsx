@@ -16,6 +16,7 @@ interface Profile {
   showMe: string[];
   purposes: string[];
   sexualOrientation: string;
+  interests: string[];
 }
 
 type Phase =
@@ -36,6 +37,7 @@ export const Signup = () => {
     showMe: [],
     purposes: [],
     sexualOrientation: "",
+    interests: [],
   });
 
   const handleChangeProfile = <T,>(key: string, value: T) =>
@@ -87,7 +89,14 @@ export const Signup = () => {
           onChangePhase={handleChangePhase}
         />
       )}
-      {phase === "interest" && <Interests />}
+      {phase === "interest" && (
+        <Interests
+          values={profile.interests}
+          onChange={handleChangeProfile}
+          onChangePhase={handleChangePhase}
+          onCreate={() => console.log(profile)}
+        />
+      )}
     </>
   );
 };

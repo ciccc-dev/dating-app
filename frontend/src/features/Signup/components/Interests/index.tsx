@@ -1,14 +1,43 @@
-import { useState } from "react";
+import { MouseEvent } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material";
 
-import { sexualOrientations } from "../../../../constants/sexualOrientations";
+import { useFetchInterests } from "../../../../hooks/useFetchInterests";
 
-export const Interests = () => {
-  const [chosen, choose] = useState("");
+type Phase = "sexual";
+
+interface Props {
+  values: string[];
+  onChange: (category: string, value: string[]) => void;
+  onChangePhase: (phase: Phase) => void;
+  onCreate: () => void;
+}
+
+export const Interests = ({
+  values,
+  onChange,
+  onChangePhase,
+  onCreate,
+}: Props) => {
+  const interests = useFetchInterests();
+  const navigatePrev = () => onChangePhase("sexual");
+
+  const add = (interest: string) =>
+    onChange("interests", [...values, interest]);
+  const remove = (interest: string) => {
+    const index = values.indexOf(interest);
+    onChange(
+      "interests",
+      values.filter((_, idx) => index !== idx)
+    );
+  };
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const chosen = event.currentTarget.dataset.interest as string;
+    values.includes(chosen) ? remove(chosen) : add(chosen);
+  };
 
   return (
     <StyledWrapper>
@@ -19,17 +48,19 @@ export const Interests = () => {
       </Wrapper>
       <Wrapper>
         <Grid container spacing={2}>
-          {sexualOrientations.map((orientation) => {
+          {interests.map((interest) => {
             return (
-              <Grid key={orientation.name} item xs={4}>
+              <Grid key={interest.id} item xs={4}>
                 <Button
                   fullWidth
-                  key={orientation.name}
+                  key={interest.id}
                   variant={
-                    orientation.name === chosen ? "contained" : "outlined"
+                    values.includes(interest.name) ? "contained" : "outlined"
                   }
+                  data-interest={interest.name}
+                  onClick={handleClick}
                 >
-                  {orientation.name}
+                  {interest.name}
                 </Button>
               </Grid>
             );
@@ -42,7 +73,7 @@ export const Interests = () => {
           justifyContent: "center",
         }}
       >
-        <Button variant='outlined' sx={{ margin: 1 }}>
+        <Button variant='outlined' sx={{ margin: 1 }} onClick={navigatePrev}>
           Back
         </Button>
         <Button variant='contained' sx={{ margin: 1 }}>
