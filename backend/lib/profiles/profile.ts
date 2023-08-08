@@ -9,7 +9,8 @@ export class Profile {
   private _username: string;
   private _gender?: Gender;
   private _birthday: Date;
-  private _sexualOrientation?: SexualOrientation;
+  // private _sexualOrientation?: SexualOrientation;
+  private _sexualOrientation?: string;
   private _aboutMe: string;
 
   constructor({
@@ -24,7 +25,8 @@ export class Profile {
     username: string;
     gender: Gender | undefined;
     birthday: string;
-    sexualOrientation: SexualOrientation | undefined;
+    // sexualOrientation: SexualOrientation | undefined;
+    sexualOrientation: string;
     aboutMe: string;
   }) {
     if (gender && !Object.values(GENDER).includes(gender))

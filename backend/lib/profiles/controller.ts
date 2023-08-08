@@ -51,7 +51,10 @@ export const postProfile = async (
   try {
     validate(req);
 
-    const profile = new Profile(req.body);
+    const profile = new Profile({
+      ...req.body,
+      sexualOrientation: req.body.sexual_orientation,
+    });
     const result = await ProfileRepository.createProfile(
       profile,
       req.auth?.payload?.sub as string
