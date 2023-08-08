@@ -16,9 +16,8 @@ interface Props {
 }
 
 export const Gender = ({ value, onChange, onChangePhase }: Props) => {
-  const handleChange = (event: React.MouseEvent<HTMLElement>) => {
+  const handleChange = (event: React.MouseEvent<HTMLElement>) =>
     onChange("gender", event.currentTarget.dataset.gender as string);
-  };
   const navigateNext = () => onChangePhase("birthday");
   const navigatePrevious = () => onChangePhase("username");
 

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -7,8 +6,23 @@ import { styled } from "@mui/material";
 
 import { sexualOrientations } from "../../../../constants/sexualOrientations";
 
-export const SexualOrientatins = () => {
-  const [chosen, choose] = useState("");
+type Phase = "interest" | "purpose";
+
+interface Props {
+  value: string;
+  onChange: (category: string, value: string) => void;
+  onChangePhase: (phase: Phase) => void;
+}
+
+export const SexualOrientatins = ({
+  value,
+  onChange,
+  onChangePhase,
+}: Props) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) =>
+    onChange("sexualOrientation", event.currentTarget.dataset.sexual as string);
+  const navigatePrev = () => onChangePhase("purpose");
+  const navigateNext = () => onChangePhase("interest");
 
   return (
     <StyledWrapper>
@@ -26,8 +40,10 @@ export const SexualOrientatins = () => {
                   fullWidth
                   key={orientation.name}
                   variant={
-                    orientation.name === chosen ? "contained" : "outlined"
+                    orientation.name === value ? "contained" : "outlined"
                   }
+                  data-sexual={orientation.name}
+                  onClick={handleClick}
                 >
                   {orientation.name}
                 </Button>
@@ -42,10 +58,10 @@ export const SexualOrientatins = () => {
           justifyContent: "center",
         }}
       >
-        <Button variant='outlined' sx={{ margin: 1 }}>
+        <Button variant='outlined' sx={{ margin: 1 }} onClick={navigatePrev}>
           Back
         </Button>
-        <Button variant='contained' sx={{ margin: 1 }}>
+        <Button variant='contained' sx={{ margin: 1 }} onClick={navigateNext}>
           Next
         </Button>
       </Wrapper>

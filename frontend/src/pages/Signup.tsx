@@ -15,6 +15,7 @@ interface Profile {
   birthday: string;
   showMe: string[];
   purposes: string[];
+  sexualOrientation: string;
 }
 
 type Phase =
@@ -34,11 +35,11 @@ export const Signup = () => {
     birthday: "",
     showMe: [],
     purposes: [],
+    sexualOrientation: "",
   });
 
-  const handleChangeProfile = <T,>(key: string, value: T) => {
+  const handleChangeProfile = <T,>(key: string, value: T) =>
     setProfile((prev) => ({ ...prev, [key]: value }));
-  };
 
   const handleChangePhase = (phase: Phase) => setPhase(phase);
 
@@ -79,7 +80,13 @@ export const Signup = () => {
           onChangePhase={handleChangePhase}
         />
       )}
-      {phase === "sexual" && <SexualOrientatins />}
+      {phase === "sexual" && (
+        <SexualOrientatins
+          value={profile.sexualOrientation}
+          onChange={handleChangeProfile}
+          onChangePhase={handleChangePhase}
+        />
+      )}
       {phase === "interest" && <Interests />}
     </>
   );
