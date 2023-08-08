@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { ProfileRepository } from "./repository";
 import { FilterRepository } from "../filters";
 
-export const getProfileIdByUserId = async (
+export const getProfileByUserId = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -35,6 +35,22 @@ export const getProfilesByUserId = async (
     if (!filter) res.status(400).json({ error: "Can't fetch filter" });
 
     const result = await ProfileRepository.fetchProfilesByFilter(filter);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateProfileByUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await ProfileRepository.updateProfileByUserId(
+      req.body.data,
+      req.body.profile
+    );
     res.json(result);
   } catch (err) {
     next(err);
