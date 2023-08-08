@@ -6,6 +6,7 @@ import { Item } from "../features/Discovery/components/Navigation";
 import { ProfilePhotos } from "../features/Account/components/ProfilePhotos";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { parseISO } from "date-fns";
@@ -17,6 +18,7 @@ import { gender } from "../constants/gender";
 import { Controller, useForm } from "react-hook-form";
 import { FilterDialog } from "../features/Discovery/components/FilterDialog";
 import { _accountClient } from "../features/Discovery/api/account";
+import { useNavigate } from "react-router-dom";
 
 export interface ProfileHookForm {
   name: string;
@@ -60,6 +62,7 @@ export const Account = () => {
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [interests, setInterests] = useState<Item[]>([]);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -108,6 +111,8 @@ export const Account = () => {
     };
     fetchInterests();
   }, [getAccessTokenSilently]);
+
+  const handleNavigateToDiscovery = () => navigate("/discovery");
 
   const handleEditUserAccountClick = () => {
     setIsUserAccountEditable(!isUserAccountEditable);
@@ -164,6 +169,13 @@ export const Account = () => {
     <>
       <StyledContainer>
         <StyledAside>
+          <StlyedBackButton
+            variant="outlined"
+            startIcon={<KeyboardArrowLeftIcon />}
+            onClick={handleNavigateToDiscovery}
+          >
+            Go To Discovery
+          </StlyedBackButton>
           <ProfilePhotos />
         </StyledAside>
         <StyledMain>
@@ -391,8 +403,14 @@ export const Account = () => {
 
 const StyledAside = styled(Box)`
   width: 400px;
-  padding: 50px 25px 0 25px;
+  padding: 30px 25px 0 25px;
   border-right: 3px solid rgba(0, 0, 0, 0.12);
+`;
+
+const StlyedBackButton = styled(Button)`
+  width: 100%;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
 `;
 
 const StyledContainer = styled(Box)`
