@@ -13,7 +13,7 @@ interface Props {
   values: string[];
   onChange: (category: string, value: string[]) => void;
   onChangePhase: (phase: Phase) => void;
-  onCreate: () => void;
+  onCreate: () => Promise<void>;
 }
 
 export const Interests = ({
@@ -76,7 +76,7 @@ export const Interests = ({
         <Button variant='outlined' sx={{ margin: 1 }} onClick={navigatePrev}>
           Back
         </Button>
-        <Button variant='contained' sx={{ margin: 1 }}>
+        <Button variant='contained' sx={{ margin: 1 }} onClick={onCreate}>
           Create
         </Button>
       </Wrapper>

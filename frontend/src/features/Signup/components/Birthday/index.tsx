@@ -31,7 +31,7 @@ export const Birthday = ({ value, onChange, onChangePhase }: Props) => {
       </Wrapper>
       <Wrapper>
         <StyledTextField
-          label='YYYY / MM / DD'
+          label='YYYY-MM-DD'
           variant='standard'
           value={value}
           onChange={handleChange}
