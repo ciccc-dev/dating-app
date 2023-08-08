@@ -21,9 +21,8 @@ export const seedInterests = async (prisma: PrismaClient) => {
     { id: 16, name: "Singing", sortOrder: 16 },
     { id: 17, name: "Volunteering", sortOrder: 17 },
     { id: 18, name: "DIY Projects", sortOrder: 18 },
-    { id: 19, name: "Cooking", sortOrder: 19 },
-    { id: 20, name: "Chess", sortOrder: 20 },
+    { id: 19, name: "Chess", sortOrder: 19 },
   ];
-  const result = prisma.interest.createMany({ data: interests });
+  const result = await prisma.interest.createMany({ data: interests });
   console.log(`Created Interests: ${result}`);
 };
