@@ -5,7 +5,7 @@ import { Profile } from "./profile";
 import { ProfileRepository } from "./repository";
 import { FilterRepository } from "../filters";
 
-export const getProfileIdByUserId = async (
+export const getProfileByUserId = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -58,6 +58,22 @@ export const postProfile = async (
     );
 
     res.status(201).json({ result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateProfileByUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await ProfileRepository.updateProfileByUserId(
+      req.body.data,
+      req.body.profile
+    );
+    res.json(result);
   } catch (err) {
     next(err);
   }

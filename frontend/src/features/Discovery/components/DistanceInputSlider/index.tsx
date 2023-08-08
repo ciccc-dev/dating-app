@@ -9,35 +9,41 @@ import { Switch } from "@mui/material";
 import { ListItemGrid } from "../LIstItemGrid";
 
 interface DistanceInputSliderProps {
-  distance: number;
-  onChange: (value: number) => void;
+  data: number;
+  onChange: <T>(title: string, value: T) => void;
   checked: boolean;
-  onCheckedChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  distance: string;
+  isDistanceFiltered: string;
 }
 
 export const DistanceInputSlider = ({
-  distance,
+  data,
   onChange,
   checked,
-  onCheckedChange,
+  distance,
+  isDistanceFiltered,
 }: DistanceInputSliderProps) => {
   const handleSliderChange = (event: Event, newValue: any) => {
-    onChange(newValue);
+    onChange(distance, newValue);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(Number(event.target.value));
+    onChange(distance, Number(event.target.value));
+  };
+
+  const handleCheckedChange = () => {
+    onChange(isDistanceFiltered, !checked);
   };
 
   const handleBlur = () => {
-    if (typeof distance === "number") {
-      if (typeof distance === "number" && distance < 0) {
-        onChange(0);
-      } else if (distance > 100) {
-        onChange(100);
+    if (typeof data === "number") {
+      if (typeof data === "number" && data < 0) {
+        onChange(distance, 0);
+      } else if (data > 100) {
+        onChange(distance, 100);
       }
     } else {
-      onChange(0);
+      onChange(distance, 0);
     }
   };
 
@@ -48,7 +54,7 @@ export const DistanceInputSlider = ({
         switchComponent={
           <Switch
             checked={checked}
-            onChange={onCheckedChange}
+            onChange={handleCheckedChange}
             inputProps={{ "aria-label": "controlled" }}
           />
         }
@@ -56,14 +62,14 @@ export const DistanceInputSlider = ({
       <Grid container alignItems="center" spacing={2}>
         <Grid item xs={9}>
           <StyledSlider
-            value={typeof distance === "number" ? distance : 0}
+            value={typeof data === "number" ? data : 0}
             onChange={handleSliderChange}
             aria-labelledby="input-slider"
           />
         </Grid>
         <Grid item xs={3}>
           <Input
-            value={distance}
+            value={data}
             size="small"
             onChange={handleInputChange}
             onBlur={handleBlur}

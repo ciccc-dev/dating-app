@@ -23,11 +23,14 @@ export interface Item {
   name: string;
 }
 
-export interface FilterDialogProps {
+export interface FilterDialogProps<T extends string | (string | Item)[]> {
+  type: string;
   title: string;
+  property: string;
+  datatype: string;
   items: Item[];
-  selectedItems: string[];
-  onChange: (values: string[]) => void;
+  selectedItems: T;
+  onChange: <T>(title: string, values: T) => void;
 }
 
 export interface DialogTitleProps {
@@ -60,24 +63,40 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
   );
 }
 
-export const FilterDialog = ({
+export const FilterDialog = <T extends string | (string | Item)[]>({
+  type,
   title,
+  property,
+  datatype,
   items,
   selectedItems,
   onChange,
-}: FilterDialogProps) => {
+}: FilterDialogProps<T>) => {
   const [open, setOpen] = useState(false);
-  const handleRadioChange = (name: string, isChecked: boolean) => {
-    if (isChecked) {
-      onChange([name]);
-    }
-  };
 
-  const handleCheckBoxChange = (name: string, isChecked: boolean) => {
-    if (isChecked) {
-      onChange([...selectedItems, name]);
-    } else {
-      onChange(selectedItems.filter((selectedItem) => selectedItem !== name));
+  const handleChange = (name: string, isChecked: boolean) => {
+    switch (datatype) {
+      case "string":
+        if (isChecked) onChange(property, name);
+        break;
+      case "stringArray":
+        const stringItems = selectedItems as string[];
+        isChecked
+          ? onChange(property, [...stringItems, name])
+          : onChange(
+              property,
+              stringItems.filter((item) => item !== name)
+            );
+        break;
+      case "objectArray":
+        const objectItems = selectedItems as Item[];
+        isChecked
+          ? onChange(property, [...objectItems, { name: name }])
+          : onChange(
+              property,
+              objectItems.filter((item) => item.name !== name)
+            );
+        break;
     }
   };
 
@@ -89,10 +108,15 @@ export const FilterDialog = ({
   };
 
   return (
-    <div>
-      <StyledButton onClick={handleClickOpen}>
-        {title}
-        <KeyboardArrowRightIcon />
+    <Box sx={{ display: title === "" ? "inline" : "block" }}>
+      <StyledButton
+        onClick={handleClickOpen}
+        sx={{ padding: title === "" ? "0" : "0.5rem 0" }}
+      >
+        {title !== "" ? title : null}
+        <KeyboardArrowRightIcon
+          sx={{ fontSize: title === "" ? "2.5rem" : "1.5rem" }}
+        />
       </StyledButton>
       <BootstrapDialog
         onClose={handleClose}
@@ -106,42 +130,33 @@ export const FilterDialog = ({
           {title}
         </BootstrapDialogTitle>
         <DialogContent dividers>
-          {title === "Looking For"
-            ? items.map((item) => (
-                <Box key={item.name}>
-                  <StyledCheckBox
-                    type="radio"
-                    id={item.name}
-                    name="lookingFor"
-                    checked={
-                      !!selectedItems.find(
+          {items.map((item) => (
+            <Box key={item.name}>
+              <StyledChecked
+                type={type}
+                id={item.name}
+                name={property}
+                checked={(() => {
+                  switch (datatype) {
+                    case "stringArray":
+                      return (selectedItems as string[]).some(
                         (selectedItem) => selectedItem === item.name
-                      )
-                    }
-                    onChange={(event) =>
-                      handleRadioChange(item.name, event.target.checked)
-                    }
-                  />
-                  <StyledLabel htmlFor={item.name}>{item.name}</StyledLabel>
-                </Box>
-              ))
-            : items.map((item) => (
-                <Box key={item.name}>
-                  <StyledCheckBox
-                    type="checkbox"
-                    id={item.name}
-                    checked={
-                      !!selectedItems.find(
-                        (selectedItem) => selectedItem === item.name
-                      )
-                    }
-                    onChange={(event) =>
-                      handleCheckBoxChange(item.name, event.target.checked)
-                    }
-                  />
-                  <StyledLabel htmlFor={item.name}>{item.name}</StyledLabel>
-                </Box>
-              ))}
+                      );
+                    case "objectArray":
+                      return (selectedItems as Item[]).some(
+                        (selectedItem) => selectedItem.name === item.name
+                      );
+                    default:
+                      return (selectedItems as string).includes(item.name);
+                  }
+                })()}
+                onChange={(event) =>
+                  handleChange(item.name, event.target.checked)
+                }
+              />
+              <StyledLabel htmlFor={item.name}>{item.name}</StyledLabel>
+            </Box>
+          ))}
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose}>
@@ -149,15 +164,13 @@ export const FilterDialog = ({
           </Button>
         </DialogActions>
       </BootstrapDialog>
-    </div>
+    </Box>
   );
 };
 
-const StyledButton = styled(Button)`
-  padding: 0.5rem 0;
-`;
+const StyledButton = styled(Button)``;
 
-const StyledCheckBox = styled("input")`
+const StyledChecked = styled("input")`
   display: none;
   &:checked + label {
     color: white;

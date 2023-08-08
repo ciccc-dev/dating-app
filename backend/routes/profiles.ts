@@ -1,10 +1,10 @@
 import express from "express";
 import { body } from "express-validator";
-
 import {
-  postProfile,
   getProfilesByUserId,
-  getProfileIdByUserId,
+  getProfileByUserId,
+  updateProfileByUserId,
+  postProfile,
 } from "../lib/profiles";
 
 const router = express.Router();
@@ -19,6 +19,7 @@ const validateCreateProfileRequest = [
 
 router.get("", getProfilesByUserId);
 router.post("", validateCreateProfileRequest, postProfile);
-router.get("/:userId", getProfileIdByUserId);
+router.get("/:userId", getProfileByUserId);
+router.patch("/update", updateProfileByUserId);
 
 export default router;
