@@ -81,6 +81,7 @@ const StyleCardContainer = styled("div")`
   width: 300px;
   height: 400px;
   background-color: lightgrey;
+  box-shadow: 4px 4px 6px grey;
 `;
 
 const StyleGrid = styled(Grid)`
