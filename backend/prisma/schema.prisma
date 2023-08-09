@@ -116,7 +116,7 @@ model ProfileUnselected {
 
   @@index([unselectedBy])
   @@index([unselectedProfile])
-  @@map("user_unselected")
+  @@map("profile_unselected")
 }
 
 model ProfileBlocked {
@@ -129,7 +129,7 @@ model ProfileBlocked {
 
   @@index([blockedBy])
   @@index([blockedProfile])
-  @@map("user_block")
+  @@map("profile_blocked")
 }
 
 model Geolocation {
