@@ -40,28 +40,34 @@ class _ProfileRepository {
       },
     });
 
-    const fetchLikedUserIds = await this.db.like.findMany({
-      where: {
-        sentBy: filter.userId,
-      },
-      select: {
-        receivedBy: true,
-      },
-    });
+    // const fetchLikedUserIds = await this.db.like.findMany({
+    //   where: {
+    //     sentBy: filter.userId,
+    //   },
+    //   select: {
+    //     receivedBy: true,
+    //   },
+    // });
 
-    const unselectedProfileIds = [
-      ...fetchUnselectedProfileIds.map(
-        ({ unselectedProfile }) => unselectedProfile
-      ),
-      filter.profile_id,
-    ];
+    const unselectedProfileIds = fetchUnselectedProfileIds
+      ? [
+          ...fetchUnselectedProfileIds.map(
+            ({ unselectedProfile }) => unselectedProfile
+          ),
+          filter.profile_id,
+        ]
+      : undefined;
 
-    const likedUserIds = fetchLikedUserIds.map(({ receivedBy }) => receivedBy);
+    // const likedUserIds = fetchLikedUserIds
+    //   ? fetchLikedUserIds.map(({ receivedBy }) => receivedBy)
+    //   : undefined;
 
     const profiles = await this.db.profile.findMany({
       where: {
-        id: { notIn: unselectedProfileIds },
-        userId: { notIn: likedUserIds },
+        id: unselectedProfileIds
+          ? { notIn: unselectedProfileIds }
+          : { not: filter.profile_id },
+        // userId: likedUserIds ? { notIn: likedUserIds } : undefined,
         gender: convertLookingForToGender(filter.showMe),
         birthday: filter.isAgeFiltered
           ? {
