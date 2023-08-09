@@ -1,6 +1,6 @@
 import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { navigationWidth } from "../constants/navigation";
 import { DiscoveryNavigation } from "../features/Discovery/components/Navigation";
@@ -21,6 +21,8 @@ export interface Profile {
   purposes: Item[];
   interests: Item[];
 }
+
+export const UserProfiles = createContext<string[]>([]);
 
 export const Discovery = () => {
   const { user, getAccessTokenSilently } = useAuth0();
@@ -59,14 +61,16 @@ export const Discovery = () => {
   return (
     <>
       <StyledWrapper>
-        <StyledNavigationWrapper component='nav'>
+        <StyledNavigationWrapper component="nav">
           <DiscoveryNavigation profileId={profileId} onClick={handleClick} />
         </StyledNavigationWrapper>
-        <StyledContent component='main'>
-          {profiles.map((profile) => (
-            <ProfileCard profile={profile} key={profile.id} />
-          ))}
-        </StyledContent>
+        <UserProfiles.Provider value={profiles.map(({ id }) => id)}>
+          <StyledContent component="main">
+            {profiles.map((profile) => (
+              <ProfileCard profile={profile} key={profile.id} />
+            ))}
+          </StyledContent>
+        </UserProfiles.Provider>
       </StyledWrapper>
     </>
   );

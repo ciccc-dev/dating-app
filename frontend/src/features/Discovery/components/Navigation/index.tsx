@@ -121,7 +121,7 @@ export const DiscoveryNavigation = ({
         process.env.REACT_APP_SERVER_URL ?? "",
         token
       );
-      FilterClient.updateFilter(filter);
+      await FilterClient.updateFilter(filter);
       onClick();
     }
   };
@@ -287,14 +287,19 @@ const StyledTypography = styled(Typography)`
 `;
 
 const StyledListBlock = styled("div")`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   padding: 0.5rem 1rem;
+  max-height: 150px;
+  overflow: auto;
 `;
 
 const StyledListSpan = styled("span")`
   padding: 0.25rem 0.5rem;
   border: 1px solid black;
   border-radius: 0.7rem;
-  margin: 0 0.25rem;
+  margin: 0 0.25rem 0.25rem 0.25rem;
 `;
 
 const StyledDialog = styled(FilterDialog)`

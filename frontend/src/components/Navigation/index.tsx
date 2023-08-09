@@ -21,15 +21,15 @@ export const Navigation = ({ Outlet }: { Outlet: any }) => {
   const { user, logout } = useAuth0();
   const handleLogout = () => logout();
   const navigate = useNavigate();
-  const handleNavigateToProfile = () => navigate("/app/profile");
+  const handleNavigateToAccount = () => navigate("/account");
   const handleChange = (e: SyntheticEvent) =>
     e.currentTarget.textContent && navigate(`/${e.currentTarget.textContent}`);
 
   const MyAccount = () => (
-    <StyledAccountBox onClick={handleNavigateToProfile}>
-      <Typography variant="inherit" color="common.white">
+    <StyledAccountBox onClick={handleNavigateToAccount}>
+      <StyledTypography variant="inherit" color="common.white">
         {user?.name ?? "---"}
-      </Typography>
+      </StyledTypography>
     </StyledAccountBox>
   );
 
@@ -53,6 +53,11 @@ export const Navigation = ({ Outlet }: { Outlet: any }) => {
     </StyledDrawer>
   );
 };
+
+const StyledTypography = styled(Typography)`
+  font-size: 1.2rem;
+  font-weight: bold;
+`;
 
 const StyledAccountBox = styled(Box)`
   padding: 10px;
