@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-
 import { calculateAge, convertAgetoDate } from "../../utils/caluculateAge";
 
 class _ProfileRepository {
@@ -32,9 +31,37 @@ class _ProfileRepository {
       }
     };
 
+    const fetchUnselectedProfileIds = await this.db.profileUnselected.findMany({
+      where: {
+        unselectedBy: filter.profile_id,
+      },
+      select: {
+        unselectedProfile: true,
+      },
+    });
+
+    const fetchLikedUserIds = await this.db.like.findMany({
+      where: {
+        sentBy: filter.userId,
+      },
+      select: {
+        receivedBy: true,
+      },
+    });
+
+    const unselectedProfileIds = [
+      ...fetchUnselectedProfileIds.map(
+        ({ unselectedProfile }) => unselectedProfile
+      ),
+      filter.profile_id,
+    ];
+
+    const likedUserIds = fetchLikedUserIds.map(({ receivedBy }) => receivedBy);
+
     const profiles = await this.db.profile.findMany({
       where: {
-        id: { not: filter.profile_id },
+        id: { notIn: unselectedProfileIds },
+        userId: { notIn: likedUserIds },
         gender: convertLookingForToGender(filter.showMe),
         birthday: filter.isAgeFiltered
           ? {
