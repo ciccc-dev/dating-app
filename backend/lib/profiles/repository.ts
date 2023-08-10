@@ -16,6 +16,9 @@ class _ProfileRepository {
       include: {
         interests: { select: { name: true } },
         purposes: { select: { name: true } },
+        geolocation: {
+          select: { location: true, latitude: true, longitude: true },
+        },
       },
     });
     return result;
@@ -94,6 +97,9 @@ class _ProfileRepository {
       include: {
         interests: { select: { name: true } },
         purposes: { select: { name: true } },
+        geolocation: {
+          select: { location: true, latitude: true, longitude: true },
+        },
       },
       take: 3,
     });
