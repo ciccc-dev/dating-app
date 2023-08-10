@@ -1,7 +1,9 @@
-import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 
-import { GeolocationRepository } from "./repository";
+import {
+  GeolocationRepository,
+  ExterenalGeolocationRepository,
+} from "./repository";
 import { ProfileGeolocation } from "./geolocation";
 import { Prisma } from "@prisma/client";
 
@@ -11,12 +13,17 @@ export const postGeolocation = async (
   next: NextFunction
 ) => {
   try {
-    const { id, profileId, location, latitude, longtitude } =
+    const exterenalGeolocation =
+      await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
+        req.body.ipaddress
+      );
+
+    const { id, profileId, location, latitude, longitude } =
       new ProfileGeolocation(
         req.body.profileId,
-        req.body.location,
-        req.body.latitude,
-        req.body.longtitude
+        exterenalGeolocation.location,
+        exterenalGeolocation.latitude,
+        exterenalGeolocation.longitude
       ).toHash();
 
     const geolocation: Prisma.GeolocationCreateInput = {
@@ -24,7 +31,7 @@ export const postGeolocation = async (
       profile: { connect: { id: profileId } },
       location: location,
       latitude: latitude,
-      longtitude: longtitude,
+      longitude: longitude,
     };
     await GeolocationRepository.createGeolocation(geolocation);
     res.status(201).json();
@@ -39,30 +46,16 @@ export const updateGeolocationByProfileId = async (
   next: NextFunction
 ) => {
   try {
+    const geolocation =
+      await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
+        req.body.ipaddress
+      );
+
     await GeolocationRepository.updateGeolocationByProfileId(
       req.body.profileId,
-      req.body.geolocation
+      geolocation
     );
     res.status(201).json();
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const fetchGeolocationfromExterenal = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const apiUrl = process.env.GEOLOCATION_API_URL;
-    const apiKey = process.env.GEOLOCATION_API_KEY;
-    const ipaddress = req.body.ipaddress;
-    const geolocationUrl = `${apiUrl}/${ipaddress}?access_key=${apiKey}`;
-    const response = await axios.get(geolocationUrl);
-    const geolocationData = response.data;
-    return res.json(geolocationData);
-    // res.status(201).json();
   } catch (err) {
     next(err);
   }

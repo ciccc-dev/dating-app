@@ -4,20 +4,20 @@ export class ProfileGeolocation {
   private profileId: string;
   private location: string;
   private latitude: string;
-  private longtitude: string;
+  private longitude: string;
   private id: string;
 
   constructor(
     profileId: string,
     location: string,
     latitude: string,
-    longtitude: string,
+    longitude: string,
     id: string = crypto.randomUUID()
   ) {
     this.profileId = profileId;
     this.location = location;
     this.latitude = latitude;
-    this.longtitude = longtitude;
+    this.longitude = longitude;
     this.id = id;
   }
 
@@ -25,7 +25,7 @@ export class ProfileGeolocation {
     profileId: this.profileId,
     location: this.location,
     latitude: this.latitude,
-    longtitude: this.longtitude,
+    longitude: this.longitude,
     id: this.id,
   });
 }
