@@ -20,6 +20,11 @@ export interface Profile {
   updatedAt: Date;
   purposes: Item[];
   interests: Item[];
+  geolocation: {
+    latitude: number;
+    longitude: number;
+    location: string;
+  };
 }
 
 export const UserProfiles = createContext<string[]>([]);
@@ -53,6 +58,8 @@ export const Discovery = () => {
     fetchProfiles();
     setIsfiltered(false);
   }, [getAccessTokenSilently, user, isFiltered]);
+
+  console.log(profiles);
 
   const handleClick = () => {
     setIsfiltered(true);

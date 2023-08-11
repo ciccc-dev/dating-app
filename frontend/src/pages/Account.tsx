@@ -17,6 +17,7 @@ import { sexualOrientations } from "../constants/sexualOrientations";
 import { gender } from "../constants/gender";
 import { Controller, useForm } from "react-hook-form";
 import { FilterDialog } from "../features/Discovery/components/FilterDialog";
+import { Map } from "../features/Discovery/components/Map";
 import { _accountClient } from "../features/Discovery/api/account";
 import { useNavigate } from "react-router-dom";
 
@@ -40,6 +41,11 @@ export interface Profile {
   updatedAt: Date;
   purposes: Item[];
   interests: Item[];
+  geolocation: {
+    latitude: number;
+    longitude: number;
+    location: string;
+  };
 }
 
 const defaultProfile = {
@@ -54,6 +60,11 @@ const defaultProfile = {
   updatedAt: new Date(),
   purposes: [],
   interests: [],
+  geolocation: {
+    latitude: 0,
+    longitude: 0,
+    location: "",
+  },
 };
 
 export const Account = () => {
@@ -394,6 +405,21 @@ export const Account = () => {
                 ))}
               </StyledValue>
             </StyledSection>
+            <StyledTitleWrapper>
+              <StyledTitle>Your Location</StyledTitle>
+            </StyledTitleWrapper>
+            <StyledDivder />
+            <StyledSection>
+              <StyledSubTitle>
+                <StyledProperty>City:</StyledProperty>
+                <span>{profile?.geolocation?.location}</span>
+              </StyledSubTitle>
+              <StyledSubDivder />
+              <Map
+                latitude={profile?.geolocation?.latitude}
+                longitude={profile?.geolocation?.longitude}
+              />
+            </StyledSection>
           </StyledForm>
         </StyledMain>
       </StyledContainer>
@@ -516,6 +542,10 @@ const StyledTitle = styled("h1")`
 const StyledSubTitle = styled("h2")`
   vertical-align: middle;
   margin: 1rem 0 0.3rem 0;
+`;
+
+const StyledProperty = styled("span")`
+  margin-right: 1rem;
 `;
 
 const StyledItem = styled("span")`
