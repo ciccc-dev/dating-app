@@ -52,7 +52,6 @@ class _ProfileRepository {
     longitude: Decimal | undefined,
     latitude: Decimal | undefined
   ) => {
-    console.log(filter, longitude, latitude);
     const convertLookingForToGender = (lookingFor: string) => {
       switch (lookingFor) {
         case "Men":
@@ -64,12 +63,10 @@ class _ProfileRepository {
       }
     };
 
-    const purposes = filter.purposes.map((purpose: Item) => ({
-      name: purpose,
-    }));
-
-    const minAge = convertAgetoDate(filter.minAge);
-    const maxAge = convertAgetoDate(filter.maxAge);
+    const gender = convertLookingForToGender(filter.showMe);
+    const newBirthday = convertAgetoDate(filter.minAge);
+    const oldBirthday = convertAgetoDate(filter.maxAge);
+    const interests = filter.interests.map((interest: Item) => interest.name);
 
     const fetchProfiles = await this.db.$queryRaw<
       PrismaPromise<FilteredProfile[]>
@@ -88,11 +85,6 @@ class _ProfileRepository {
         )) AS purposes
         FROM purpose pu
         WHERE pu.profile_id = pr.id
-        ${
-          filter.isPurposeFiltered && filter.purposes.length > 0
-            ? `AND pu.name IN ${filter.purposes}`
-            : Prisma.empty
-        }
       ),
       (
         SELECT json_agg(json_build_object(
@@ -101,49 +93,58 @@ class _ProfileRepository {
         FROM interest inte
         JOIN "_InterestToProfile" intp ON intp."A" = inte.id
         WHERE intp."B" = pr.id
-        ${
-          filter.isInterestFiltered && filter.interests.length > 0
-            ? `AND inte.name IN ${filter.interests}`
-            : Prisma.empty
-        }
       ),
       (
-        SELECT json_build_object(
-          'distance', st_distance(
+        SELECT st_distance(
             st_makepoint(${longitude}, ${latitude}),
             st_makepoint(g.longitude, g.latitude)
-          )
         ) AS distance
         FROM geolocation g
         WHERE g.profile_id = pr.id
         ${
           filter.isDistanceFiltered
-            ? `AND st_distance(st_makepoint(${longitude}, ${latitude}),
+            ? Prisma.sql`AND st_distance(st_makepoint(${longitude}, ${latitude}),
               st_makepoint(g.longitude, g.latitude)
             ) <= ${filter.distance}`
             : Prisma.empty
         }
       )
     FROM profile pr
+    JOIN "_InterestToProfile" intp ON intp."B" = pr.id
+    JOIN interest inte ON inte.id =  intp."A"
+    JOIN purpose pu ON pu.profile_id = pr.id
     WHERE pr.id != ${filter.profileId}::uuid
+    AND pr.gender = ${gender}
        AND pr.id NOT IN (SELECT unselected_profile FROM profile_unselected
          WHERE unselected_by = ${filter.profileId}::uuid)
-         AND user_id NOT IN (SELECT received_by FROM likes
+         AND pr.user_id NOT IN (SELECT received_by FROM likes
            WHERE sent_by = ${userId})
            ${
-             filter.isSexualOrientationFiltered
-               ? `AND pr.sexual_orientation IN ${filter.sexualOrientations}`
+             filter.isPurposeFiltered && filter.purposes.length > 0
+               ? Prisma.sql`AND pu.name IN (${filter.purposes.join(",")})`
+               : Prisma.empty
+           }
+           ${
+             filter.isInterestFiltered && filter.interests.length > 0
+               ? Prisma.sql`AND inte.name IN (${interests.join(",")})`
+               : Prisma.empty
+           }
+           ${
+             filter.isSexualOrientationFiltered &&
+             filter.sexualOrientations.length > 0
+               ? Prisma.sql`AND pr.sexual_orientation IN (${filter.sexualOrientations.join(
+                   ","
+                 )})`
                : Prisma.empty
            }
            ${
              filter.isAgeFiltered
-               ? `AND pr.birthday >= ${minAge} AND pr.birthday <= ${maxAge}`
+               ? Prisma.sql`AND pr.birthday >= ${oldBirthday} AND pr.birthday <= ${newBirthday}`
                : Prisma.empty
            }
      ORDER BY RANDOM()
      LIMIT 3;
   `;
-
     const convertedProfiles = fetchProfiles.map(({ birthday, ...rest }) => ({
       ...rest,
       age: calculateAge(birthday),
