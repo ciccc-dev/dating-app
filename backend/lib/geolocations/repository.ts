@@ -19,12 +19,23 @@ class _GeolocationRepository {
     profileId: string,
     geolocation: Prisma.GeolocationUpdateInput
   ) => {
-    console.log(profileId, geolocation);
     const result = this.db.geolocation.update<Prisma.GeolocationUpdateArgs>({
       where: { profileId: profileId },
       data: geolocation,
     });
-    console.log("result", result);
+    return result;
+  };
+
+  fetchGeolocation = async (profileId: string) => {
+    const result = await this.db.geolocation.findUnique({
+      where: {
+        profileId: profileId,
+      },
+      select: {
+        longitude: true,
+        latitude: true,
+      },
+    });
     return result;
   };
 }

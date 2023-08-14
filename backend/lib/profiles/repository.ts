@@ -1,7 +1,29 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, PrismaPromise } from "@prisma/client";
 
 import { calculateAge, convertAgetoDate } from "../../utils/caluculateAge";
 import { Profile } from "./profile";
+import { Decimal } from "@prisma/client/runtime";
+
+interface Item {
+  name: string;
+}
+
+interface Geolocation {
+  distance: string;
+}
+
+interface FilteredProfile {
+  id: number;
+  user_id: number;
+  user_name: string;
+  birthday: Date;
+  gender: string;
+  sexual_orientation: string;
+  about_me: string;
+  purposes: Item[];
+  interests: Item[];
+  geolocation: Geolocation;
+}
 
 class _ProfileRepository {
   private db: PrismaClient;
@@ -24,7 +46,13 @@ class _ProfileRepository {
     return result;
   };
 
-  fetchProfilesByFilter = async (filter: any) => {
+  fetchProfilesByFilter = async (
+    userId: string,
+    filter: any,
+    longitude: Decimal | undefined,
+    latitude: Decimal | undefined
+  ) => {
+    console.log(filter, longitude, latitude);
     const convertLookingForToGender = (lookingFor: string) => {
       switch (lookingFor) {
         case "Men":
@@ -36,74 +64,87 @@ class _ProfileRepository {
       }
     };
 
-    const fetchUnselectedProfileIds = await this.db.profileUnselected.findMany({
-      where: {
-        unselectedBy: filter.profile_id,
-      },
-      select: {
-        unselectedProfile: true,
-      },
-    });
+    const purposes = filter.purposes.map((purpose: Item) => ({
+      name: purpose,
+    }));
 
-    // const fetchLikedUserIds = await this.db.like.findMany({
-    //   where: {
-    //     sentBy: filter.userId,
-    //   },
-    //   select: {
-    //     receivedBy: true,
-    //   },
-    // });
+    const minAge = convertAgetoDate(filter.minAge);
+    const maxAge = convertAgetoDate(filter.maxAge);
 
-    const unselectedProfileIds = fetchUnselectedProfileIds
-      ? [
-          ...fetchUnselectedProfileIds.map(
-            ({ unselectedProfile }) => unselectedProfile
-          ),
-          filter.profile_id,
-        ]
-      : undefined;
+    const fetchProfiles = await this.db.$queryRaw<
+      PrismaPromise<FilteredProfile[]>
+    >`
+    SELECT 
+      pr.id AS "id",
+      pr.user_id AS "user_id",
+      pr.user_name AS "user_name",
+      pr.birthday AS "birthday",
+      pr.gender AS "gender",
+      pr.sexual_orientation AS "sexual_orientation",
+      pr.about_me AS "about_me",
+      (
+        SELECT json_agg(json_build_object(
+          'name', pu.name
+        )) AS purposes
+        FROM purpose pu
+        WHERE pu.profile_id = pr.id
+        ${
+          filter.isPurposeFiltered && filter.purposes.length > 0
+            ? `AND pu.name IN ${filter.purposes}`
+            : Prisma.empty
+        }
+      ),
+      (
+        SELECT json_agg(json_build_object(
+          'name', inte.name
+        )) AS interests
+        FROM interest inte
+        JOIN "_InterestToProfile" intp ON intp."A" = inte.id
+        WHERE intp."B" = pr.id
+        ${
+          filter.isInterestFiltered && filter.interests.length > 0
+            ? `AND inte.name IN ${filter.interests}`
+            : Prisma.empty
+        }
+      ),
+      (
+        SELECT json_build_object(
+          'distance', st_distance(
+            st_makepoint(${longitude}, ${latitude}),
+            st_makepoint(g.longitude, g.latitude)
+          )
+        ) AS distance
+        FROM geolocation g
+        WHERE g.profile_id = pr.id
+        ${
+          filter.isDistanceFiltered
+            ? `AND st_distance(st_makepoint(${longitude}, ${latitude}),
+              st_makepoint(g.longitude, g.latitude)
+            ) <= ${filter.distance}`
+            : Prisma.empty
+        }
+      )
+    FROM profile pr
+    WHERE pr.id != ${filter.profileId}::uuid
+       AND pr.id NOT IN (SELECT unselected_profile FROM profile_unselected
+         WHERE unselected_by = ${filter.profileId}::uuid)
+         AND user_id NOT IN (SELECT received_by FROM likes
+           WHERE sent_by = ${userId})
+           ${
+             filter.isSexualOrientationFiltered
+               ? `AND pr.sexual_orientation IN ${filter.sexualOrientations}`
+               : Prisma.empty
+           }
+           ${
+             filter.isAgeFiltered
+               ? `AND pr.birthday >= ${minAge} AND pr.birthday <= ${maxAge}`
+               : Prisma.empty
+           }
+     ORDER BY RANDOM()
+     LIMIT 3;
+  `;
 
-    // const likedUserIds = fetchLikedUserIds
-    //   ? fetchLikedUserIds.map(({ receivedBy }) => receivedBy)
-    //   : undefined;
-
-    const profiles = await this.db.profile.findMany({
-      where: {
-        id: unselectedProfileIds
-          ? { notIn: unselectedProfileIds }
-          : { not: filter.profile_id },
-        // userId: likedUserIds ? { notIn: likedUserIds } : undefined,
-        gender: convertLookingForToGender(filter.showMe),
-        birthday: filter.isAgeFiltered
-          ? {
-              gte: convertAgetoDate(filter.maxAge),
-              lte: convertAgetoDate(filter.minAge),
-            }
-          : undefined,
-        sexualOrientation: filter.isSexualOrientationFiltered
-          ? { in: filter.sexualOrientations }
-          : undefined,
-        interests: filter.isInterestFiltered
-          ? { some: { OR: filter.interests } }
-          : undefined,
-        purposes: filter.isPurposeFiltered
-          ? {
-              some: {
-                OR: filter.purposes.map((purpose: any) => ({ name: purpose })),
-              },
-            }
-          : undefined,
-      },
-      include: {
-        interests: { select: { name: true } },
-        purposes: { select: { name: true } },
-        geolocation: {
-          select: { location: true, latitude: true, longitude: true },
-        },
-      },
-      take: 3,
-    });
-    const convertedProfiles = profiles.map(({ birthday, ...rest }) => ({
+    const convertedProfiles = fetchProfiles.map(({ birthday, ...rest }) => ({
       ...rest,
       age: calculateAge(birthday),
     }));

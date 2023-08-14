@@ -60,3 +60,19 @@ export const updateGeolocationByProfileId = async (
     next(err);
   }
 };
+
+export const getGeolocationDistance = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // await GeolocationRepository.fetchGeolocation(
+    //   req.body.longitude,
+    //   req.body.latitude
+    // );
+    res.status(201).json();
+  } catch (err) {
+    next(err);
+  }
+};
