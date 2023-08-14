@@ -114,7 +114,7 @@ class _ProfileRepository {
     JOIN interest inte ON inte.id =  intp."A"
     JOIN purpose pu ON pu.profile_id = pr.id
     WHERE pr.id != ${filter.profileId}::uuid
-    AND pr.gender = ${gender}
+    ${gender ? Prisma.sql`AND pr.gender = ${gender})` : Prisma.empty}
        AND pr.id NOT IN (SELECT unselected_profile FROM profile_unselected
          WHERE unselected_by = ${filter.profileId}::uuid)
          AND pr.user_id NOT IN (SELECT received_by FROM likes
@@ -145,11 +145,11 @@ class _ProfileRepository {
      ORDER BY RANDOM()
      LIMIT 3;
   `;
+
     const convertedProfiles = fetchProfiles.map(({ birthday, ...rest }) => ({
       ...rest,
       age: calculateAge(birthday),
     }));
-
     return convertedProfiles;
   };
 
