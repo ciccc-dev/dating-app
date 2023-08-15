@@ -61,7 +61,6 @@ export const Signup = () => {
       process.env.REACT_APP_SERVER_URL ?? "",
       token
     );
-    console.log(profile.sexualOrientation);
     const result = await ProfileAPI.CreatePost({
       username: profile.username,
       gender: profile.gender,
