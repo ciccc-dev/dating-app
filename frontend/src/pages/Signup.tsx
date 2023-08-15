@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import { Birthday } from "../features/Signup/components/Birthday";
 import { Gender } from "../features/Signup/components/Gender";
@@ -7,9 +8,9 @@ import { Purpose } from "../features/Signup/components/Purpose";
 import { SexualOrientatins } from "../features/Signup/components/SexualOrientations";
 import { ShowMe } from "../features/Signup/components/ShowMe";
 import { Username } from "../features/Signup/components/Username";
-
 import { _ProfileAPI } from "../features/Profile";
-import { useAuth0 } from "@auth0/auth0-react";
+import { NotificationBar } from "../components/NotificationBar";
+import { useDialogState } from "../hooks/useDialogState";
 
 interface Profile {
   username: string;
@@ -31,6 +32,7 @@ type Phase =
   | "interest";
 
 export const Signup = () => {
+  const [isOpen, { open, close }] = useDialogState();
   const [phase, setPhase] = useState<Phase>("username");
   const [profile, setProfile] = useState<Profile>({
     username: "",
@@ -68,7 +70,7 @@ export const Signup = () => {
       sexualOrientation: profile.sexualOrientation,
       aboutMe: "",
     });
-    console.log(result);
+    if (!result.status) return open();
   };
 
   return (
@@ -123,6 +125,12 @@ export const Signup = () => {
           onCreate={CreateProfile}
         />
       )}
+      <NotificationBar
+        isOpen={isOpen}
+        onClose={close}
+        isSuccess={false}
+        message='Signup failed'
+      />
     </>
   );
 };
