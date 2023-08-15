@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material";
 
 import { purposes } from "../../../../constants/purposes";
+import { NotificationBar } from "../../../../components/NotificationBar";
+import { useDialogState } from "../../../../hooks/useDialogState";
 
 type Phase = "showMe" | "sexual";
 
@@ -16,6 +18,8 @@ interface Props {
 }
 
 export const Purpose = ({ values, onChange, onChangePhase }: Props) => {
+  const [isOpen, { open, close }] = useDialogState();
+
   const remove = (chosen: string) => {
     const index = values.indexOf(chosen);
     onChange(
@@ -30,7 +34,10 @@ export const Purpose = ({ values, onChange, onChangePhase }: Props) => {
   };
 
   const navigatePrev = () => onChangePhase("showMe");
-  const navigateNext = () => onChangePhase("sexual");
+  const navigateNext = () => {
+    if (values.length === 0) return open();
+    onChangePhase("sexual");
+  };
 
   return (
     <StyledWrapper>
@@ -71,6 +78,12 @@ export const Purpose = ({ values, onChange, onChangePhase }: Props) => {
           Next
         </Button>
       </Wrapper>
+      <NotificationBar
+        isOpen={isOpen}
+        onClose={close}
+        isSuccess={false}
+        message='Please choose one or more purposes'
+      />
     </StyledWrapper>
   );
 };
