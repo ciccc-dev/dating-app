@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
 
 import { Birthday } from "../features/Signup/components/Birthday";
 import { Gender } from "../features/Signup/components/Gender";
@@ -8,7 +9,7 @@ import { Purpose } from "../features/Signup/components/Purpose";
 import { SexualOrientatins } from "../features/Signup/components/SexualOrientations";
 import { ShowMe } from "../features/Signup/components/ShowMe";
 import { Username } from "../features/Signup/components/Username";
-import { _ProfileAPI } from "../features/Profile";
+import { _profileClient } from "../features/Discovery/api/profile";
 import { NotificationBar } from "../components/NotificationBar";
 import { useDialogState } from "../hooks/useDialogState";
 
@@ -32,6 +33,7 @@ type Phase =
   | "interest";
 
 export const Signup = () => {
+  const navigate = useNavigate();
   const [isOpen, { open, close }] = useDialogState();
   const [phase, setPhase] = useState<Phase>("username");
   const [profile, setProfile] = useState<Profile>({
@@ -43,15 +45,21 @@ export const Signup = () => {
     sexualOrientation: "",
     interests: [],
   });
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   const [token, setToken] = useState("");
 
   useEffect(() => {
     (async () => {
       const token = await getAccessTokenSilently();
       setToken(token);
+      const ProfileAPI = new _profileClient(
+        process.env.REACT_APP_SERVER_URL ?? "",
+        token
+      );
+      const result = await ProfileAPI.getProfile(user?.sub ?? "");
+      if (result) navigate("/discovery");
     })();
-  }, [getAccessTokenSilently]);
+  }, [getAccessTokenSilently, navigate, user?.sub]);
 
   const handleChangeProfile = <T,>(key: string, value: T) =>
     setProfile((prev) => ({ ...prev, [key]: value }));
@@ -59,7 +67,7 @@ export const Signup = () => {
   const handleChangePhase = (phase: Phase) => setPhase(phase);
 
   const CreateProfile = async () => {
-    const ProfileAPI = new _ProfileAPI(
+    const ProfileAPI = new _profileClient(
       process.env.REACT_APP_SERVER_URL ?? "",
       token
     );
@@ -71,6 +79,7 @@ export const Signup = () => {
       aboutMe: "",
     });
     if (!result.status) return open();
+    navigate("/discovery");
   };
 
   return (
