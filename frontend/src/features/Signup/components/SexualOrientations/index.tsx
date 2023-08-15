@@ -5,6 +5,8 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material";
 
 import { sexualOrientations } from "../../../../constants/sexualOrientations";
+import { NotificationBar } from "../../../../components/NotificationBar";
+import { useDialogState } from "../../../../hooks/useDialogState";
 
 type Phase = "interest" | "purpose";
 
@@ -19,10 +21,15 @@ export const SexualOrientatins = ({
   onChange,
   onChangePhase,
 }: Props) => {
+  const [isOpen, { open, close }] = useDialogState();
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) =>
     onChange("sexualOrientation", event.currentTarget.dataset.sexual as string);
   const navigatePrev = () => onChangePhase("purpose");
-  const navigateNext = () => onChangePhase("interest");
+  const navigateNext = () => {
+    if (value.length === 0) return open();
+    onChangePhase("interest");
+  };
 
   return (
     <StyledWrapper>
@@ -65,6 +72,12 @@ export const SexualOrientatins = ({
           Next
         </Button>
       </Wrapper>
+      <NotificationBar
+        isOpen={isOpen}
+        onClose={close}
+        isSuccess={false}
+        message='Please choose a sexual orientation'
+      />
     </StyledWrapper>
   );
 };

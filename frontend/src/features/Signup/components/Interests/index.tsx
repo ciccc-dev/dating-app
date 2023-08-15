@@ -5,6 +5,8 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material";
 
+import { NotificationBar } from "../../../../components/NotificationBar";
+import { useDialogState } from "../../../../hooks/useDialogState";
 import { useFetchInterests } from "../../../../hooks/useFetchInterests";
 
 type Phase = "sexual";
@@ -23,7 +25,7 @@ export const Interests = ({
   onCreate,
 }: Props) => {
   const interests = useFetchInterests();
-  const navigatePrev = () => onChangePhase("sexual");
+  const [isOpen, { open, close }] = useDialogState();
 
   const add = (interest: string) =>
     onChange("interests", [...values, interest]);
@@ -37,6 +39,12 @@ export const Interests = ({
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     const chosen = event.currentTarget.dataset.interest as string;
     values.includes(chosen) ? remove(chosen) : add(chosen);
+  };
+
+  const navigatePrev = () => onChangePhase("sexual");
+  const handleCreate = () => {
+    if (values.length === 0) return open();
+    onCreate();
   };
 
   return (
@@ -76,10 +84,16 @@ export const Interests = ({
         <Button variant='outlined' sx={{ margin: 1 }} onClick={navigatePrev}>
           Back
         </Button>
-        <Button variant='contained' sx={{ margin: 1 }} onClick={onCreate}>
+        <Button variant='contained' sx={{ margin: 1 }} onClick={handleCreate}>
           Create
         </Button>
       </Wrapper>
+      <NotificationBar
+        isOpen={isOpen}
+        onClose={close}
+        isSuccess={false}
+        message='Please choose one or more interests'
+      />
     </StyledWrapper>
   );
 };

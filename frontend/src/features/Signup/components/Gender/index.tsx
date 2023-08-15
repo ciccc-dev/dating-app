@@ -5,6 +5,8 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material";
 
 import { genders } from "../../../../constants/gender";
+import { NotificationBar } from "../../../../components/NotificationBar";
+import { useDialogState } from "../../../../hooks/useDialogState";
 
 type Phase = "username" | "birthday";
 
@@ -15,9 +17,15 @@ interface Props {
 }
 
 export const Gender = ({ value, onChange, onChangePhase }: Props) => {
+  const [isOpen, { open, close }] = useDialogState();
+
   const handleChange = (event: React.MouseEvent<HTMLElement>) =>
     onChange("gender", event.currentTarget.dataset.gender as string);
-  const navigateNext = () => onChangePhase("birthday");
+
+  const navigateNext = () => {
+    if (value.length === 0) return open();
+    onChangePhase("birthday");
+  };
   const navigatePrevious = () => onChangePhase("username");
 
   return (
@@ -63,6 +71,12 @@ export const Gender = ({ value, onChange, onChangePhase }: Props) => {
           Next
         </Button>
       </Wrapper>
+      <NotificationBar
+        isOpen={isOpen}
+        onClose={close}
+        isSuccess={false}
+        message='Please choose a gender'
+      />
     </Box>
   );
 };
