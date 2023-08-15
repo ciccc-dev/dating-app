@@ -17,6 +17,7 @@ class _FilterRepository {
         profile: { select: { id: true } },
       },
     });
+    if (!response) return {};
     const result = new Filter(response);
     return result;
   };
