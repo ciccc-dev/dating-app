@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { differenceInSeconds, parseISO } from "date-fns";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { pink } from "@mui/material/colors";
+import { _profileClient } from "../features/Discovery/api/profile";
 
 const theme = createTheme({
   palette: {
@@ -15,27 +15,36 @@ const theme = createTheme({
 });
 
 export const Root = () => {
-  const { isAuthenticated, isLoading, user } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, isLoading, user } =
+    useAuth0();
   const location = useLocation();
   const navigate = useNavigate();
-  const LOGIN_DURATION = 3;
 
   useEffect(() => {
     if (isLoading) return;
-    if (!isAuthenticated || location.pathname === "/") return navigate("/home");
-    if (user?.updated_at) {
-      const secondsAfterLogin = differenceInSeconds(
-        new Date(),
-        parseISO(user?.updated_at)
-      );
-      secondsAfterLogin < LOGIN_DURATION && navigate("/app/discovery");
+    if (!isAuthenticated) return navigate("/home");
+    if (!isAuthenticated && location.pathname === "/") return navigate("/home");
+
+    if (isAuthenticated) {
+      (async () => {
+        const token = await getAccessTokenSilently();
+        const ProfileClient = new _profileClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        const profile = await ProfileClient.getProfile(user?.sub ?? "");
+
+        if (!profile) return navigate("/signup");
+        return navigate("/discovery");
+      })();
     }
   }, [
+    getAccessTokenSilently,
     isAuthenticated,
     isLoading,
     location.pathname,
     navigate,
-    user?.updated_at,
+    user?.sub,
   ]);
 
   return (
