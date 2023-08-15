@@ -5,6 +5,9 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material";
 
+import { NotificationBar } from "../../../../components/NotificationBar";
+import { useDialogState } from "../../../../hooks/useDialogState";
+
 const showMeGenders = ["Man", "Woman", "Other"];
 
 type Phase = "birthday" | "purpose";
@@ -16,6 +19,8 @@ interface Props {
 }
 
 export const ShowMe = ({ values, onChange, onChangePhase }: Props) => {
+  const [isOpen, { open, close }] = useDialogState();
+
   const remove = (chosenGender: string) => {
     const index = values.indexOf(chosenGender);
     onChange(
@@ -32,7 +37,10 @@ export const ShowMe = ({ values, onChange, onChangePhase }: Props) => {
   };
 
   const navigatePrev = () => onChangePhase("birthday");
-  const navigateNext = () => onChangePhase("purpose");
+  const navigateNext = () => {
+    if (values.length === 0) return open();
+    onChangePhase("purpose");
+  };
 
   return (
     <StyledWrapper>
@@ -71,6 +79,12 @@ export const ShowMe = ({ values, onChange, onChangePhase }: Props) => {
           Next
         </Button>
       </Wrapper>
+      <NotificationBar
+        isOpen={isOpen}
+        onClose={close}
+        isSuccess={false}
+        message='Please choose'
+      />
     </StyledWrapper>
   );
 };
