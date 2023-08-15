@@ -20,11 +20,7 @@ export interface Profile {
   updatedAt: Date;
   purposes: Item[];
   interests: Item[];
-  geolocation: {
-    latitude: number;
-    longitude: number;
-    location: string;
-  };
+  distance: number;
 }
 
 export const UserProfiles = createContext<string[]>([]);
