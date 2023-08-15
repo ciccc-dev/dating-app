@@ -140,6 +140,8 @@ export const Messages = () => {
 
 const StyledWrapper = styled(Box)`
   display: flex;
+  height: 100vh;
+  background-color: #f5f5f5;
 `;
 
 const StyledNavigationWrapper = styled(Box)`

@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { DatingApp } from "./pages/DatingApp";
 import { Discovery } from "./pages/Discovery";
 import { Home } from "./pages/Home";
 import { Likes } from "./pages/Likes";
@@ -39,16 +38,6 @@ const router = createBrowserRouter([
       {
         path: "/account",
         element: <Account />,
-      },
-      {
-        path: "/app",
-        element: <DatingApp />,
-        children: [
-          {
-            path: "/app/discovery",
-            element: <Discovery />,
-          },
-        ],
       },
     ],
   },
