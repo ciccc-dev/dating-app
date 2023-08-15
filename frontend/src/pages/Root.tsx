@@ -23,8 +23,6 @@ export const Root = () => {
   useEffect(() => {
     if (isLoading) return;
     if (!isAuthenticated) return navigate("/home");
-    if (!isAuthenticated && location.pathname === "/") return navigate("/home");
-
     if (isAuthenticated) {
       (async () => {
         const token = await getAccessTokenSilently();
@@ -33,9 +31,8 @@ export const Root = () => {
           token
         );
         const profile = await ProfileClient.getProfile(user?.sub ?? "");
-
         if (!profile) return navigate("/signup");
-        return navigate("/discovery");
+        if (location.pathname === "/") return navigate("/discovery");
       })();
     }
   }, [
