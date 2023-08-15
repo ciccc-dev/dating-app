@@ -74,8 +74,8 @@ class _ProfileRepository {
    WITH profile_distance AS (
       SELECT
         pr.id,
-        st_distance(st_makepoint(${longitude}, ${latitude}),
-                    st_makepoint(g.longitude, g.latitude)) AS "distance"
+        CEILING(st_distance(st_makepoint(${longitude}, ${latitude}),
+                    st_makepoint(g.longitude, g.latitude))) AS "distance"
       FROM profile pr
       JOIN geolocation g ON g.profile_id = pr.id
    )
