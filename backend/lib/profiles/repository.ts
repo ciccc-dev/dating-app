@@ -1,9 +1,9 @@
 import { Prisma, PrismaClient, PrismaPromise } from "@prisma/client";
-import crypto from "crypto";
+import { Decimal } from "@prisma/client/runtime";
 
 import { calculateAge, convertAgetoDate } from "../../utils/caluculateAge";
 import { Profile } from "./profile";
-import { Decimal } from "@prisma/client/runtime";
+import { Filter } from "../filters/filter";
 
 interface Item {
   name: string;
@@ -49,7 +49,7 @@ class _ProfileRepository {
 
   fetchProfilesByFilter = async (
     userId: string,
-    filter: any,
+    filter: Filter,
     longitude: Decimal | undefined,
     latitude: Decimal | undefined
   ) => {
@@ -64,10 +64,10 @@ class _ProfileRepository {
       }
     };
 
-    const gender = convertLookingForToGender(filter.showMe);
-    const newBirthday = convertAgetoDate(filter.minAge);
-    const oldBirthday = convertAgetoDate(filter.maxAge);
-    const interests = filter.interests.map((interest: Item) => interest.name);
+    const gender = convertLookingForToGender(filter.showMe());
+    const newBirthday = convertAgetoDate(filter.minAge());
+    const oldBirthday = convertAgetoDate(filter.maxAge());
+    const interests = filter.interests().map((interest: Item) => interest.name);
 
     const fetchProfiles = await this.db.$queryRaw<
       PrismaPromise<FilteredProfile[]>
@@ -101,28 +101,28 @@ class _ProfileRepository {
   LEFT OUTER JOIN interest inte ON inte.id =  intp."A"
   LEFT OUTER JOIN purpose pu ON pu.profile_id = pr.id
   LEFT OUTER JOIN profile_distance pd ON pd.id = pr.id
-  WHERE pr.id != ${filter.profileId}::uuid
+  WHERE pr.id != ${filter.profileId()}::uuid
   AND pr.id NOT IN (SELECT unselected_profile FROM profile_unselected
-    WHERE unselected_by = ${filter.profileId}::uuid)
+    WHERE unselected_by = ${filter.profileId()}::uuid)
     AND pr.user_id NOT IN (SELECT received_by FROM likes
       WHERE sent_by = ${userId})
       ${gender ? Prisma.sql`AND pr.gender = ${gender}` : Prisma.empty}
          ${
-           filter.isAgeFiltered
+           filter.isAgeFiltered()
              ? Prisma.sql`AND pr.birthday >= ${oldBirthday} AND pr.birthday <= ${newBirthday}`
              : Prisma.empty
          }
          ${
-           filter.isPurposeFiltered && filter.purposes.length > 0
+           filter.isPurposeFiltered() && filter.purposes().length > 0
              ? Prisma.sql`AND pr.id IN (
              SELECT pr.id
              FROM profile pr
              JOIN purpose pu ON pu.profile_id = pr.id
-             WHERE pu.name IN (${filter.purposes.join(",")}))`
+             WHERE pu.name IN (${filter.purposes().join(",")}))`
              : Prisma.empty
          }
         ${
-          filter.isInterestFiltered && filter.interests.length > 0
+          filter.isInterestFiltered() && filter.interests().length > 0
             ? Prisma.sql`AND pr.id IN (
             SELECT pr.id
             FROM profile pr
@@ -132,8 +132,8 @@ class _ProfileRepository {
             : Prisma.empty
         }
         ${
-          filter.isDistanceFiltered
-            ? Prisma.sql`AND pd.distance <= ${filter.distance}`
+          filter.isDistanceFiltered()
+            ? Prisma.sql`AND pd.distance <= ${filter.distance()}`
             : Prisma.empty
         }
         GROUP BY pr.id, pd.distance
@@ -184,7 +184,7 @@ class _ProfileRepository {
     return transaction;
   };
 
-  createProfile = async (profile: Profile, userId: string) => {
+  createProfile = async (profile: Profile, filter: Filter, userId: string) => {
     const data: Prisma.ProfileCreateInput = {
       id: profile.id(),
       userId,
@@ -196,7 +196,7 @@ class _ProfileRepository {
       registeredAt: new Date(),
       updatedAt: new Date(),
       filter: {
-        create: { id: crypto.randomUUID(), showMe: "All" },
+        create: { id: filter.id(), showMe: filter.showMe() },
       },
     };
     return await this.db.profile.create<Prisma.ProfileCreateArgs>({ data });
