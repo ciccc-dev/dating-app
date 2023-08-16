@@ -81,6 +81,7 @@ export class _profileClient {
     birthday,
     sexualOrientation,
     showMe,
+    purposes,
     aboutMe,
   }: {
     username: string;
@@ -88,6 +89,7 @@ export class _profileClient {
     birthday: string;
     sexualOrientation: string;
     showMe: string[];
+    purposes: string[];
     aboutMe: string;
   }) => {
     try {
@@ -104,6 +106,7 @@ export class _profileClient {
           birthday,
           sexual_orientation: sexualOrientation,
           show_me: showMe,
+          purposes,
           about_me: aboutMe,
         }),
       });
