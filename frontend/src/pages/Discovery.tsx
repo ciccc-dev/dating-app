@@ -64,11 +64,11 @@ export const Discovery = () => {
   return (
     <>
       <StyledWrapper>
-        <StyledNavigationWrapper component="nav">
+        <StyledNavigationWrapper component='nav'>
           <DiscoveryNavigation profileId={profileId} onClick={handleClick} />
         </StyledNavigationWrapper>
         <UserProfiles.Provider value={profiles.map(({ id }) => id)}>
-          <StyledContent component="main">
+          <StyledContent component='main'>
             {profiles.map((profile, index) => (
               <ProfileCard profile={profile} key={index} />
             ))}
@@ -81,6 +81,7 @@ export const Discovery = () => {
 
 const StyledWrapper = styled(Box)`
   display: flex;
+  background-color: #f5f5f5;
 `;
 
 const StyledNavigationWrapper = styled(Box)`
