@@ -1,7 +1,29 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, PrismaPromise } from "@prisma/client";
 
 import { calculateAge, convertAgetoDate } from "../../utils/caluculateAge";
 import { Profile } from "./profile";
+import { Decimal } from "@prisma/client/runtime";
+
+interface Item {
+  name: string;
+}
+
+interface Geolocation {
+  distance: string;
+}
+
+interface FilteredProfile {
+  id: number;
+  user_id: number;
+  user_name: string;
+  birthday: Date;
+  gender: string;
+  sexual_orientation: string;
+  about_me: string;
+  purposes: Item[];
+  interests: Item[];
+  geolocation: Geolocation;
+}
 
 class _ProfileRepository {
   private db: PrismaClient;
@@ -16,12 +38,20 @@ class _ProfileRepository {
       include: {
         interests: { select: { name: true } },
         purposes: { select: { name: true } },
+        geolocation: {
+          select: { location: true, latitude: true, longitude: true },
+        },
       },
     });
     return result;
   };
 
-  fetchProfilesByFilter = async (filter: any) => {
+  fetchProfilesByFilter = async (
+    userId: string,
+    filter: any,
+    longitude: Decimal | undefined,
+    latitude: Decimal | undefined
+  ) => {
     const convertLookingForToGender = (lookingFor: string) => {
       switch (lookingFor) {
         case "Men":
@@ -33,75 +63,87 @@ class _ProfileRepository {
       }
     };
 
-    const fetchUnselectedProfileIds = await this.db.profileUnselected.findMany({
-      where: {
-        unselectedBy: filter.profile_id,
-      },
-      select: {
-        unselectedProfile: true,
-      },
-    });
+    const gender = convertLookingForToGender(filter.showMe);
+    const newBirthday = convertAgetoDate(filter.minAge);
+    const oldBirthday = convertAgetoDate(filter.maxAge);
+    const interests = filter.interests.map((interest: Item) => interest.name);
 
-    // const fetchLikedUserIds = await this.db.like.findMany({
-    //   where: {
-    //     sentBy: filter.userId,
-    //   },
-    //   select: {
-    //     receivedBy: true,
-    //   },
-    // });
+    const fetchProfiles = await this.db.$queryRaw<
+      PrismaPromise<FilteredProfile[]>
+    >`
+   WITH profile_distance AS (
+      SELECT
+        pr.id,
+        CEILING(st_distance(st_makepoint(${longitude}, ${latitude}),
+                    st_makepoint(g.longitude, g.latitude))) AS "distance"
+      FROM profile pr
+      JOIN geolocation g ON g.profile_id = pr.id
+   )
 
-    const unselectedProfileIds = fetchUnselectedProfileIds
-      ? [
-          ...fetchUnselectedProfileIds.map(
-            ({ unselectedProfile }) => unselectedProfile
-          ),
-          filter.profile_id,
-        ]
-      : undefined;
+  SELECT
+    pr.id AS "Id",
+    pr.user_id AS "userId",
+    pr.user_name AS "userName",
+    pr.birthday AS "birthday",
+    pr.gender AS "gender",
+    pr.sexual_orientation AS "sexualOrientation",
+    pr.about_me AS "aboutMe",
+    pd.distance AS "distance",
+    json_agg(DISTINCT jsonb_build_object(
+        'name', pu.name
+      )) AS purposes,
+    json_agg(DISTINCT jsonb_build_object(
+        'name', inte.name
+      )) AS interests
+  FROM profile pr
+  LEFT OUTER JOIN "_InterestToProfile" intp ON intp."B" = pr.id
+  LEFT OUTER JOIN interest inte ON inte.id =  intp."A"
+  LEFT OUTER JOIN purpose pu ON pu.profile_id = pr.id
+  LEFT OUTER JOIN profile_distance pd ON pd.id = pr.id
+  WHERE pr.id != ${filter.profileId}::uuid
+  AND pr.id NOT IN (SELECT unselected_profile FROM profile_unselected
+    WHERE unselected_by = ${filter.profileId}::uuid)
+    AND pr.user_id NOT IN (SELECT received_by FROM likes
+      WHERE sent_by = ${userId})
+      ${gender ? Prisma.sql`AND pr.gender = ${gender}` : Prisma.empty}
+         ${
+           filter.isAgeFiltered
+             ? Prisma.sql`AND pr.birthday >= ${oldBirthday} AND pr.birthday <= ${newBirthday}`
+             : Prisma.empty
+         }
+         ${
+           filter.isPurposeFiltered && filter.purposes.length > 0
+             ? Prisma.sql`AND pr.id IN (
+             SELECT pr.id
+             FROM profile pr
+             JOIN purpose pu ON pu.profile_id = pr.id
+             WHERE pu.name IN (${filter.purposes.join(",")}))`
+             : Prisma.empty
+         }
+        ${
+          filter.isInterestFiltered && filter.interests.length > 0
+            ? Prisma.sql`AND pr.id IN (
+            SELECT pr.id
+            FROM profile pr
+            JOIN "_InterestToProfile" intp ON intp."B" = pr.id
+            JOIN interest inte ON inte.id = intp."A"
+            WHERE inte.name IN (${interests.join(",")}))`
+            : Prisma.empty
+        }
+        ${
+          filter.isDistanceFiltered
+            ? Prisma.sql`AND pd.distance <= ${filter.distance}`
+            : Prisma.empty
+        }
+        GROUP BY pr.id, pd.distance
+        ORDER BY RANDOM()
+        LIMIT 3
+`;
 
-    // const likedUserIds = fetchLikedUserIds
-    //   ? fetchLikedUserIds.map(({ receivedBy }) => receivedBy)
-    //   : undefined;
-
-    const profiles = await this.db.profile.findMany({
-      where: {
-        id: unselectedProfileIds
-          ? { notIn: unselectedProfileIds }
-          : { not: filter.profile_id },
-        // userId: likedUserIds ? { notIn: likedUserIds } : undefined,
-        gender: convertLookingForToGender(filter.showMe),
-        birthday: filter.isAgeFiltered
-          ? {
-              gte: convertAgetoDate(filter.maxAge),
-              lte: convertAgetoDate(filter.minAge),
-            }
-          : undefined,
-        sexualOrientation: filter.isSexualOrientationFiltered
-          ? { in: filter.sexualOrientations }
-          : undefined,
-        interests: filter.isInterestFiltered
-          ? { some: { OR: filter.interests } }
-          : undefined,
-        purposes: filter.isPurposeFiltered
-          ? {
-              some: {
-                OR: filter.purposes.map((purpose: any) => ({ name: purpose })),
-              },
-            }
-          : undefined,
-      },
-      include: {
-        interests: { select: { name: true } },
-        purposes: { select: { name: true } },
-      },
-      take: 3,
-    });
-    const convertedProfiles = profiles.map(({ birthday, ...rest }) => ({
+    const convertedProfiles = fetchProfiles.map(({ birthday, ...rest }) => ({
       ...rest,
       age: calculateAge(birthday),
     }));
-
     return convertedProfiles;
   };
 

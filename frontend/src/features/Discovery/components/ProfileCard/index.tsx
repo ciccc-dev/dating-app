@@ -32,8 +32,13 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
               alt="profile1"
             />
             <StyledGrid container>
-              <Grid item xs={12}>
+              <Grid item xs={10}>
                 <StyledSpan>{profile.gender}</StyledSpan>
+              </Grid>
+              <Grid item xs={2}>
+                {profile.distance ? (
+                  <StyledSpan>{profile.distance}km</StyledSpan>
+                ) : null}
               </Grid>
               <Grid item xs={10}>
                 <div>{profile.userName}</div>

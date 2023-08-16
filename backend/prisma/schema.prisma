@@ -133,15 +133,15 @@ model ProfileBlocked {
 }
 
 model Geolocation {
-  id         String  @id @db.Uuid
-  profile    Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  profileId  String  @unique @map("profile_id") @db.Uuid
-  location   String  @db.VarChar(60)
-  latitude   Decimal @db.Decimal(17, 14)
-  longtitude Decimal @db.Decimal(17, 14)
+  id        String  @id @db.Uuid
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String  @unique @map("profile_id") @db.Uuid
+  location  String  @db.VarChar(60)
+  latitude  Decimal @db.Decimal(17, 14)
+  longitude Decimal @db.Decimal(17, 14)
 
   @@index([latitude])
-  @@index([longtitude])
+  @@index([longitude])
   @@map("geolocation")
 }
 

@@ -12,7 +12,7 @@ export class Filter {
   private isPurposeFiltered?: boolean;
   private interests?: string[];
   private isInterestFiltered?: boolean;
-  private profile_id: string;
+  private profileId: string;
 
   constructor(obj: any) {
     this.id = obj.id;
@@ -28,6 +28,6 @@ export class Filter {
     this.isPurposeFiltered = obj.isPurposeFiltered;
     this.interests = obj.interests ?? [];
     this.isInterestFiltered = obj.isInterestFiltered;
-    this.profile_id = obj.profile.id;
+    this.profileId = obj.profile.id;
   }
 }

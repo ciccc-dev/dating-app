@@ -4,6 +4,7 @@ import { validate } from "../../middleware/validateRequest";
 import { Profile } from "./profile";
 import { ProfileRepository } from "./repository";
 import { FilterRepository } from "../filters";
+import { GeolocationRepository } from "../geolocations";
 
 export const getProfileByUserId = async (
   req: Request,
@@ -26,9 +27,8 @@ export const getProfilesByUserId = async (
   next: NextFunction
 ) => {
   try {
-    const profile = await ProfileRepository.fetchProfileByUserId(
-      req.auth?.payload?.sub as string
-    );
+    const userId = req.auth?.payload?.sub as string;
+    const profile = await ProfileRepository.fetchProfileByUserId(userId);
     if (!profile) res.status(400).json({ error: "Can't find your profile" });
 
     const filter = await FilterRepository.fetchFilterByProfileId(
@@ -36,7 +36,16 @@ export const getProfilesByUserId = async (
     );
     if (!filter) res.status(400).json({ error: "Can't fetch filter" });
 
-    const result = await ProfileRepository.fetchProfilesByFilter(filter);
+    const geolocation = await GeolocationRepository.fetchGeolocation(
+      profile?.id ?? ""
+    );
+
+    const result = await ProfileRepository.fetchProfilesByFilter(
+      userId,
+      filter,
+      geolocation?.longitude,
+      geolocation?.latitude
+    );
     res.json(result);
   } catch (err) {
     next(err);

@@ -20,6 +20,7 @@ export interface Profile {
   updatedAt: Date;
   purposes: Item[];
   interests: Item[];
+  distance: number;
 }
 
 export const UserProfiles = createContext<string[]>([]);
@@ -54,6 +55,8 @@ export const Discovery = () => {
     setIsfiltered(false);
   }, [getAccessTokenSilently, user, isFiltered]);
 
+  console.log(profiles);
+
   const handleClick = () => {
     setIsfiltered(true);
   };
@@ -66,8 +69,8 @@ export const Discovery = () => {
         </StyledNavigationWrapper>
         <UserProfiles.Provider value={profiles.map(({ id }) => id)}>
           <StyledContent component="main">
-            {profiles.map((profile) => (
-              <ProfileCard profile={profile} key={profile.id} />
+            {profiles.map((profile, index) => (
+              <ProfileCard profile={profile} key={index} />
             ))}
           </StyledContent>
         </UserProfiles.Provider>
