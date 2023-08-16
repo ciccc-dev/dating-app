@@ -69,8 +69,8 @@ export const Discovery = () => {
         </StyledNavigationWrapper>
         <UserProfiles.Provider value={profiles.map(({ id }) => id)}>
           <StyledContent component="main">
-            {profiles.map((profile) => (
-              <ProfileCard profile={profile} key={profile.id} />
+            {profiles.map((profile, index) => (
+              <ProfileCard profile={profile} key={index} />
             ))}
           </StyledContent>
         </UserProfiles.Provider>
