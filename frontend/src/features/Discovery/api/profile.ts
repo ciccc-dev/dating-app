@@ -75,7 +75,7 @@ export class _profileClient {
     }
   };
 
-  CreatePost = async ({
+  CreateProfile = async ({
     username,
     gender,
     birthday,
