@@ -8,7 +8,7 @@ import { styled } from "@mui/material";
 import { NotificationBar } from "../../../../components/NotificationBar";
 import { useDialogState } from "../../../../hooks/useDialogState";
 
-const showMeGenders = ["Man", "Woman", "Other"];
+const showMeGenders = ["Men", "Women", "All"];
 
 type Phase = "birthday" | "purpose";
 
