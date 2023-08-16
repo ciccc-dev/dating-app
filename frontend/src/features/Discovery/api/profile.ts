@@ -75,17 +75,19 @@ export class _profileClient {
     }
   };
 
-  CreatePost = async ({
+  CreateProfile = async ({
     username,
     gender,
     birthday,
     sexualOrientation,
+    showMe,
     aboutMe,
   }: {
     username: string;
     gender: string;
     birthday: string;
     sexualOrientation: string;
+    showMe: string[];
     aboutMe: string;
   }) => {
     try {
@@ -101,6 +103,7 @@ export class _profileClient {
           gender,
           birthday,
           sexual_orientation: sexualOrientation,
+          show_me: showMe,
           about_me: aboutMe,
         }),
       });

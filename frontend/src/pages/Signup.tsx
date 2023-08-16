@@ -71,11 +71,12 @@ export const Signup = () => {
       process.env.REACT_APP_SERVER_URL ?? "",
       token
     );
-    const result = await ProfileAPI.CreatePost({
+    const result = await ProfileAPI.CreateProfile({
       username: profile.username,
       gender: profile.gender,
       birthday: profile.birthday,
       sexualOrientation: profile.sexualOrientation,
+      showMe: profile.showMe,
       aboutMe: "",
     });
     if (!result.status) return open();

@@ -17,7 +17,7 @@ class _FilterRepository {
         profile: { select: { id: true } },
       },
     });
-    if (!response) return {};
+    if (!response) throw Error("strange filter");
     const result = new Filter(response);
     return result;
   };

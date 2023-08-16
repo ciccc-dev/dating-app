@@ -5,6 +5,7 @@ import { Profile } from "./profile";
 import { ProfileRepository } from "./repository";
 import { FilterRepository } from "../filters";
 import { GeolocationRepository } from "../geolocations";
+import { Filter } from "../filters/filter";
 
 export const getProfileByUserId = async (
   req: Request,
@@ -64,8 +65,12 @@ export const postProfile = async (
       ...req.body,
       sexualOrientation: req.body.sexual_orientation,
     });
+    // TODO: Replace prisma schema file on show_me of filter table
+    const filter = new Filter({ showMe: req.body.show_me[0] });
+
     const result = await ProfileRepository.createProfile(
       profile,
+      filter,
       req.auth?.payload?.sub as string
     );
 

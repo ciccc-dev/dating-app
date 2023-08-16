@@ -108,8 +108,6 @@ export const DiscoveryNavigation = ({
     fetchFilterData();
   }, [getAccessTokenSilently, profileId]);
 
-  console.log(filter);
-
   const handleChange = <T,>(title: string, value: T) => {
     setFilter({ ...filter, [title]: value });
   };
