@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient, PrismaPromise } from "@prisma/client";
+import crypto from "crypto";
 
 import { calculateAge, convertAgetoDate } from "../../utils/caluculateAge";
 import { Profile } from "./profile";
@@ -194,6 +195,9 @@ class _ProfileRepository {
       aboutMe: profile.aboutMe() ?? "",
       registeredAt: new Date(),
       updatedAt: new Date(),
+      filter: {
+        create: { id: crypto.randomUUID(), showMe: "All" },
+      },
     };
     return await this.db.profile.create<Prisma.ProfileCreateArgs>({ data });
   };
