@@ -196,7 +196,11 @@ class _ProfileRepository {
       registeredAt: new Date(),
       updatedAt: new Date(),
       filter: {
-        create: { id: filter.id(), showMe: filter.showMe() },
+        create: {
+          id: filter.id(),
+          showMe: filter.showMe(),
+          purposes: filter.purposes(),
+        },
       },
     };
     return await this.db.profile.create<Prisma.ProfileCreateArgs>({ data });
