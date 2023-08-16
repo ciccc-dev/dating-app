@@ -47,7 +47,7 @@ export const getProfilesByUserId = async (
       geolocation?.longitude,
       geolocation?.latitude
     );
-    res.json(result);
+    res.status(200).json(result);
   } catch (err) {
     next(err);
   }
