@@ -13,7 +13,7 @@ export const getLikedProfiles = async (
     const profiles = await LikeRepository.fetchLikeProrilesByUserId(
       req.auth?.payload?.sub as string
     );
-    res.json(profiles);
+    res.status(200).json(profiles);
   } catch (err) {
     next(err);
   }
