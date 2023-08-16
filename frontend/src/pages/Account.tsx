@@ -416,8 +416,16 @@ export const Account = () => {
               </StyledSubTitle>
               <StyledSubDivder />
               <Map
-                latitude={profile?.geolocation?.latitude}
-                longitude={profile?.geolocation?.longitude}
+                latitude={
+                  typeof profile?.geolocation?.latitude === "string"
+                    ? parseInt(profile?.geolocation?.latitude)
+                    : profile?.geolocation?.latitude
+                }
+                longitude={
+                  typeof profile?.geolocation?.longitude === "string"
+                    ? parseInt(profile?.geolocation?.longitude)
+                    : profile?.geolocation?.longitude
+                }
               />
             </StyledSection>
           </StyledForm>

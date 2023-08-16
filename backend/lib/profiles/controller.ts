@@ -40,7 +40,6 @@ export const getProfilesByUserId = async (
       profile?.id ?? ""
     );
 
-    console.log("hello", filter, geolocation);
     const result = await ProfileRepository.fetchProfilesByFilter(
       userId,
       filter,
