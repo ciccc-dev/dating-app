@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { PURPOSE, Purpose } from "../../constants";
 
 export class Filter {
   private _id: string;
@@ -10,7 +11,7 @@ export class Filter {
   private _isDistanceFiltered: boolean;
   private _sexualOrientations: string[];
   private _isSexualOrientationFiltered: boolean;
-  private _purposes: string[];
+  private _purposes: Purpose[];
   private _isPurposeFiltered: boolean;
   private _interests: any[];
   private _isInterestFiltered: boolean;
@@ -47,6 +48,11 @@ export class Filter {
     isInterestFiltered?: boolean;
     profileId?: string;
   }) {
+    purposes?.forEach((purpose) => {
+      if (!Object.values(PURPOSE).includes(purpose))
+        throw "Puropose value is invalid";
+    });
+
     this._id = id ?? crypto.randomUUID();
     this._showMe = showMe ?? "";
     this._minAge = minAge ?? 0;
@@ -74,23 +80,4 @@ export class Filter {
   interests = () => this._interests;
   isInterestFiltered = () => this._isInterestFiltered;
   profileId = () => this._profileId;
-
-  toHash = () => {
-    return {
-      id: this._id,
-      showMe: this._showMe,
-      minAge: this._minAge,
-      maxAge: this._maxAge,
-      isAgeFiltered: this._isAgeFiltered,
-      distance: this._distance,
-      isDistanceFiltered: this._isDistanceFiltered,
-      sexualOrientations: this._sexualOrientations,
-      isSexualOrientationFiltered: this._isSexualOrientationFiltered,
-      purposes: this._purposes,
-      isPurposeFiltered: this._isPurposeFiltered,
-      interests: this._interests,
-      isInterestFiltered: this._isInterestFiltered,
-      profileId: this._profileId,
-    };
-  };
 }

@@ -77,6 +77,7 @@ export const Signup = () => {
       birthday: profile.birthday,
       sexualOrientation: profile.sexualOrientation,
       showMe: profile.showMe,
+      purposes: profile.purposes,
       aboutMe: "",
     });
     if (!result.status) return open();

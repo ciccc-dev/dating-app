@@ -15,6 +15,7 @@ const validateCreateProfileRequest = [
   body("birthday").notEmpty().isDate(),
   body("sexual_orientation").optional(),
   body("show_me").isArray(),
+  body("purposes").isArray(),
   body("about_me").optional(),
 ];
 
