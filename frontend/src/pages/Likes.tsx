@@ -53,6 +53,8 @@ export const Likes = () => {
 
 const StyledWrapper = styled(Box)`
   display: flex;
+  background-color: #f5f5f5;
+  height: 100vh;
 `;
 
 const StyledNavigationWrapper = styled(Box)`
