@@ -99,7 +99,7 @@ export const Account = () => {
           }
         }
       } catch (error) {
-        throw error;
+        console.log(error);
       }
     };
     const fetchPhotoUrls = async () => {
@@ -110,10 +110,8 @@ export const Account = () => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          if (user?.sub) {
-            console.log("profile.id", profile.id);
+          if (user?.sub && profile.id) {
             const data = await PhotoClient.fetchPhotos(profile.id);
-            console.log(data);
             setPhotoUrls(data);
           }
         }
@@ -140,7 +138,7 @@ export const Account = () => {
           setInterests(data);
         }
       } catch (error) {
-        throw error;
+        console.log(error);
       }
     };
     fetchInterests();
@@ -432,7 +430,7 @@ export const Account = () => {
               <StyledTitle>Your Location</StyledTitle>
             </StyledTitleWrapper>
             <StyledDivder />
-            <StyledSection>
+            {/* <StyledSection>
               <StyledSubTitle>
                 <StyledProperty>City:</StyledProperty>
                 <span>{profile?.geolocation?.location}</span>
@@ -450,7 +448,7 @@ export const Account = () => {
                     : profile?.geolocation?.longitude
                 }
               />
-            </StyledSection>
+            </StyledSection> */}
           </StyledForm>
         </StyledMain>
       </StyledContainer>
