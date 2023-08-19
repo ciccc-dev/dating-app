@@ -3,6 +3,7 @@ import { Stack, Box, Button, Grid, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { _photoClient } from "../../../Discovery/api/photo";
 import PersonIcon from "@mui/icons-material/Person";
+import { PhotoDialog } from "../PhotoDialog";
 
 export interface IFile {
   url: string;
@@ -56,15 +57,12 @@ export const ProfilePhotos = ({ photoUrls }: ProfilePhotosProps) => {
         {[...Array(5)].map((e, index) => (
           <Grid key={index} item xs={index === 0 ? 12 : 3}>
             {photoUrls && photoUrls[index] ? (
-              <StyleImg
-                src={photoUrls[index]}
-                alt={`userPhoto-${index}`}
-                sx={{
-                  aspectRatio: "0.75",
-                  width: "100%",
-                  borderRadius: "10px",
-                }}
-              />
+              // <StyleImg
+              //   src={photoUrls[index]}
+              //   alt={`userPhoto-${index}`}
+              //   // onClick={handlePhotoChange}
+              // />
+              <PhotoDialog photoUrls={photoUrls} index={index} />
             ) : (
               <Box
                 key={index}
@@ -129,7 +127,15 @@ export const ProfilePhotos = ({ photoUrls }: ProfilePhotosProps) => {
   );
 };
 
-const StyleImg = styled("img")``;
+const StyleImg = styled("img")`
+  aspect-ratio: 0.75;
+  width: 100%;
+  border-radius: 10px;
+  &:hover {
+    cursor: pointer;
+    border: 2px solid #ec407a;
+  }
+`;
 
 const StyledGrid = styled(Grid)`
   width: 300px;
