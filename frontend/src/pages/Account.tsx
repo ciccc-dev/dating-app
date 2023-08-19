@@ -20,6 +20,7 @@ import { FilterDialog } from "../features/Discovery/components/FilterDialog";
 import { Map } from "../features/Discovery/components/Map";
 import { _accountClient } from "../features/Discovery/api/account";
 import { useNavigate } from "react-router-dom";
+import { _photoClient } from "../features/Discovery/api/photo";
 
 export interface ProfileHookForm {
   name: string;
@@ -73,6 +74,7 @@ export const Account = () => {
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [interests, setInterests] = useState<Item[]>([]);
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const navigate = useNavigate();
   const {
     register,
@@ -100,9 +102,30 @@ export const Account = () => {
         throw error;
       }
     };
+    const fetchPhotoUrls = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const PhotoClient = new _photoClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          if (user?.sub) {
+            console.log("profile.id", profile.id);
+            const data = await PhotoClient.fetchPhotos(profile.id);
+            console.log(data);
+            setPhotoUrls(data);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
     fetchProfileId();
+    fetchPhotoUrls();
+
     setIsUpdated(false);
-  }, [getAccessTokenSilently, user, isUpdated]);
+  }, [getAccessTokenSilently, user, isUpdated, profile.id]);
 
   useEffect(() => {
     const fetchInterests = async () => {
@@ -187,7 +210,7 @@ export const Account = () => {
           >
             Go To Discovery
           </StlyedBackButton>
-          <ProfilePhotos />
+          <ProfilePhotos photoUrls={photoUrls} />
         </StyledAside>
         <StyledMain>
           <StyledForm component="form" onSubmit={handleSubmit(onAccountSubmit)}>
