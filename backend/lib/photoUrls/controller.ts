@@ -47,3 +47,21 @@ export const fetchPhotoUrls = async (
   console.log(result);
   res.status(201).json(result);
 };
+
+export const updatePhotoUrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = await PhotoUrlRepository.updatePhotoUrlById(req.params.id, "");
+  res.status(201).json(result);
+};
+
+export const deletePhotoUrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = await PhotoUrlRepository.deletePhotoUrlById(req.params.id);
+  res.status(201).json(result);
+};

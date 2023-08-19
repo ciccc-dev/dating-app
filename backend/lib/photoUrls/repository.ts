@@ -90,6 +90,27 @@ class _PhotoUrlRepository {
     });
     return result;
   };
+
+  deletePhotoUrlById = async (id: string) => {
+    const result = await this.db.photoUrl.delete({
+      where: {
+        id: id,
+      },
+    });
+    return result;
+  };
+
+  updatePhotoUrlById = async (id: string, url: string) => {
+    const result = await this.db.photoUrl.update({
+      where: {
+        id: id,
+      },
+      data: {
+        photoUrl: url,
+      },
+    });
+    return result;
+  };
 }
 
 const db = new PrismaClient();
