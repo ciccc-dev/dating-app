@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -72,6 +73,25 @@ class _PhotoUrlRepository {
     return urls;
   };
 
+  deletePhotoFromBucket = async (photoUrl: url) => {
+    const s3 = new S3Client({
+      credentials: {
+        accessKeyId: accessKey,
+        secretAccessKey: secretAccessKey,
+      },
+      region: bucketRegion,
+    });
+
+    const params = {
+      Bucket: bucketName,
+      Key: photoUrl.photoUrl,
+    };
+
+    const command = new DeleteObjectCommand(params);
+    const url = await s3.send(command);
+    return url;
+  };
+
   createPhotoUrls = async (photoUrls: Prisma.PhotoUrlCreateManyInput[]) => {
     const result = this.db.photoUrl.createMany({
       data: photoUrls,
@@ -83,6 +103,18 @@ class _PhotoUrlRepository {
     const result = await this.db.photoUrl.findMany({
       where: {
         profileId: profileId,
+      },
+      select: {
+        photoUrl: true,
+      },
+    });
+    return result;
+  };
+
+  fetchPhotoUrlById = async (id: string) => {
+    const result = await this.db.photoUrl.findUnique({
+      where: {
+        id: id,
       },
       select: {
         photoUrl: true,
