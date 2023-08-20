@@ -18,6 +18,10 @@ import { Chats } from "../features/Messages/components/Chats";
 import { MessagesNavigation } from "../features/Messages/components/Navigation";
 import { Form } from "../features/Messages/components/Form";
 import { Message, Profile } from "../features/Messages/types";
+import {
+  UseFetchLinkedProfilesResponse,
+  useFetchLikedProfiles,
+} from "../hooks/useFetchLikedProfiles";
 
 interface State {
   messages: Message[];
@@ -36,6 +40,9 @@ const initialState = {
 
 export const Messages = () => {
   const [state, update] = useState<State>(initialState);
+  const { sentTo, matched }: UseFetchLinkedProfilesResponse =
+    useFetchLikedProfiles();
+
   const [message, setMessage] = useState("");
   const { isLoading, user } = useAuth0();
   const queryParms = new URLSearchParams(useLocation().search);
@@ -127,6 +134,14 @@ export const Messages = () => {
                 onChange={handleChangeMessage}
                 onClickEnter={handleClickEnter}
                 onSubmit={handleSendMessage}
+                disabled={
+                  sentTo
+                    .map((x) => x.userId)
+                    .includes(state.selectedPartnerId) &&
+                  !matched
+                    .map((x) => x.userId)
+                    .includes(state.selectedPartnerId)
+                }
               />
             </>
           ) : (

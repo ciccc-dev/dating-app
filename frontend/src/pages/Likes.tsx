@@ -30,9 +30,7 @@ export const Likes = () => {
   }, [matched, receivedFrom, sentTo, state.category]);
 
   const handleChangeCategory = (e: any) =>
-    update(() => ({
-      category: e.currentTarget.dataset.item as string,
-    }));
+    update(() => ({ category: e.currentTarget.dataset.item as string }));
 
   return (
     <StyledWrapper>
