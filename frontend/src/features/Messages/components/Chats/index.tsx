@@ -76,18 +76,7 @@ const StyledPaper = styled(Paper)`
   width: 95%;
   overflow: auto;
   margin: 20px;
-
-  @media (min-width: 600px) {
-    height: 650px;
-  }
-
-  @media (min-width: 960px) {
-    height: 650px;
-  }
-
-  @media (min-width: 1300px) {
-    height: 700px;
-  }
+  height: 85vh;
 `;
 
 const StyledGrid = styled(Grid)`
