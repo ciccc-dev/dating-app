@@ -1,10 +1,11 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Stack, Box, Button, Grid, styled } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { _photoClient } from "../../../Discovery/api/photo";
 import PersonIcon from "@mui/icons-material/Person";
 import { PhotoDialog } from "../PhotoDialog";
 import { Photo } from "../../../../pages/Account";
+import { Point, Area } from "react-easy-crop/types";
 
 export interface IFile {
   url: string;
@@ -19,6 +20,8 @@ interface ProfilePhotosProps {
 export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const postPhotos = async (files: FileList) => {
     try {
@@ -41,6 +44,31 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
     }
   };
 
+  const postPhoto = async (file: File) => {
+    try {
+      if (file) {
+        const formData = new FormData();
+        formData.append("photo", file);
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const PhotoClient = new _photoClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          // const data = await PhotoClient.postPhotos(profileId, formData);
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const selectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
   const selectImages = (event: React.ChangeEvent<HTMLInputElement>) => {
     let images: Array<string> = [];
     let files = event.target.files;
@@ -50,6 +78,12 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
       }
       setSelectedFiles(files);
       postPhotos(files);
+    }
+  };
+
+  const handleBoxClick = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
     }
   };
 
@@ -65,7 +99,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
                 profileId={profileId}
               />
             ) : (
-              <Box
+              <StyledBox
                 key={index}
                 sx={{
                   aspectRatio: "0.75",
@@ -76,11 +110,19 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
+                onClick={handleBoxClick}
               >
                 <PersonIcon
                   sx={{ color: "grey", width: "100%", fontSize: "300%" }}
                 />
-              </Box>
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  name="photo"
+                  onChange={selectImage}
+                />
+              </StyledBox>
             )}
             {/* {selectedFiles && selectedFiles[index] ? (
                 <StyleImg
@@ -109,6 +151,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
               multiple
               type="file"
               name="photos"
+              ref={inputRef}
               onChange={selectImages}
             />
           </Button>
@@ -119,10 +162,6 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
         >
           Upload
         </Button> */}
-        {/* <form onSubmit={handleFormSubmit} encType="multipart/form-data">
-          <input type="file" accept="image/*" name="file" multiple />
-          <button type="submit">Submit</button>
-        </form> */}
       </Box>
     </>
   );
@@ -140,4 +179,11 @@ const StyleImg = styled("img")`
 
 const StyledGrid = styled(Grid)`
   width: 300px;
+`;
+
+const StyledBox = styled(Box)`
+  &:hover {
+    cursor: pointer;
+    border: 2px solid #ec407a;
+  }
 `;
