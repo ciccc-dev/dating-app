@@ -21,7 +21,7 @@ export const postPhotoUrls = async (
       );
 
       const photos = data.map((url: string, index) =>
-        new PhotoUrl(req.body.profileId, url, index).toHash()
+        new PhotoUrl(req.params.profileId, url, index).toHash()
       );
 
       await PhotoUrlRepository.createPhotoUrls(photos);

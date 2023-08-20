@@ -9,7 +9,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const router = express.Router();
 
-router.post("", upload.array("photos", 5), postPhotoUrls);
+router.post("/:profileId", upload.array("photos", 5), postPhotoUrls);
 router.get("/:profileId", fetchPhotoUrls);
 router.delete("/:photoUrlId", deletePhotoUrl);
 

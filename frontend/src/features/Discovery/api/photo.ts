@@ -9,10 +9,10 @@ export class _photoClient {
     this.accessToken = accesToken;
   }
 
-  postPhotos = async (photos: FormData) => {
+  postPhotos = async (profileId: string, photos: FormData) => {
     try {
       const res = await axios({
-        url: `${this.apiUrl}/api/photos`,
+        url: `${this.apiUrl}/api/photos/${profileId}`,
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.accessToken}`,

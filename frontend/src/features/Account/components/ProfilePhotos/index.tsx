@@ -33,7 +33,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          const data = await PhotoClient.postPhotos(formData);
+          const data = await PhotoClient.postPhotos(profileId, formData);
         }
       }
     } catch (error) {
