@@ -20,7 +20,6 @@ export class _photoClient {
         },
         data: photos,
       });
-      console.log("okay");
       return res.data;
     } catch (error) {
       console.log(error);
@@ -35,10 +34,24 @@ export class _photoClient {
         method: "GET",
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
-          "Content-Type": "multipart/form-data",
         },
       });
-      console.log("okay");
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  deletePhoto = async (photoUrlId: string) => {
+    try {
+      const res = await axios({
+        url: `${this.apiUrl}/api/photos/${photoUrlId}`,
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+      });
       return res.data;
     } catch (error) {
       console.log(error);

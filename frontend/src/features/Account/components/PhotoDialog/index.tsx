@@ -3,13 +3,21 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import { Box, styled, Divider } from "@mui/material";
 import { Photo } from "../../../../pages/Account";
+import { useAuth0 } from "@auth0/auth0-react";
+import { _photoClient } from "../../../Discovery/api/photo";
 
 interface PhotoDialogProps {
-  photoUrls: Photo[];
+  photoUrl: Photo;
   index: number;
+  profileId: string;
 }
 
-export const PhotoDialog = ({ index, photoUrls }: PhotoDialogProps) => {
+export const PhotoDialog = ({
+  index,
+  photoUrl,
+  profileId,
+}: PhotoDialogProps) => {
+  const { user, getAccessTokenSilently } = useAuth0();
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -20,17 +28,32 @@ export const PhotoDialog = ({ index, photoUrls }: PhotoDialogProps) => {
     setOpen(false);
   };
 
+  const handleDeletePhoto = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const ProfileClient = new _photoClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        return await ProfileClient.deletePhoto(photoUrl.id);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <>
       <StyleImg
-        id={photoUrls[index].id}
-        src={photoUrls[index].photoUrl}
+        id={photoUrl.id}
+        src={photoUrl.photoUrl}
         alt={`userPhoto-${index}`}
         onClick={handleClickOpen}
       />
       <Dialog open={open} onClose={handleClose}>
         <StyledBox>
-          <StyledButton onClick={handleClose} autoFocus>
+          <StyledButton onClick={handleDeletePhoto} autoFocus>
             Delete photo
           </StyledButton>
           <Divider />

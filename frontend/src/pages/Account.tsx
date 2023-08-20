@@ -213,7 +213,7 @@ export const Account = () => {
           >
             Go To Discovery
           </StlyedBackButton>
-          <ProfilePhotos photoUrls={photoUrls} />
+          <ProfilePhotos photoUrls={photoUrls} profileId={profile.id} />
         </StyledAside>
         <StyledMain>
           <StyledForm component="form" onSubmit={handleSubmit(onAccountSubmit)}>

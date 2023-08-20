@@ -12,7 +12,6 @@ const bucketName = process.env.BUCKET_NAME!;
 const bucketRegion = process.env.BUCKET_REGION!;
 const accessKey = process.env.ACCESS_KEY!;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY!;
-const randomImageName = crypto.randomBytes(32).toString("hex");
 
 interface url {
   id: string;
@@ -40,7 +39,8 @@ class _PhotoUrlRepository {
     const data: string[] = [];
 
     for (const file of files) {
-      const randomUrl = randomImageName + file.originalname;
+      const randomImageName = crypto.randomBytes(32).toString("hex");
+      const randomUrl = randomImageName + "_" + file.originalname;
 
       const params = {
         Bucket: bucketName,
@@ -50,7 +50,6 @@ class _PhotoUrlRepository {
       };
 
       data.push(randomUrl);
-      console.log("params", params);
       const command = new PutObjectCommand(params);
       await s3.send(command);
     }

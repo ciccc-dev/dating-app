@@ -13,9 +13,10 @@ export interface IFile {
 
 interface ProfilePhotosProps {
   photoUrls: Photo[];
+  profileId: string;
 }
 
-export const ProfilePhotos = ({ photoUrls }: ProfilePhotosProps) => {
+export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
@@ -58,12 +59,11 @@ export const ProfilePhotos = ({ photoUrls }: ProfilePhotosProps) => {
         {[...Array(5)].map((e, index) => (
           <Grid key={index} item xs={index === 0 ? 12 : 3}>
             {photoUrls && photoUrls[index] ? (
-              // <StyleImg
-              //   src={photoUrls[index]}
-              //   alt={`userPhoto-${index}`}
-              //   // onClick={handlePhotoChange}
-              // />
-              <PhotoDialog photoUrls={photoUrls} index={index} />
+              <PhotoDialog
+                photoUrl={photoUrls[index]}
+                index={index}
+                profileId={profileId}
+              />
             ) : (
               <Box
                 key={index}

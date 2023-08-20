@@ -20,13 +20,8 @@ export const postPhotoUrls = async (
         req.files as Express.Multer.File[]
       );
 
-      const photos = req.body.map((photo: photoUrl) =>
-        new PhotoUrl(
-          photo.profileId,
-          photo.photoUrl,
-          photo.sortOrder,
-          photo.id
-        ).toHash()
+      const photos = data.map((url: string, index) =>
+        new PhotoUrl(req.body.profileId, url, index).toHash()
       );
 
       await PhotoUrlRepository.createPhotoUrls(photos);
@@ -53,7 +48,10 @@ export const updatePhotoUrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  const result = await PhotoUrlRepository.updatePhotoUrlById(req.params.id, "");
+  const result = await PhotoUrlRepository.updatePhotoUrlById(
+    req.params.photoUrlId,
+    ""
+  );
   res.status(201).json(result);
 };
 
@@ -62,12 +60,15 @@ export const deletePhotoUrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  const url = await PhotoUrlRepository.fetchPhotoUrlById(req.params.id);
+  console.log(req.params.photoUrlId);
+  const url = await PhotoUrlRepository.fetchPhotoUrlById(req.params.photoUrlId);
   if (!url) {
     res.status(404).send("Post not found");
     return;
   }
   await PhotoUrlRepository.deletePhotoFromBucket(url);
-  const result = await PhotoUrlRepository.deletePhotoUrlById(req.params.id);
+  const result = await PhotoUrlRepository.deletePhotoUrlById(
+    req.params.photoUrlId
+  );
   res.status(201).json(result);
 };

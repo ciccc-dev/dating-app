@@ -11,6 +11,6 @@ const router = express.Router();
 
 router.post("", upload.array("photos", 5), postPhotoUrls);
 router.get("/:profileId", fetchPhotoUrls);
-router.delete("/:id", deletePhotoUrl);
+router.delete("/:photoUrlId", deletePhotoUrl);
 
 export default router;
