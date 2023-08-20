@@ -16,16 +16,16 @@ export const Form = ({ message, onChange, onClickEnter, onSubmit }: Props) => {
     <StyledPaper>
       <StyledForm onSubmit={onSubmit}>
         <TextField
-          label="Message"
+          label='Message'
           value={message}
           onChange={onChange}
           onKeyDown={onClickEnter}
           fullWidth
           multiline
           rows={1}
-          variant="outlined"
+          variant='outlined'
         />
-        <IconButton type="submit" color="primary">
+        <IconButton type='submit' color='primary'>
           <SendIcon />
         </IconButton>
       </StyledForm>
@@ -37,7 +37,22 @@ const StyledPaper = styled(Paper)`
   margin-left: 16px;
   position: absolute;
   bottom: 10px;
-  width: 80%;
+
+  @media (min-width: 100px) {
+    width: 90%;
+  }
+
+  @media (min-width: 600px) {
+    width: 60%;
+  }
+
+  @media (min-width: 1000px) {
+    width: 70%;
+  }
+
+  @media (min-width: 1620px) {
+    width: 80%;
+  }
 `;
 
 const StyledForm = styled("form")`
