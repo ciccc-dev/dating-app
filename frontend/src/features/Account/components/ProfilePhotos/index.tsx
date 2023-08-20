@@ -1,55 +1,142 @@
-import { Grid, styled } from "@mui/material";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Stack, Box, Button, Grid, styled } from "@mui/material";
+import { useEffect, useState } from "react";
+import { _photoClient } from "../../../Discovery/api/photo";
+import PersonIcon from "@mui/icons-material/Person";
+import { PhotoDialog } from "../PhotoDialog";
+import { Photo } from "../../../../pages/Account";
 
-export const ProfilePhotos = () => {
-  const photos = [
-    {
-      id: "001",
-      photoUrl: "https://swiperjs.com/demos/images/nature-1.jpg",
-      sortOrder: 1,
-    },
-    {
-      id: "002",
-      photoUrl: "https://swiperjs.com/demos/images/nature-2.jpg",
-      sortOrder: 2,
-    },
-    {
-      id: "003",
-      photoUrl: "https://swiperjs.com/demos/images/nature-3.jpg",
-      sortOrder: 3,
-    },
-    {
-      id: "004",
-      photoUrl: "https://swiperjs.com/demos/images/nature-4.jpg",
-      sortOrder: 4,
-    },
-    {
-      id: "005",
-      photoUrl: "https://swiperjs.com/demos/images/nature-5.jpg",
-      sortOrder: 5,
-    },
-  ];
+export interface IFile {
+  url: string;
+  name: string;
+}
+
+interface ProfilePhotosProps {
+  photoUrls: Photo[];
+  profileId: string;
+}
+
+export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
+  const { user, getAccessTokenSilently } = useAuth0();
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+
+  const postPhotos = async (files: FileList) => {
+    try {
+      if (files) {
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+          formData.append("photos", files[i]);
+        }
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const PhotoClient = new _photoClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          const data = await PhotoClient.postPhotos(profileId, formData);
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const selectImages = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let images: Array<string> = [];
+    let files = event.target.files;
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        images.push(URL.createObjectURL(files[i]));
+      }
+      setSelectedFiles(files);
+      postPhotos(files);
+    }
+  };
 
   return (
     <>
-      <StyledGrid container spacing={0}>
-        {photos.map((photo) => (
-          <Grid key={photo.id} item xs={photo.sortOrder === 1 ? 12 : 3}>
-            <StyleImg
-              src={photo.photoUrl}
-              alt={`userPhoto-${photo.id}`}
-              sx={{
-                width: photo.sortOrder === 1 ? "300px" : "75px",
-                height: photo.sortOrder === 1 ? "400px" : "100px",
-              }}
-            />
+      <StyledGrid container spacing={1}>
+        {[...Array(5)].map((e, index) => (
+          <Grid key={index} item xs={index === 0 ? 12 : 3}>
+            {photoUrls && photoUrls[index] ? (
+              <PhotoDialog
+                photoUrl={photoUrls[index]}
+                index={index}
+                profileId={profileId}
+              />
+            ) : (
+              <Box
+                key={index}
+                sx={{
+                  aspectRatio: "0.75",
+                  width: "100%",
+                  background: "lightgrey",
+                  borderRadius: "10px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <PersonIcon
+                  sx={{ color: "grey", width: "100%", fontSize: "300%" }}
+                />
+              </Box>
+            )}
+            {/* {selectedFiles && selectedFiles[index] ? (
+                <StyleImg
+                  src={URL.createObjectURL(selectedFiles[index])}
+                  alt={`userPhoto-${index}`}
+                  sx={{
+                    width: "100%",
+                    aspectRatio: "0.75",
+                  }}
+                />
+              ) : null} */}
           </Grid>
         ))}
       </StyledGrid>
+      <Box sx={{ marginTop: "1rem" }}>
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <Button
+            variant="outlined"
+            component="label"
+            sx={{ width: "100%", fontSize: "1.2rem", marginBottom: "1rem" }}
+          >
+            Choose Photos
+            <input
+              hidden
+              accept="image/*"
+              multiple
+              type="file"
+              name="photos"
+              onChange={selectImages}
+            />
+          </Button>
+        </Stack>
+        {/* <Button
+          variant="outlined"
+          sx={{ width: "100%", fontSize: "1.2rem", marginBottom: "1rem" }}
+        >
+          Upload
+        </Button> */}
+        {/* <form onSubmit={handleFormSubmit} encType="multipart/form-data">
+          <input type="file" accept="image/*" name="file" multiple />
+          <button type="submit">Submit</button>
+        </form> */}
+      </Box>
     </>
   );
 };
 
-const StyleImg = styled("img")``;
+const StyleImg = styled("img")`
+  aspect-ratio: 0.75;
+  width: 100%;
+  border-radius: 10px;
+  &:hover {
+    cursor: pointer;
+    border: 2px solid #ec407a;
+  }
+`;
 
 const StyledGrid = styled(Grid)`
   width: 300px;

@@ -20,6 +20,7 @@ import { FilterDialog } from "../features/Discovery/components/FilterDialog";
 import { Map } from "../features/Discovery/components/Map";
 import { _accountClient } from "../features/Discovery/api/account";
 import { useNavigate } from "react-router-dom";
+import { _photoClient } from "../features/Discovery/api/photo";
 
 export interface ProfileHookForm {
   name: string;
@@ -67,12 +68,18 @@ const defaultProfile = {
   },
 };
 
+export interface Photo {
+  id: string;
+  photoUrl: string;
+}
+
 export const Account = () => {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [interests, setInterests] = useState<Item[]>([]);
+  const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
   const navigate = useNavigate();
   const {
     register,
@@ -97,12 +104,31 @@ export const Account = () => {
           }
         }
       } catch (error) {
-        throw error;
+        console.log(error);
+      }
+    };
+    const fetchPhotoUrls = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const PhotoClient = new _photoClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          if (user?.sub && profile.id) {
+            const data = await PhotoClient.fetchPhotos(profile.id);
+            setPhotoUrls(data);
+          }
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
     fetchProfileId();
+    fetchPhotoUrls();
+
     setIsUpdated(false);
-  }, [getAccessTokenSilently, user, isUpdated]);
+  }, [getAccessTokenSilently, user, isUpdated, profile.id]);
 
   useEffect(() => {
     const fetchInterests = async () => {
@@ -117,7 +143,7 @@ export const Account = () => {
           setInterests(data);
         }
       } catch (error) {
-        throw error;
+        console.log(error);
       }
     };
     fetchInterests();
@@ -187,7 +213,7 @@ export const Account = () => {
           >
             Go To Discovery
           </StlyedBackButton>
-          <ProfilePhotos />
+          <ProfilePhotos photoUrls={photoUrls} profileId={profile.id} />
         </StyledAside>
         <StyledMain>
           <StyledForm component="form" onSubmit={handleSubmit(onAccountSubmit)}>
@@ -409,7 +435,7 @@ export const Account = () => {
               <StyledTitle>Your Location</StyledTitle>
             </StyledTitleWrapper>
             <StyledDivder />
-            <StyledSection>
+            {/* <StyledSection>
               <StyledSubTitle>
                 <StyledProperty>City:</StyledProperty>
                 <span>{profile?.geolocation?.location}</span>
@@ -427,7 +453,7 @@ export const Account = () => {
                     : profile?.geolocation?.longitude
                 }
               />
-            </StyledSection>
+            </StyledSection> */}
           </StyledForm>
         </StyledMain>
       </StyledContainer>

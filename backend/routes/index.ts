@@ -7,6 +7,7 @@ import filterRoutes from "./filter";
 import interestsRoutes from "./interests";
 import profileUnselectedRoutes from "./profileUnselected";
 import geolocationRoutes from "./geolocation";
+import photosRoutes from "./photos";
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.use("/filter", filterRoutes);
 router.use("/interests", interestsRoutes);
 router.use("/profileUnselected", profileUnselectedRoutes);
 router.use("/geolocation", geolocationRoutes);
+router.use("/photos", photosRoutes);
 
 export default router;
