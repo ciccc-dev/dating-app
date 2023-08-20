@@ -2,9 +2,10 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import { Box, styled, Divider } from "@mui/material";
+import { Photo } from "../../../../pages/Account";
 
 interface PhotoDialogProps {
-  photoUrls: string[];
+  photoUrls: Photo[];
   index: number;
 }
 
@@ -22,7 +23,8 @@ export const PhotoDialog = ({ index, photoUrls }: PhotoDialogProps) => {
   return (
     <>
       <StyleImg
-        src={photoUrls[index]}
+        id={photoUrls[index].id}
+        src={photoUrls[index].photoUrl}
         alt={`userPhoto-${index}`}
         onClick={handleClickOpen}
       />

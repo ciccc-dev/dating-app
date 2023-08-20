@@ -67,7 +67,7 @@ export const deletePhotoUrl = async (
     res.status(404).send("Post not found");
     return;
   }
-  const data = await PhotoUrlRepository.deletePhotoFromBucket(url);
+  await PhotoUrlRepository.deletePhotoFromBucket(url);
   const result = await PhotoUrlRepository.deletePhotoUrlById(req.params.id);
   res.status(201).json(result);
 };

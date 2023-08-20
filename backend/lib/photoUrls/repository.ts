@@ -15,6 +15,11 @@ const secretAccessKey = process.env.SECRET_ACCESS_KEY!;
 const randomImageName = crypto.randomBytes(32).toString("hex");
 
 interface url {
+  id: string;
+  photoUrl: string;
+}
+
+interface photoUrl {
   photoUrl: string;
 }
 
@@ -60,7 +65,7 @@ class _PhotoUrlRepository {
       },
       region: bucketRegion,
     });
-    const urls: string[] = [];
+    const updatedPhotoUrls: url[] = [];
     for (const photoUrl of photoUrls) {
       const getObjectParams = {
         Bucket: bucketName,
@@ -68,12 +73,16 @@ class _PhotoUrlRepository {
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-      urls.push(url);
+      const updatedPhotoUrl = {
+        ...photoUrl,
+        photoUrl: url,
+      };
+      updatedPhotoUrls.push(updatedPhotoUrl);
     }
-    return urls;
+    return updatedPhotoUrls;
   };
 
-  deletePhotoFromBucket = async (photoUrl: url) => {
+  deletePhotoFromBucket = async (photoUrl: photoUrl) => {
     const s3 = new S3Client({
       credentials: {
         accessKeyId: accessKey,
@@ -105,6 +114,7 @@ class _PhotoUrlRepository {
         profileId: profileId,
       },
       select: {
+        id: true,
         photoUrl: true,
       },
     });

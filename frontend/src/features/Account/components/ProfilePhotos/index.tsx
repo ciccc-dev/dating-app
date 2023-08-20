@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { _photoClient } from "../../../Discovery/api/photo";
 import PersonIcon from "@mui/icons-material/Person";
 import { PhotoDialog } from "../PhotoDialog";
+import { Photo } from "../../../../pages/Account";
 
 export interface IFile {
   url: string;
@@ -11,7 +12,7 @@ export interface IFile {
 }
 
 interface ProfilePhotosProps {
-  photoUrls: string[];
+  photoUrls: Photo[];
 }
 
 export const ProfilePhotos = ({ photoUrls }: ProfilePhotosProps) => {

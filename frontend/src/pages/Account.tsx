@@ -68,13 +68,18 @@ const defaultProfile = {
   },
 };
 
+export interface Photo {
+  id: string;
+  photoUrl: string;
+}
+
 export const Account = () => {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [interests, setInterests] = useState<Item[]>([]);
-  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
   const navigate = useNavigate();
   const {
     register,
