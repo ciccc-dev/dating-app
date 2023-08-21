@@ -6,6 +6,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { PhotoDialog } from "../PhotoDialog";
 import { Photo } from "../../../../pages/Account";
 import { Point, Area } from "react-easy-crop/types";
+import { ImageCropDialog } from "../ImageCropDialog";
 
 export interface IFile {
   url: string;
@@ -99,30 +100,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
                 profileId={profileId}
               />
             ) : (
-              <StyledBox
-                key={index}
-                sx={{
-                  aspectRatio: "0.75",
-                  width: "100%",
-                  background: "lightgrey",
-                  borderRadius: "10px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onClick={handleBoxClick}
-              >
-                <PersonIcon
-                  sx={{ color: "grey", width: "100%", fontSize: "300%" }}
-                />
-                <input
-                  hidden
-                  accept="image/*"
-                  type="file"
-                  name="photo"
-                  onChange={selectImage}
-                />
-              </StyledBox>
+              <ImageCropDialog />
             )}
             {/* {selectedFiles && selectedFiles[index] ? (
                 <StyleImg
@@ -137,7 +115,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
           </Grid>
         ))}
       </StyledGrid>
-      <Box sx={{ marginTop: "1rem" }}>
+      {/* <Box sx={{ marginTop: "1rem" }}>
         <Stack direction="row" alignItems="center" spacing={2}>
           <Button
             variant="outlined"
@@ -151,18 +129,11 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
               multiple
               type="file"
               name="photos"
-              ref={inputRef}
               onChange={selectImages}
             />
           </Button>
         </Stack>
-        {/* <Button
-          variant="outlined"
-          sx={{ width: "100%", fontSize: "1.2rem", marginBottom: "1rem" }}
-        >
-          Upload
-        </Button> */}
-      </Box>
+      </Box> */}
     </>
   );
 };

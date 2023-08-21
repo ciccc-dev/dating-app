@@ -5,6 +5,8 @@ import { Box, styled, Divider } from "@mui/material";
 import { Photo } from "../../../../pages/Account";
 import { useAuth0 } from "@auth0/auth0-react";
 import { _photoClient } from "../../../Discovery/api/photo";
+import PersonIcon from "@mui/icons-material/Person";
+import { useRef, useState } from "react";
 
 interface PhotoDialogProps {
   photoUrl: Photo;
@@ -18,7 +20,7 @@ export const PhotoDialog = ({
   profileId,
 }: PhotoDialogProps) => {
   const { user, getAccessTokenSilently } = useAuth0();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
