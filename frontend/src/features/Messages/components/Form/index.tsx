@@ -23,7 +23,7 @@ export const Form = ({
     <StyledPaper>
       <StyledForm onSubmit={onSubmit}>
         <TextField
-          label='Message'
+          label={disabled ? "Need to match to send a message" : "Message"}
           value={message}
           onChange={onChange}
           onKeyDown={onClickEnter}
