@@ -28,6 +28,7 @@ interface State {
   currentChatroom: string;
   partners: Profile[];
   selectedPartnerId: string;
+  ongoingMessage: string;
 }
 
 const initialState = {
@@ -36,14 +37,13 @@ const initialState = {
   currentChatroom: "",
   partners: [],
   selectedPartnerId: "",
+  ongoingMessage: "",
 };
 
 export const Messages = () => {
   const [state, update] = useState<State>(initialState);
-  const { sentTo, matched }: UseFetchLinkedProfilesResponse =
-    useFetchLikedProfiles();
+  const { matched }: UseFetchLinkedProfilesResponse = useFetchLikedProfiles();
 
-  const [message, setMessage] = useState("");
   const { isLoading, user } = useAuth0();
   const queryParms = new URLSearchParams(useLocation().search);
 
@@ -74,15 +74,15 @@ export const Messages = () => {
     }));
 
   const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) =>
-    setMessage(event.target.value);
+    update((prev) => ({ ...prev, ongoingMessage: event.target.value }));
 
   const onSubmit = () => {
     WebsocketClient.emitSendMessage({
-      message,
+      message: state.ongoingMessage,
       sentBy: user?.sub ?? "",
       receivedBy: state.selectedPartnerId,
     });
-    setMessage("");
+    update((prev) => ({ ...prev, ongoingMessage: "" }));
   };
 
   const handleSendMessage = (event: FormEvent) => {
@@ -130,14 +130,11 @@ export const Messages = () => {
               </StyledPartnerName>
               <Chats messages={currentMessages} />
               <Form
-                message={message}
+                message={state.ongoingMessage}
                 onChange={handleChangeMessage}
                 onClickEnter={handleClickEnter}
                 onSubmit={handleSendMessage}
                 disabled={
-                  sentTo
-                    .map((x) => x.userId)
-                    .includes(state.selectedPartnerId) &&
                   !matched
                     .map((x) => x.userId)
                     .includes(state.selectedPartnerId)
