@@ -9,14 +9,21 @@ interface Props {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onClickEnter: (event: KeyboardEvent<HTMLDivElement>) => void;
   onSubmit: (event: FormEvent) => void;
+  disabled: boolean;
 }
 
-export const Form = ({ message, onChange, onClickEnter, onSubmit }: Props) => {
+export const Form = ({
+  message,
+  onChange,
+  onClickEnter,
+  onSubmit,
+  disabled,
+}: Props) => {
   return (
     <StyledPaper>
       <StyledForm onSubmit={onSubmit}>
         <TextField
-          label='Message'
+          label={disabled ? "Need to match to send a message" : "Message"}
           value={message}
           onChange={onChange}
           onKeyDown={onClickEnter}
@@ -24,6 +31,7 @@ export const Form = ({ message, onChange, onClickEnter, onSubmit }: Props) => {
           multiline
           rows={1}
           variant='outlined'
+          disabled={disabled}
         />
         <IconButton type='submit' color='primary'>
           <SendIcon />

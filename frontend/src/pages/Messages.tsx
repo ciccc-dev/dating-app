@@ -18,12 +18,17 @@ import { Chats } from "../features/Messages/components/Chats";
 import { MessagesNavigation } from "../features/Messages/components/Navigation";
 import { Form } from "../features/Messages/components/Form";
 import { Message, Profile } from "../features/Messages/types";
+import {
+  UseFetchLinkedProfilesResponse,
+  useFetchLikedProfiles,
+} from "../hooks/useFetchLikedProfiles";
 
 interface State {
   messages: Message[];
   currentChatroom: string;
   partners: Profile[];
   selectedPartnerId: string;
+  ongoingMessage: string;
 }
 
 const initialState = {
@@ -32,11 +37,13 @@ const initialState = {
   currentChatroom: "",
   partners: [],
   selectedPartnerId: "",
+  ongoingMessage: "",
 };
 
 export const Messages = () => {
   const [state, update] = useState<State>(initialState);
-  const [message, setMessage] = useState("");
+  const { matched }: UseFetchLinkedProfilesResponse = useFetchLikedProfiles();
+
   const { isLoading, user } = useAuth0();
   const queryParms = new URLSearchParams(useLocation().search);
 
@@ -67,15 +74,15 @@ export const Messages = () => {
     }));
 
   const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) =>
-    setMessage(event.target.value);
+    update((prev) => ({ ...prev, ongoingMessage: event.target.value }));
 
   const onSubmit = () => {
     WebsocketClient.emitSendMessage({
-      message,
+      message: state.ongoingMessage,
       sentBy: user?.sub ?? "",
       receivedBy: state.selectedPartnerId,
     });
-    setMessage("");
+    update((prev) => ({ ...prev, ongoingMessage: "" }));
   };
 
   const handleSendMessage = (event: FormEvent) => {
@@ -123,10 +130,15 @@ export const Messages = () => {
               </StyledPartnerName>
               <Chats messages={currentMessages} />
               <Form
-                message={message}
+                message={state.ongoingMessage}
                 onChange={handleChangeMessage}
                 onClickEnter={handleClickEnter}
                 onSubmit={handleSendMessage}
+                disabled={
+                  !matched
+                    .map((x) => x.userId)
+                    .includes(state.selectedPartnerId)
+                }
               />
             </>
           ) : (
