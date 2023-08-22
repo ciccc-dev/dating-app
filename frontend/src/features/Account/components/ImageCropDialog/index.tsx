@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import React, { useCallback, useRef, useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
-import { uploadImage } from "../../../../utils/cropImage";
 import PersonIcon from "@mui/icons-material/Person";
+import getCroppedImg from "../../../../utils/cropImage";
 
 const aspect = 3 / 4;
 const zoomInit = 1;
@@ -21,12 +21,17 @@ const croppedAreaInit = {
   y: 0,
 };
 
-export const ImageCropDialog = () => {
+interface ImageCropDialogProps {
+  postPhoto: (file: File) => void;
+}
+
+export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [zoom, setZoom] = useState(zoomInit);
   const [crop, setCrop] = useState<Point>(cropInit);
-  const [croppedArea, setCroppedArea] = React.useState<Area>(croppedAreaInit);
+  const [croppedAreaPixels, setCroppedAreaPixels] =
+    useState<Area>(croppedAreaInit);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFileUrl, setSelectedFileUrl] = useState("");
 
@@ -44,20 +49,28 @@ export const ImageCropDialog = () => {
     }
   };
 
-  const onCropComplete = (croppedAreaPixels: Area) => {
-    setCroppedArea(croppedAreaPixels);
-  };
+  const onCropComplete = useCallback(
+    (croppedArea: Area, croppedAreaPixels: Area) => {
+      setCroppedAreaPixels(croppedAreaPixels);
+    },
+    []
+  );
 
-  const onUpload = async () => {
-    const data = await uploadImage(
-      URL.createObjectURL(selectedFile!),
-      selectedFile!.name,
-      croppedArea
-    );
-    if (data) {
-      setSelectedFile(data);
+  const onUpload = useCallback(async () => {
+    try {
+      const croppedImage = await getCroppedImg(
+        URL.createObjectURL(selectedFile!),
+        selectedFile!.name,
+        croppedAreaPixels
+      );
+      if (croppedImage) {
+        setSelectedFile(croppedImage);
+        postPhoto(croppedImage);
+      }
+    } catch (error) {
+      console.error(error);
     }
-  };
+  }, [croppedAreaPixels, selectedFile, postPhoto]);
 
   const onCancel = () => {
     handleClose();

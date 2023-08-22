@@ -56,7 +56,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          // const data = await PhotoClient.postPhotos(profileId, formData);
+          const data = await PhotoClient.postPhoto(profileId, formData);
         }
       }
     } catch (error) {
@@ -100,7 +100,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
                 profileId={profileId}
               />
             ) : (
-              <ImageCropDialog />
+              <ImageCropDialog postPhoto={postPhoto} />
             )}
             {/* {selectedFiles && selectedFiles[index] ? (
                 <StyleImg
