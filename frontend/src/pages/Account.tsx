@@ -435,7 +435,7 @@ export const Account = () => {
               <StyledTitle>Your Location</StyledTitle>
             </StyledTitleWrapper>
             <StyledDivder />
-            {/* <StyledSection>
+            <StyledSection>
               <StyledSubTitle>
                 <StyledProperty>City:</StyledProperty>
                 <span>{profile?.geolocation?.location}</span>
@@ -453,7 +453,7 @@ export const Account = () => {
                     : profile?.geolocation?.longitude
                 }
               />
-            </StyledSection> */}
+            </StyledSection>
           </StyledForm>
         </StyledMain>
       </StyledContainer>

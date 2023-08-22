@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { PhotoUrl } from "./photoUrl";
 import { PhotoUrlRepository } from "./repository";
+import { Prisma } from "@prisma/client";
 
 interface photoUrl {
   profileId: string;
@@ -25,6 +26,37 @@ export const postPhotoUrls = async (
       );
 
       await PhotoUrlRepository.createPhotoUrls(photos);
+      res.status(201).json();
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const postPhotoUrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (req.file) {
+      const data = await PhotoUrlRepository.postPhotoToBucket(
+        req.file as Express.Multer.File
+      );
+
+      const { profileId, photoUrl, sortOrder, id, registeredAt, updatedAt } =
+        new PhotoUrl(req.params.profileId, data, 1).toHash();
+
+      const photo: Prisma.PhotoUrlCreateInput = {
+        id: id,
+        profile: { connect: { id: profileId } },
+        photoUrl: photoUrl,
+        sortOrder: sortOrder,
+        registeredAt: registeredAt,
+        updatedAt: updatedAt,
+      };
+
+      await PhotoUrlRepository.createPhotoUrl(photo);
       res.status(201).json();
     }
   } catch (err) {

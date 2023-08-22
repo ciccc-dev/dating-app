@@ -56,6 +56,29 @@ class _PhotoUrlRepository {
     return data;
   };
 
+  postPhotoToBucket = async (file: Express.Multer.File) => {
+    const s3 = new S3Client({
+      credentials: {
+        accessKeyId: accessKey,
+        secretAccessKey: secretAccessKey,
+      },
+      region: bucketRegion,
+    });
+
+    const randomImageName = crypto.randomBytes(32).toString("hex");
+    const randomUrl = randomImageName + "_" + file.originalname;
+    const params = {
+      Bucket: bucketName,
+      Key: randomUrl,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    };
+    const command = new PutObjectCommand(params);
+    await s3.send(command);
+
+    return randomUrl;
+  };
+
   fetchPhotosFromBucket = async (photoUrls: url[]) => {
     const s3 = new S3Client({
       credentials: {
@@ -103,6 +126,13 @@ class _PhotoUrlRepository {
   createPhotoUrls = async (photoUrls: Prisma.PhotoUrlCreateManyInput[]) => {
     const result = this.db.photoUrl.createMany({
       data: photoUrls,
+    });
+    return result;
+  };
+
+  createPhotoUrl = async (photoUrl: Prisma.PhotoUrlCreateInput) => {
+    const result = this.db.photoUrl.create({
+      data: photoUrl,
     });
     return result;
   };

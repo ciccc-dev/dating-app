@@ -35,6 +35,8 @@ const ProfileMap = ({
 
   if (!isLoaded) return <div>Loading...</div>;
 
+  if (!latitude || !longitude) return <div>Cannot get geolocation</div>;
+
   return (
     <GoogleMap
       zoom={16}

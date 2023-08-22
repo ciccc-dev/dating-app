@@ -24,18 +24,23 @@ export const Home = () => {
       <div style={styles.paperContainer}>
         <Grid
           container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
+          alignItems='center'
+          justifyContent='center'
+          direction='column'
         >
           <StyledGrid item xs={12}>
-            <Typography variant="h3">Connect</Typography>
+            <StyledTitle>
+              <Typography variant='h3' align='center' color='white'>
+                <div>Find Friends, dates, relationships</div>
+                <div>Start here.</div>
+              </Typography>
+            </StyledTitle>
           </StyledGrid>
           <StyledGrid item xs={12}>
             <Button
-              variant="contained"
-              color="secondary"
-              size="large"
+              variant='contained'
+              color='secondary'
+              size='large'
               onClick={handleClickCreateAccountButton}
             >
               Create Account
@@ -51,10 +56,18 @@ const StyledGrid = styled(Grid)`
   margin-top: 200px;
 `;
 
+const StyledTitle = styled(`div`)`
+  background-color: #d81b60;
+  opacity: 0.6;
+  border-radius: 20px;
+  padding: 10px;
+`;
+
 const styles = {
   paperContainer: {
-    opacity: 0.7,
+    opacity: 0.8,
     height: 890,
-    backgroundImage: `url(${"https://tinder.com/static/build/f527e47b80b40fa123bc1093175cb7dd.webp"})`,
+    backgroundImage: `url(${process.env.PUBLIC_URL}/top.png)`,
+    backgroundSize: "cover",
   },
 };
