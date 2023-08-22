@@ -75,6 +75,8 @@ export class Filter {
   isAgeFiltered = () => this._isAgeFiltered;
   distance = () => this._distance;
   isDistanceFiltered = () => this._isDistanceFiltered;
+  sexualOrientations = () => this._sexualOrientations;
+  isSexualOrientationFiltered = () => this._isSexualOrientationFiltered;
   purposes = () => this._purposes;
   isPurposeFiltered = () => this._isPurposeFiltered;
   interests = () => this._interests;
