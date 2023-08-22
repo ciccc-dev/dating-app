@@ -1,25 +1,3 @@
-// {
-//   "id": "chatcmpl-7qGXtUlMX4SA1xWB8psDpgaxthsgR",
-//   "object": "chat.completion",
-//   "created": 1692691013,
-//   "model": "gpt-3.5-turbo-0613",
-//   "choices": [
-//     {
-//       "index": 0,
-//       "message": {
-//         "role": "assistant",
-//         "content": "No, I am not looking for friends. I am specifically looking for a partner."
-//       },
-//       "finish_reason": "stop"
-//     }
-//   ],
-//   "usage": {
-//     "prompt_tokens": 82,
-//     "completion_tokens": 17,
-//     "total_tokens": 99
-//   }
-// }
-
 export class Completion {
   private _id: string;
   private _unixCreateAt: number;
