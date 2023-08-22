@@ -1,10 +1,12 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Stack, Box, Button, Grid, styled } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { _photoClient } from "../../../Discovery/api/photo";
 import PersonIcon from "@mui/icons-material/Person";
 import { PhotoDialog } from "../PhotoDialog";
 import { Photo } from "../../../../pages/Account";
+import { Point, Area } from "react-easy-crop/types";
+import { ImageCropDialog } from "../ImageCropDialog";
 
 export interface IFile {
   url: string;
@@ -19,6 +21,8 @@ interface ProfilePhotosProps {
 export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const postPhotos = async (files: FileList) => {
     try {
@@ -41,6 +45,31 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
     }
   };
 
+  const postPhoto = async (file: File) => {
+    try {
+      if (file) {
+        const formData = new FormData();
+        formData.append("photo", file);
+        const token = await getAccessTokenSilently();
+        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+          const PhotoClient = new _photoClient(
+            process.env.REACT_APP_SERVER_URL ?? "",
+            token
+          );
+          const data = await PhotoClient.postPhoto(profileId, formData);
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const selectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
   const selectImages = (event: React.ChangeEvent<HTMLInputElement>) => {
     let images: Array<string> = [];
     let files = event.target.files;
@@ -50,6 +79,12 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
       }
       setSelectedFiles(files);
       postPhotos(files);
+    }
+  };
+
+  const handleBoxClick = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
     }
   };
 
@@ -65,22 +100,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
                 profileId={profileId}
               />
             ) : (
-              <Box
-                key={index}
-                sx={{
-                  aspectRatio: "0.75",
-                  width: "100%",
-                  background: "lightgrey",
-                  borderRadius: "10px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <PersonIcon
-                  sx={{ color: "grey", width: "100%", fontSize: "300%" }}
-                />
-              </Box>
+              <ImageCropDialog postPhoto={postPhoto} />
             )}
             {/* {selectedFiles && selectedFiles[index] ? (
                 <StyleImg
@@ -95,7 +115,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
           </Grid>
         ))}
       </StyledGrid>
-      <Box sx={{ marginTop: "1rem" }}>
+      {/* <Box sx={{ marginTop: "1rem" }}>
         <Stack direction="row" alignItems="center" spacing={2}>
           <Button
             variant="outlined"
@@ -113,17 +133,7 @@ export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
             />
           </Button>
         </Stack>
-        {/* <Button
-          variant="outlined"
-          sx={{ width: "100%", fontSize: "1.2rem", marginBottom: "1rem" }}
-        >
-          Upload
-        </Button> */}
-        {/* <form onSubmit={handleFormSubmit} encType="multipart/form-data">
-          <input type="file" accept="image/*" name="file" multiple />
-          <button type="submit">Submit</button>
-        </form> */}
-      </Box>
+      </Box> */}
     </>
   );
 };
@@ -140,4 +150,11 @@ const StyleImg = styled("img")`
 
 const StyledGrid = styled(Grid)`
   width: 300px;
+`;
+
+const StyledBox = styled(Box)`
+  &:hover {
+    cursor: pointer;
+    border: 2px solid #ec407a;
+  }
 `;

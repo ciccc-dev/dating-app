@@ -27,6 +27,24 @@ export class _photoClient {
     }
   };
 
+  postPhoto = async (profileId: string, photo: FormData) => {
+    try {
+      const res = await axios({
+        url: `${this.apiUrl}/api/photos/single/${profileId}`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+        data: photo,
+      });
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
   fetchPhotos = async (profileId: string) => {
     try {
       const res = await axios({
