@@ -8,6 +8,7 @@ import { Messages } from "./pages/Messages";
 import { Account } from "./pages/Account";
 import { Root } from "./pages/Root";
 import { Signup } from "./pages/Signup";
+import { AiAvator } from "./pages/AiAvator";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "/account",
         element: <Account />,
+      },
+      {
+        path: "/ai-avator/:userId",
+        element: <AiAvator />,
       },
     ],
   },
