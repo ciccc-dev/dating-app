@@ -127,6 +127,10 @@ export const Messages = () => {
             <>
               <StyledPartnerName variant='h5'>
                 {selectedPartner?.userName ?? ""}
+
+                <a href={`/ai-avator/${state.selectedPartnerId}`}>
+                  （ You can ask AI about this user information ）
+                </a>
               </StyledPartnerName>
               <Chats messages={currentMessages} />
               <Form
