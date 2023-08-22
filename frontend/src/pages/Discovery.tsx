@@ -7,6 +7,7 @@ import { DiscoveryNavigation } from "../features/Discovery/components/Navigation
 import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileCard } from "../features/Discovery/components/ProfileCard";
 import { Item } from "../features/Discovery/components/FilterDialog";
+import { Photo } from "./Account";
 
 export interface Profile {
   id: string;
@@ -20,6 +21,7 @@ export interface Profile {
   updatedAt: Date;
   purposes: Item[];
   interests: Item[];
+  photos: Photo[];
   distance: number;
 }
 
@@ -64,11 +66,11 @@ export const Discovery = () => {
   return (
     <>
       <StyledWrapper>
-        <StyledNavigationWrapper component='nav'>
+        <StyledNavigationWrapper component="nav">
           <DiscoveryNavigation profileId={profileId} onClick={handleClick} />
         </StyledNavigationWrapper>
         <UserProfiles.Provider value={profiles.map(({ id }) => id)}>
-          <StyledContent component='main'>
+          <StyledContent component="main">
             {profiles.map((profile, index) => (
               <ProfileCard profile={profile} key={index} />
             ))}

@@ -6,6 +6,7 @@ import { ProfileRepository } from "./repository";
 import { FilterRepository } from "../filters";
 import { GeolocationRepository } from "../geolocations";
 import { Filter } from "../filters/filter";
+import { PhotoUrlRepository } from "../photoUrls/repository";
 
 export const getProfileByUserId = async (
   req: Request,
@@ -47,7 +48,30 @@ export const getProfilesByUserId = async (
       geolocation?.longitude,
       geolocation?.latitude
     );
-    res.status(200).json(result);
+
+    if (result) {
+      const processedProfiles = await Promise.all(
+        result.map(async (profile) => {
+          console.log(profile.photos);
+          if (profile.photos[0].id) {
+            const photoUrls = await PhotoUrlRepository.fetchPhotosFromBucket(
+              profile.photos
+            );
+            return {
+              ...profile,
+              photos: photoUrls,
+            };
+          }
+          return {
+            ...profile,
+            photos: [],
+          };
+        })
+      );
+      return res.status(200).json(processedProfiles);
+    }
+
+    return res.status(200).json(result);
   } catch (err) {
     next(err);
   }

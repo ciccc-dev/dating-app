@@ -26,7 +26,12 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
           modules={[EffectFlip, Pagination]}
           className="mySwiper"
         >
-          <StyledSwiperSlide>
+          {profile.photos.map((item, index) => (
+            <StyledSwiperSlide key={index}>
+              <StyledImg src={item.photoUrl} alt={item.photoUrl} />
+            </StyledSwiperSlide>
+          ))}
+          {/* <StyledSwiperSlide>
             <StyledImg
               src="https://swiperjs.com/demos/images/nature-1.jpg"
               alt="profile1"
@@ -85,7 +90,7 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
               src="https://swiperjs.com/demos/images/nature-5.jpg"
               alt="profile5"
             />
-          </StyledSwiperSlide>
+          </StyledSwiperSlide> */}
         </StyledSwiper>
       </StyledCardContainer>
     </>

@@ -155,14 +155,13 @@ const StyleCardContainer = styled("div")`
 const StyleGradeIcon = styled(GradeRoundedIcon)`
   z-index: 2;
   position: absolute;
-  border: 2px solid #ec407a;
+  border: 2px solid #ffff66;
   border-radius: 50%;
   font-size: 2rem;
   top: 10px;
   right: 10px;
-  background-color: white;
-  color: #ec407a;
-  padding: 0.2rem;
+  color: #ffff66;
+  padding: 0.3rem;
   cursor: pointer;
 `;
 
