@@ -4,19 +4,6 @@ import { OpenAiRepository } from "./repository";
 import { ProfileRepository } from "../profiles";
 import { validate } from "../../middleware/validateRequest";
 
-export const getChat = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const generatedText = await OpenAiRepository.getCompletion();
-    res.status(200).json();
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const getAnswersGeneratedByAi = async (
   req: Request,
   res: Response,
