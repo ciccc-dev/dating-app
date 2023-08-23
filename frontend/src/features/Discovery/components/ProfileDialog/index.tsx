@@ -16,6 +16,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { _likeClient } from "../../api/like";
 import { _messageClient } from "../../api/messages";
 import { _profileUnselectedClient } from "../../api/profileUnselected";
+import unknowUser from "../../../../pic/unkown_user.png";
 
 interface ProfileDialogProps {
   profile: Profile;
@@ -109,28 +110,29 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
 
   return (
     <>
-      <StyleGradeIcon onClick={handleClickOpen} />
+      <StyledGradeIcon onClick={handleClickOpen} />
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth={true}>
         <Grid container>
           <Grid item xs={5}>
             <DialogContent>
-              <StyleCardContainer>
-                <StyleImg
-                  src="https://swiperjs.com/demos/images/nature-1.jpg"
-                  alt="profile1"
-                />
-                <StyleGrid container>
+              <StyledCardContainer>
+                {profile.photos.length > 0 ? (
+                  <StyledImg src={profile.photos[0].photoUrl} alt="profile1" />
+                ) : (
+                  <StyledImg src={unknowUser} alt="unknowUser" />
+                )}
+                <StyledGrid container>
                   <Grid item xs={10}>
-                    <div>{profile.userName}</div>
+                    <StledMainBox>{profile.userName}</StledMainBox>
                   </Grid>
                   <Grid item xs={2}>
-                    <div>{profile.age}</div>
+                    <StledMainBox>{profile.age}</StledMainBox>
                   </Grid>
-                </StyleGrid>
-              </StyleCardContainer>
+                </StyledGrid>
+              </StyledCardContainer>
             </DialogContent>
           </Grid>
-          <StyleMessageWrapper item xs={7}>
+          <StyledMessageWrapper item xs={7}>
             <DialogContent>
               <TextField
                 autoFocus
@@ -147,20 +149,21 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
               <StyledButton onClick={handleClose}>Cancel</StyledButton>
               <StyledButton onClick={handleClickSend}>Send</StyledButton>
             </DialogActions>
-          </StyleMessageWrapper>
+          </StyledMessageWrapper>
         </Grid>
       </Dialog>
     </>
   );
 };
 
-const StyleCardContainer = styled("div")`
+const StyledCardContainer = styled("div")`
   position: relative;
   width: 300px;
   height: 400px;
+  border-radius: 1.2rem;
 `;
 
-const StyleGradeIcon = styled(GradeRoundedIcon)`
+const StyledGradeIcon = styled(GradeRoundedIcon)`
   z-index: 2;
   position: absolute;
   border: 2px solid #ffff66;
@@ -173,13 +176,14 @@ const StyleGradeIcon = styled(GradeRoundedIcon)`
   cursor: pointer;
 `;
 
-const StyleImg = styled("img")`
+const StyledImg = styled("img")`
   display: block;
   width: 300px;
   height: 400px;
+  border-radius: 1.2rem;
 `;
 
-const StyleGrid = styled(Grid)`
+const StyledGrid = styled(Grid)`
   position: relative;
   width: 80%;
   left: 10%;
@@ -188,7 +192,7 @@ const StyleGrid = styled(Grid)`
   font-size: 1.8rem;
 `;
 
-const StyleMessageWrapper = styled(Grid)`
+const StyledMessageWrapper = styled(Grid)`
   display: flex;
   flex-direction: column;
 `;
@@ -196,4 +200,12 @@ const StyleMessageWrapper = styled(Grid)`
 const StyledButton = styled(Button)`
   padding: 0.5rem 1rem;
   font-size: 1rem;
+`;
+
+const StledMainBox = styled("span")`
+  font-size: 1.8rem;
+  background-image: linear-gradient(90deg, #4e9ff3, #8eefff);
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 20%;
 `;
