@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 interface State {
   isSignup: boolean;
-  profile?: { id: string };
+  profile?: { id: string; userName: string };
 }
 
 export const useFetchProfile = () => {

@@ -8,40 +8,37 @@ import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/system";
 
 import { navigationWidth } from "../../constants/navigation";
+import { useFetchProfile } from "../../hooks/useFetchProfile";
 
 // TODO: Replace to constant
 const tabValues = ["discovery", "likes", "messages"];
 
 export const Navigation = ({ Outlet }: { Outlet: any }) => {
   // Set a current tab from url path
-  const location = useLocation();
-  const currentPath = location.pathname.replace("/", "");
+  const currentPath = useLocation().pathname.replace("/", "");
   const tabIndex = tabValues.indexOf(currentPath);
+  const { profile } = useFetchProfile();
 
-  const { user, logout } = useAuth0();
+  const { logout } = useAuth0();
   const handleLogout = () => logout();
   const navigate = useNavigate();
   const handleNavigateToAccount = () => navigate("/account");
   const handleChange = (e: SyntheticEvent) =>
     e.currentTarget.textContent && navigate(`/${e.currentTarget.textContent}`);
 
-  const MyAccount = () => (
-    <StyledAccountBox onClick={handleNavigateToAccount}>
-      <StyledTypography variant="inherit" color="common.white">
-        {user?.name ?? "---"}
-      </StyledTypography>
-    </StyledAccountBox>
-  );
-
   return (
-    <StyledDrawer variant="permanent" open>
-      <MyAccount />
+    <StyledDrawer variant='permanent' open>
+      <StyledAccountBox onClick={handleNavigateToAccount}>
+        <StyledTypography variant='inherit' color='common.white'>
+          {profile?.userName ?? "---"}
+        </StyledTypography>
+      </StyledAccountBox>
       <Toolbar />
       <Box>
         <Tabs value={tabIndex} onChange={handleChange} centered>
-          <StyledTab label="discovery" />
-          <StyledTab label="likes" />
-          <StyledTab label="messages" />
+          <StyledTab label='discovery' />
+          <StyledTab label='likes' />
+          <StyledTab label='messages' />
         </Tabs>
       </Box>
 
