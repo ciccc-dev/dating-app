@@ -10,6 +10,7 @@ import { ProfileDialog } from "../ProfileDialog";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import unknowUser from "../../../../pic/unkown_user.png";
+import { MainProfile } from "./MainProfile";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -27,30 +28,16 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
           modules={[EffectFlip, Pagination]}
           className="mySwiper"
         >
-          <StyledGrid container>
-            <Grid item xs={10}>
-              <StyledSpan>{profile.gender}</StyledSpan>
-            </Grid>
-            <Grid item xs={2}>
-              {profile.distance ? (
-                <StyledSpan>{profile.distance}km</StyledSpan>
-              ) : null}
-            </Grid>
-            <Grid item xs={10}>
-              <StledMainBox>{profile.userName}</StledMainBox>
-            </Grid>
-            <Grid item xs={2}>
-              <StledMainBox>{profile.age}</StledMainBox>
-            </Grid>
-          </StyledGrid>
           {profile.photos.length === 0 ? (
             <StyledSwiperSlide>
               <StyledImg src={unknowUser} alt="unknowUser" />
+              <MainProfile profile={profile} />
             </StyledSwiperSlide>
           ) : (
             profile.photos.map((item, index) => (
               <StyledSwiperSlide key={index}>
                 <StyledImg src={item.photoUrl} alt={item.photoUrl} />
+                <MainProfile profile={profile} />
               </StyledSwiperSlide>
             ))
           )}
@@ -188,7 +175,8 @@ const StyledSpan = styled("span")`
   border-radius: 1rem;
   padding: 0.25rem 0.5rem;
   color: white;
-  font-size: 0.8rem;
+  background-color: #006600;
+  font-size: 0.7rem;
   font-weight: 600;
   margin-right: 0.5rem;
 `;
