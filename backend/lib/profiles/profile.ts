@@ -12,6 +12,7 @@ export class Profile {
   // private _sexualOrientation?: SexualOrientation;
   private _sexualOrientation?: string;
   private _aboutMe: string;
+  private _interests: { id: number; name: string }[];
 
   constructor({
     id,
@@ -20,6 +21,7 @@ export class Profile {
     birthday,
     sexualOrientation,
     aboutMe,
+    interests,
   }: {
     id: string | undefined;
     username: string;
@@ -28,6 +30,7 @@ export class Profile {
     // sexualOrientation: SexualOrientation | undefined;
     sexualOrientation: string;
     aboutMe: string;
+    interests: { id: number; name: string }[];
   }) {
     if (gender && !Object.values(GENDER).includes(gender))
       throw "Gender is invalida";
@@ -38,6 +41,7 @@ export class Profile {
     this._birthday = parseISO(birthday);
     this._sexualOrientation = sexualOrientation;
     this._aboutMe = aboutMe ?? "";
+    this._interests = interests ?? [];
   }
 
   id = () => this._id;
@@ -46,4 +50,5 @@ export class Profile {
   birthday = () => this._birthday;
   sexualOrientation = () => this._sexualOrientation;
   aboutMe = () => this._aboutMe;
+  interests = () => this._interests;
 }
