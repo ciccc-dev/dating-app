@@ -8,6 +8,7 @@ import interestsRoutes from "./interests";
 import profileUnselectedRoutes from "./profileUnselected";
 import geolocationRoutes from "./geolocation";
 import photosRoutes from "./photos";
+import openaiRoutes from "./openai";
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.use("/interests", interestsRoutes);
 router.use("/profileUnselected", profileUnselectedRoutes);
 router.use("/geolocation", geolocationRoutes);
 router.use("/photos", photosRoutes);
+router.use("/openai", openaiRoutes);
 
 export default router;
