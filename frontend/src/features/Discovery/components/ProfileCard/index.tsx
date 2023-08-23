@@ -4,7 +4,7 @@ import "swiper/css";
 import "swiper/css/effect-flip";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Profile, isFilteredContext } from "../../../../pages/Discovery";
+import { Profile } from "../../../../pages/Discovery";
 import { Box, Grid, styled } from "@mui/material";
 import { ProfileDialog } from "../ProfileDialog";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
@@ -27,6 +27,22 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
           modules={[EffectFlip, Pagination]}
           className="mySwiper"
         >
+          <StyledGrid container>
+            <Grid item xs={10}>
+              <StyledSpan>{profile.gender}</StyledSpan>
+            </Grid>
+            <Grid item xs={2}>
+              {profile.distance ? (
+                <StyledSpan>{profile.distance}km</StyledSpan>
+              ) : null}
+            </Grid>
+            <Grid item xs={10}>
+              <div>{profile.userName}</div>
+            </Grid>
+            <Grid item xs={2}>
+              <div>{profile.age}</div>
+            </Grid>
+          </StyledGrid>
           {profile.photos.map((item, index) => (
             <StyledSwiperSlide key={index}>
               <StyledImg src={item.photoUrl} alt={item.photoUrl} />

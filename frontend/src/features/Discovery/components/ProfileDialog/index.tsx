@@ -8,6 +8,7 @@ import { useContext, useState } from "react";
 import { Grid, styled } from "@mui/material";
 import {
   Profile,
+  UserProfileIdContext,
   UserProfiles,
   isFilteredContext,
 } from "../../../../pages/Discovery";
@@ -26,6 +27,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
   const [message, setMessage] = useState("");
   const profilesId = useContext(UserProfiles);
   const { setIsfiltered } = useContext(isFilteredContext);
+  const { profileId } = useContext(UserProfileIdContext);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -78,7 +80,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
         );
         if (user?.sub) {
           await ProfileUnselectedClient.postProfileUnselected(
-            profile.id,
+            profileId,
             profileUnselected
           );
         }

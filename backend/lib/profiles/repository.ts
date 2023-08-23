@@ -88,7 +88,7 @@ class _ProfileRepository {
    )
 
   SELECT
-    pr.id AS "Id",
+    pr.id AS "id",
     pr.user_id AS "userId",
     pr.user_name AS "userName",
     pr.birthday AS "birthday",

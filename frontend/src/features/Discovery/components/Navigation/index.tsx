@@ -14,7 +14,10 @@ import { Navigation } from "../../../../components/Navigation";
 import { ListItemGrid } from "../LIstItemGrid";
 import { _interestClient } from "../../api/interest";
 import { useAuth0 } from "@auth0/auth0-react";
-import { isFilteredContext } from "../../../../pages/Discovery";
+import {
+  UserProfileIdContext,
+  isFilteredContext,
+} from "../../../../pages/Discovery";
 
 export interface Filter {
   id: string;
@@ -54,16 +57,11 @@ export interface Item {
   name: string;
 }
 
-export interface DiscoveryNavigationProps {
-  profileId: string;
-}
-
-export const DiscoveryNavigation = ({
-  profileId,
-}: DiscoveryNavigationProps) => {
+export const DiscoveryNavigation = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [filter, setFilter] = useState<Filter>(defaultFilter);
   const [interests, setInterests] = useState<Item[]>([]);
+  const { profileId } = useContext(UserProfileIdContext);
   const { setIsfiltered } = useContext(isFilteredContext);
 
   useEffect(() => {
