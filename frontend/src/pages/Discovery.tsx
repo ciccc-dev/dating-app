@@ -9,6 +9,11 @@ import { ProfileCard } from "../features/Discovery/components/ProfileCard";
 import { Item } from "../features/Discovery/components/FilterDialog";
 import { Photo } from "./Account";
 
+interface isFilteredType {
+  isFiltered: boolean;
+  setIsfiltered: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export interface Profile {
   id: string;
   userId: string;
@@ -26,12 +31,19 @@ export interface Profile {
 }
 
 export const UserProfiles = createContext<string[]>([]);
-
+export const isFilteredContext = createContext<isFilteredType>({
+  isFiltered: false,
+  setIsfiltered: () => {},
+});
 export const Discovery = () => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [isFiltered, setIsfiltered] = useState<boolean>(false);
+  const value = {
+    isFiltered,
+    setIsfiltered,
+  };
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -59,23 +71,21 @@ export const Discovery = () => {
 
   console.log(profiles);
 
-  const handleClick = () => {
-    setIsfiltered(true);
-  };
-
   return (
     <>
       <StyledWrapper>
-        <StyledNavigationWrapper component="nav">
-          <DiscoveryNavigation profileId={profileId} onClick={handleClick} />
-        </StyledNavigationWrapper>
-        <UserProfiles.Provider value={profiles.map(({ id }) => id)}>
-          <StyledContent component="main">
-            {profiles.map((profile, index) => (
-              <ProfileCard profile={profile} key={index} />
-            ))}
-          </StyledContent>
-        </UserProfiles.Provider>
+        <isFilteredContext.Provider value={value}>
+          <StyledNavigationWrapper component="nav">
+            <DiscoveryNavigation profileId={profileId} />
+          </StyledNavigationWrapper>
+          <UserProfiles.Provider value={profiles.map(({ id }) => id)}>
+            <StyledContent component="main">
+              {profiles.map((profile, index) => (
+                <ProfileCard profile={profile} key={index} />
+              ))}
+            </StyledContent>
+          </UserProfiles.Provider>
+        </isFilteredContext.Provider>
       </StyledWrapper>
     </>
   );

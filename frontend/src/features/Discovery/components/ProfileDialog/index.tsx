@@ -6,7 +6,11 @@ import DialogContent from "@mui/material/DialogContent";
 import GradeRoundedIcon from "@mui/icons-material/GradeRounded";
 import { useContext, useState } from "react";
 import { Grid, styled } from "@mui/material";
-import { Profile, UserProfiles } from "../../../../pages/Discovery";
+import {
+  Profile,
+  UserProfiles,
+  isFilteredContext,
+} from "../../../../pages/Discovery";
 import { useAuth0 } from "@auth0/auth0-react";
 import { _likeClient } from "../../api/like";
 import { _messageClient } from "../../api/messages";
@@ -21,6 +25,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const profilesId = useContext(UserProfiles);
+  const { setIsfiltered } = useContext(isFilteredContext);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -40,6 +45,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
       sendUnselected();
       sendMessage();
       alert("Message has been sent!");
+      setIsfiltered(true);
       setOpen(false);
     }
   };

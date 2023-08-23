@@ -4,7 +4,7 @@ import "swiper/css";
 import "swiper/css/effect-flip";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Profile } from "../../../../pages/Discovery";
+import { Profile, isFilteredContext } from "../../../../pages/Discovery";
 import { Box, Grid, styled } from "@mui/material";
 import { ProfileDialog } from "../ProfileDialog";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
