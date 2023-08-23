@@ -5,12 +5,10 @@ import "swiper/css/effect-flip";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Profile } from "../../../../pages/Discovery";
-import { Box, Grid, styled } from "@mui/material";
+import { styled } from "@mui/material";
 import { ProfileDialog } from "../ProfileDialog";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import unknowUser from "../../../../pic/unkown_user.png";
-import { MainProfile } from "./MainProfile";
+import { ProfileDetail } from "./ProfileDetail";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -31,76 +29,16 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
           {profile.photos.length === 0 ? (
             <StyledSwiperSlide>
               <StyledImg src={unknowUser} alt="unknowUser" />
-              <MainProfile profile={profile} />
+              <ProfileDetail profile={profile} index={0} />
             </StyledSwiperSlide>
           ) : (
             profile.photos.map((item, index) => (
               <StyledSwiperSlide key={index}>
                 <StyledImg src={item.photoUrl} alt={item.photoUrl} />
-                <MainProfile profile={profile} />
+                <ProfileDetail profile={profile} index={index} />
               </StyledSwiperSlide>
             ))
           )}
-          {/* <StyledSwiperSlide>
-            <StyledImg
-              src="https://swiperjs.com/demos/images/nature-1.jpg"
-              alt="profile1"
-            />
-            <StyledGrid container>
-              <Grid item xs={10}>
-                <StyledSpan>{profile.gender}</StyledSpan>
-              </Grid>
-              <Grid item xs={2}>
-                {profile.distance ? (
-                  <StyledSpan>{profile.distance}km</StyledSpan>
-                ) : null}
-              </Grid>
-              <Grid item xs={10}>
-                <div>{profile.userName}</div>
-              </Grid>
-              <Grid item xs={2}>
-                <div>{profile.age}</div>
-              </Grid>
-            </StyledGrid>
-          </StyledSwiperSlide>
-          <StyledSwiperSlide>
-            <StyledImg
-              src="https://swiperjs.com/demos/images/nature-2.jpg"
-              alt="profile2"
-            />
-            <StyledParagraph>{`${profile.aboutMe}`}</StyledParagraph>
-          </StyledSwiperSlide>
-          <StyledSwiperSlide>
-            <StyledImg
-              src="https://swiperjs.com/demos/images/nature-3.jpg"
-              alt="profile3"
-            />
-            <StyledBox>
-              <StyledPersonOutlineIcon />
-              <StyledSpan>{`${profile.sexualOrientation}`}</StyledSpan>
-              {profile.purposes.map((purpose, index) => (
-                <StyledSpan key={index}>{`${purpose.name}`}</StyledSpan>
-              ))}
-            </StyledBox>
-          </StyledSwiperSlide>
-          <StyledSwiperSlide>
-            <StyledImg
-              src="https://swiperjs.com/demos/images/nature-4.jpg"
-              alt="profile4"
-            />
-            <StyledBox>
-              <StyledFavoriteBorderIcon />
-              {profile.interests.map((interest, index) => (
-                <StyledSpan key={index}>{`${interest.name}`}</StyledSpan>
-              ))}
-            </StyledBox>
-          </StyledSwiperSlide>
-          <StyledSwiperSlide>
-            <StyledImg
-              src="https://swiperjs.com/demos/images/nature-5.jpg"
-              alt="profile5"
-            />
-          </StyledSwiperSlide> */}
         </StyledSwiper>
       </StyledCardContainer>
     </>
@@ -114,71 +52,6 @@ const StyledCardContainer = styled("div")`
   height: 400px;
   background-color: lightgrey;
   box-shadow: 4px 4px 6px grey;
-`;
-
-const StyledGrid = styled(Grid)`
-  padding: 0.5rem 1rem;
-  position: relative;
-  width: 100%;
-  max-height: 30%;
-  bottom: 30%;
-  color: white;
-  font-size: 1.8rem;
-`;
-
-const StyledParagraph = styled("p")`
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0.5rem 1rem;
-  position: relative;
-  width: 100%;
-  max-height: 25%;
-  bottom: 25%;
-  color: white;
-  font-size: 1.2rem;
-`;
-
-const StyledPersonOutlineIcon = styled(PersonOutlineIcon)`
-  font-size: 1.7rem;
-  margin-right: 0.25rem;
-`;
-
-const StyledFavoriteBorderIcon = styled(FavoriteBorderIcon)`
-  font-size: 1.7rem;
-  margin-right: 0.25rem;
-`;
-
-const StyledBox = styled(Box)`
-  box-sizing: border-box;
-  padding: 0.5rem 1rem;
-  position: relative;
-  width: 100%;
-  bottom: 25%;
-  color: white;
-  max-height: 25%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  overflow: auto;
-  gap: 0.25rem;
-`;
-
-const StledMainBox = styled("span")`
-  background-image: linear-gradient(90deg, #4e9ff3, #8eefff);
-  background-repeat: no-repeat;
-  background-position: bottom;
-  background-size: 100% 20%;
-`;
-
-const StyledSpan = styled("span")`
-  border: 1px solid white;
-  border-radius: 1rem;
-  padding: 0.25rem 0.5rem;
-  color: white;
-  background-color: #006600;
-  font-size: 0.7rem;
-  font-weight: 600;
-  margin-right: 0.5rem;
 `;
 
 const StyledSwiper = styled(Swiper)`
