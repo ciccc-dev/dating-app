@@ -1,11 +1,9 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Stack, Box, Button, Grid, styled } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { Box, Grid, styled } from "@mui/material";
+import { useRef, useState } from "react";
 import { _photoClient } from "../../../Discovery/api/photo";
-import PersonIcon from "@mui/icons-material/Person";
 import { PhotoDialog } from "../PhotoDialog";
 import { Photo } from "../../../../pages/Account";
-import { Point, Area } from "react-easy-crop/types";
 import { ImageCropDialog } from "../ImageCropDialog";
 
 export interface IFile {

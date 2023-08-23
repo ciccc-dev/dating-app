@@ -9,6 +9,7 @@ import { Box, Grid, styled } from "@mui/material";
 import { ProfileDialog } from "../ProfileDialog";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import unknowUser from "../../../../pic/unkown_user.png";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -99,6 +100,7 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
 
 const StyledCardContainer = styled("div")`
   position: relative;
+  border-radius: 1.2rem;
   width: 300px;
   height: 400px;
   background-color: lightgrey;
@@ -165,6 +167,9 @@ const StyledSpan = styled("span")`
 const StyledSwiper = styled(Swiper)`
   width: 300px;
   height: 400px;
+  background-image: url(${unknowUser});
+  background-size: cover;
+  border-radius: 1.2rem;
 `;
 
 const StyledSwiperSlide = styled(SwiperSlide)`
@@ -176,4 +181,5 @@ const StyledImg = styled("img")`
   display: block;
   width: 300px;
   height: 400px;
+  border-radius: 1.2rem;
 `;

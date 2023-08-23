@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import React, { useCallback, useRef, useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
-import PersonIcon from "@mui/icons-material/Person";
+import unknowUser from "../../../../pic/unkown_user.png";
 import getCroppedImg from "../../../../utils/cropImage";
 
 const aspect = 3 / 4;
@@ -96,6 +96,8 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          backgroundImage: `url(${unknowUser})`,
+          backgroundSize: "cover",
         }}
         onClick={handleBoxClick}
       >
@@ -107,7 +109,6 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
           ref={inputRef}
           onChange={selectImage}
         />
-        <PersonIcon sx={{ color: "grey", width: "100%", fontSize: "300%" }} />
       </StyledBox>
 
       {selectedFile && (
