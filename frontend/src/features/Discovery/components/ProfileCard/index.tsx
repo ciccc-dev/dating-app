@@ -6,9 +6,9 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Profile } from "../../../../pages/Discovery";
 import { styled } from "@mui/material";
-import { ProfileDialog } from "../ProfileDialog";
 import unknowUser from "../../../../pic/unkown_user.png";
 import { ProfileDetail } from "./ProfileDetail";
+import { ProfileDetailDialog } from "../ProfileDetalisDilalog";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -18,7 +18,7 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
   return (
     <>
       <StyledCardContainer>
-        <ProfileDialog profile={profile} />
+        <ProfileDetailDialog profile={profile} />
         <StyledSwiper
           effect={"flip"}
           grabCursor={true}
