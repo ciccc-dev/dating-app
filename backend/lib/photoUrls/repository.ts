@@ -13,7 +13,7 @@ const bucketRegion = process.env.BUCKET_REGION!;
 const accessKey = process.env.ACCESS_KEY!;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY!;
 
-interface url {
+export interface url {
   id: string;
   photoUrl: string;
 }

@@ -4,8 +4,13 @@ import { Decimal } from "@prisma/client/runtime";
 import { calculateAge, convertAgetoDate } from "../../utils/caluculateAge";
 import { Profile } from "./profile";
 import { Filter } from "../filters/filter";
+import { url } from "../photoUrls/repository";
 
 interface Item {
+  name: string;
+}
+
+interface Photo {
   name: string;
 }
 
@@ -21,6 +26,7 @@ interface FilteredProfile {
   gender: string;
   sexual_orientation: string;
   about_me: string;
+  photos: url[];
   purposes: Item[];
   interests: Item[];
   geolocation: Geolocation;
@@ -82,7 +88,7 @@ class _ProfileRepository {
    )
 
   SELECT
-    pr.id AS "Id",
+    pr.id AS "id",
     pr.user_id AS "userId",
     pr.user_name AS "userName",
     pr.birthday AS "birthday",
@@ -95,8 +101,13 @@ class _ProfileRepository {
       )) AS purposes,
     json_agg(DISTINCT jsonb_build_object(
         'name', inte.name
-      )) AS interests
+      )) AS interests,
+    json_agg(DISTINCT jsonb_build_object(
+        'id', ph.id,
+        'photoUrl', ph.photo_url
+      )) AS "photos"
   FROM profile pr
+  LEFT OUTER JOIN photo_url ph ON ph.profile_id = pr.id
   LEFT OUTER JOIN "_InterestToProfile" intp ON intp."B" = pr.id
   LEFT OUTER JOIN interest inte ON inte.id =  intp."A"
   LEFT OUTER JOIN purpose pu ON pu.profile_id = pr.id
@@ -107,38 +118,46 @@ class _ProfileRepository {
     AND pr.user_id NOT IN (SELECT received_by FROM likes
       WHERE sent_by = ${userId})
       ${gender ? Prisma.sql`AND pr.gender = ${gender}` : Prisma.empty}
-         ${
-           filter.isAgeFiltered()
-             ? Prisma.sql`AND pr.birthday >= ${oldBirthday} AND pr.birthday <= ${newBirthday}`
-             : Prisma.empty
-         }
-         ${
-           filter.isPurposeFiltered() && filter.purposes().length > 0
-             ? Prisma.sql`AND pr.id IN (
-             SELECT pr.id
-             FROM profile pr
-             JOIN purpose pu ON pu.profile_id = pr.id
-             WHERE pu.name IN (${filter.purposes().join(",")}))`
-             : Prisma.empty
-         }
-        ${
-          filter.isInterestFiltered() && filter.interests().length > 0
-            ? Prisma.sql`AND pr.id IN (
-            SELECT pr.id
-            FROM profile pr
-            JOIN "_InterestToProfile" intp ON intp."B" = pr.id
-            JOIN interest inte ON inte.id = intp."A"
-            WHERE inte.name IN (${interests.join(",")}))`
-            : Prisma.empty
-        }
-        ${
-          filter.isDistanceFiltered()
-            ? Prisma.sql`AND pd.distance <= ${filter.distance()}`
-            : Prisma.empty
-        }
-        GROUP BY pr.id, pd.distance
-        ORDER BY RANDOM()
-        LIMIT 3
+      ${
+        filter.isAgeFiltered()
+          ? Prisma.sql`AND pr.birthday >= ${oldBirthday} AND pr.birthday <= ${newBirthday}`
+          : Prisma.empty
+      }
+      ${
+        filter.isSexualOrientationFiltered() &&
+        filter.sexualOrientations().length > 0
+          ? Prisma.sql`AND pr.sexual_orientation IN (${Prisma.join(
+              filter.sexualOrientations()
+            )})`
+          : Prisma.empty
+      }
+      ${
+        filter.isPurposeFiltered() && filter.purposes().length > 0
+          ? Prisma.sql`AND pr.id IN (
+          SELECT pr.id
+          FROM profile pr
+          JOIN purpose pu ON pu.profile_id = pr.id
+          WHERE pu.name IN (${Prisma.join(filter.purposes())}))`
+          : Prisma.empty
+      }
+     ${
+       filter.isInterestFiltered() && filter.interests().length > 0
+         ? Prisma.sql`AND pr.id IN (
+         SELECT pr.id
+         FROM profile pr
+         JOIN "_InterestToProfile" intp ON intp."B" = pr.id
+         JOIN interest inte ON inte.id = intp."A"
+         WHERE inte.name IN (${Prisma.join(interests)}))`
+         : Prisma.empty
+     }
+     ${
+       filter.isDistanceFiltered()
+         ? Prisma.sql`AND pd.distance <= ${filter.distance()}`
+         : Prisma.empty
+     }
+     GROUP BY pr.id, pd.distance
+     ORDER BY RANDOM()
+     LIMIT 3
 `;
 
     const convertedProfiles = fetchProfiles.map(({ birthday, ...rest }) => ({

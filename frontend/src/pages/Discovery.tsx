@@ -7,6 +7,17 @@ import { DiscoveryNavigation } from "../features/Discovery/components/Navigation
 import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileCard } from "../features/Discovery/components/ProfileCard";
 import { Item } from "../features/Discovery/components/FilterDialog";
+import { Photo } from "./Account";
+
+interface UserProfileIdType {
+  profileId: string;
+  setProfileId: React.Dispatch<React.SetStateAction<string>>;
+}
+
+interface isFilteredType {
+  isFiltered: boolean;
+  setIsfiltered: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 export interface Profile {
   id: string;
@@ -20,16 +31,29 @@ export interface Profile {
   updatedAt: Date;
   purposes: Item[];
   interests: Item[];
+  photos: Photo[];
   distance: number;
 }
-
+export const UserProfileIdContext = createContext<UserProfileIdType>({
+  profileId: "",
+  setProfileId: () => {},
+});
 export const UserProfiles = createContext<string[]>([]);
-
+export const isFilteredContext = createContext<isFilteredType>({
+  isFiltered: false,
+  setIsfiltered: () => {},
+});
 export const Discovery = () => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [isFiltered, setIsfiltered] = useState<boolean>(false);
+  const value = {
+    isFiltered,
+    setIsfiltered,
+  };
+  const profileIdValue = { profileId, setProfileId };
+  const profileValue = profiles.map(({ id }) => id);
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -57,23 +81,23 @@ export const Discovery = () => {
 
   console.log(profiles);
 
-  const handleClick = () => {
-    setIsfiltered(true);
-  };
-
   return (
     <>
       <StyledWrapper>
-        <StyledNavigationWrapper component='nav'>
-          <DiscoveryNavigation profileId={profileId} onClick={handleClick} />
-        </StyledNavigationWrapper>
-        <UserProfiles.Provider value={profiles.map(({ id }) => id)}>
-          <StyledContent component='main'>
-            {profiles.map((profile, index) => (
-              <ProfileCard profile={profile} key={index} />
-            ))}
-          </StyledContent>
-        </UserProfiles.Provider>
+        <UserProfileIdContext.Provider value={profileIdValue}>
+          <isFilteredContext.Provider value={value}>
+            <StyledNavigationWrapper component="nav">
+              <DiscoveryNavigation />
+            </StyledNavigationWrapper>
+            <UserProfiles.Provider value={profileValue}>
+              <StyledContent component="main">
+                {profiles.map((profile, index) => (
+                  <ProfileCard profile={profile} key={index} />
+                ))}
+              </StyledContent>
+            </UserProfiles.Provider>
+          </isFilteredContext.Provider>
+        </UserProfileIdContext.Provider>
       </StyledWrapper>
     </>
   );

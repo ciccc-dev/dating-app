@@ -9,6 +9,7 @@ import { Box, Grid, styled } from "@mui/material";
 import { ProfileDialog } from "../ProfileDialog";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import unknowUser from "../../../../pic/unkown_user.png";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -26,7 +27,28 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
           modules={[EffectFlip, Pagination]}
           className="mySwiper"
         >
-          <StyledSwiperSlide>
+          <StyledGrid container>
+            <Grid item xs={10}>
+              <StyledSpan>{profile.gender}</StyledSpan>
+            </Grid>
+            <Grid item xs={2}>
+              {profile.distance ? (
+                <StyledSpan>{profile.distance}km</StyledSpan>
+              ) : null}
+            </Grid>
+            <Grid item xs={10}>
+              <div>{profile.userName}</div>
+            </Grid>
+            <Grid item xs={2}>
+              <div>{profile.age}</div>
+            </Grid>
+          </StyledGrid>
+          {profile.photos.map((item, index) => (
+            <StyledSwiperSlide key={index}>
+              <StyledImg src={item.photoUrl} alt={item.photoUrl} />
+            </StyledSwiperSlide>
+          ))}
+          {/* <StyledSwiperSlide>
             <StyledImg
               src="https://swiperjs.com/demos/images/nature-1.jpg"
               alt="profile1"
@@ -85,7 +107,7 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
               src="https://swiperjs.com/demos/images/nature-5.jpg"
               alt="profile5"
             />
-          </StyledSwiperSlide>
+          </StyledSwiperSlide> */}
         </StyledSwiper>
       </StyledCardContainer>
     </>
@@ -94,6 +116,7 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
 
 const StyledCardContainer = styled("div")`
   position: relative;
+  border-radius: 1.2rem;
   width: 300px;
   height: 400px;
   background-color: lightgrey;
@@ -160,6 +183,9 @@ const StyledSpan = styled("span")`
 const StyledSwiper = styled(Swiper)`
   width: 300px;
   height: 400px;
+  background-image: url(${unknowUser});
+  background-size: cover;
+  border-radius: 1.2rem;
 `;
 
 const StyledSwiperSlide = styled(SwiperSlide)`
@@ -171,4 +197,5 @@ const StyledImg = styled("img")`
   display: block;
   width: 300px;
   height: 400px;
+  border-radius: 1.2rem;
 `;
