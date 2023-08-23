@@ -204,6 +204,10 @@ class _ProfileRepository {
   };
 
   createProfile = async (profile: Profile, filter: Filter, userId: string) => {
+    const interests: any[] = profile.interests().map((interest) => {
+      return { id: interest.id };
+    });
+
     const data: Prisma.ProfileCreateInput = {
       id: profile.id(),
       userId,
@@ -221,6 +225,7 @@ class _ProfileRepository {
           purposes: filter.purposes(),
         },
       },
+      interests: { connect: interests },
     };
     return await this.db.profile.create<Prisma.ProfileCreateArgs>({ data });
   };

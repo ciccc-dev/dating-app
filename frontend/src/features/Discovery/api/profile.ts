@@ -83,6 +83,7 @@ export class _profileClient {
     showMe,
     purposes,
     aboutMe,
+    interests,
   }: {
     username: string;
     gender: string;
@@ -91,6 +92,7 @@ export class _profileClient {
     showMe: string[];
     purposes: string[];
     aboutMe: string;
+    interests: { id: number; name: string }[];
   }) => {
     try {
       const res = await axios({
@@ -108,6 +110,7 @@ export class _profileClient {
           show_me: showMe,
           purposes,
           about_me: aboutMe,
+          interests,
         }),
       });
       return { status: res.status, message: "Success" };

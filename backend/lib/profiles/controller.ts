@@ -94,9 +94,6 @@ export const postProfile = async (
       showMe: req.body.show_me[0],
       purposes: req.body.purposes,
     });
-
-    console.log(filter);
-
     const result = await ProfileRepository.createProfile(
       profile,
       filter,

@@ -9,7 +9,7 @@ export class _interestClient {
     this.accessToken = accesToken;
   }
 
-  getInterests = async () => {
+  getInterests = async (interests?: string[]) => {
     try {
       const res = await axios({
         url: `${this.apiUrl}/api/interests`,
@@ -18,12 +18,11 @@ export class _interestClient {
           Authorization: `Bearer ${this.accessToken}`,
           "Content-Type": "application/json",
         },
+        params: { name: interests },
       });
       return res.data;
-
     } catch (error) {
       throw error;
     }
   };
 }
-
