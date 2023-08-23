@@ -8,23 +8,40 @@ import { Profile } from "../../../../pages/Discovery";
 import { styled } from "@mui/material";
 import unknowUser from "../../../../pic/unkown_user.png";
 import { ProfileDetail } from "./ProfileDetail";
-import { ProfileDetailDialog } from "../ProfileDetalisDilalog";
+import { ProfileDetailDialog } from "../ProfileDetailDilalog";
+import { ConstructionOutlined } from "@mui/icons-material";
+import { useState } from "react";
+import { ProfileSendLikeDialog } from "../ProfileSendLikeDialog";
 
 interface ProfileCardProps {
   profile: Profile;
 }
 
 export const ProfileCard = ({ profile }: ProfileCardProps) => {
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
       <StyledCardContainer>
         <ProfileDetailDialog profile={profile} />
+        <ProfileSendLikeDialog
+          profile={profile}
+          open={open}
+          onClose={handleClose}
+        />
         <StyledSwiper
           effect={"flip"}
           grabCursor={true}
           pagination={true}
           modules={[EffectFlip, Pagination]}
           className="mySwiper"
+          onDoubleClick={handleClickOpen}
         >
           {profile.photos.length === 0 ? (
             <StyledSwiperSlide>

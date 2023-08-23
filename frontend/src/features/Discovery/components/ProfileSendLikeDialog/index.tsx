@@ -3,7 +3,6 @@ import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import GradeRoundedIcon from "@mui/icons-material/GradeRounded";
 import { useContext, useState } from "react";
 import { Grid, styled } from "@mui/material";
 import {
@@ -18,25 +17,22 @@ import { _messageClient } from "../../api/messages";
 import { _profileUnselectedClient } from "../../api/profileUnselected";
 import unknowUser from "../../../../pic/unkown_user.png";
 
-interface ProfileDialogProps {
+interface ProfileSendLikeDialogProps {
   profile: Profile;
+  open: boolean;
+  onClose: () => void;
 }
 
-export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
+export const ProfileSendLikeDialog = ({
+  profile,
+  open,
+  onClose,
+}: ProfileSendLikeDialogProps) => {
   const { user, getAccessTokenSilently } = useAuth0();
-  const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const profilesId = useContext(UserProfiles);
   const { setIsfiltered } = useContext(isFilteredContext);
   const { profileId } = useContext(UserProfileIdContext);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const handleChangeMessage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
@@ -49,7 +45,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
       sendMessage();
       alert("Message has been sent!");
       setIsfiltered(true);
-      setOpen(false);
+      onClose();
     }
   };
 
@@ -110,8 +106,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
 
   return (
     <>
-      <StyledGradeIcon onClick={handleClickOpen} />
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth={true}>
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth={true}>
         <Grid container>
           <Grid item xs={5}>
             <DialogContent>
@@ -146,7 +141,7 @@ export const ProfileDialog = ({ profile }: ProfileDialogProps) => {
               />
             </DialogContent>
             <DialogActions>
-              <StyledButton onClick={handleClose}>Cancel</StyledButton>
+              <StyledButton onClick={onClose}>Cancel</StyledButton>
               <StyledButton onClick={handleClickSend}>Send</StyledButton>
             </DialogActions>
           </StyledMessageWrapper>
@@ -161,19 +156,6 @@ const StyledCardContainer = styled("div")`
   width: 300px;
   height: 400px;
   border-radius: 1.2rem;
-`;
-
-const StyledGradeIcon = styled(GradeRoundedIcon)`
-  z-index: 2;
-  position: absolute;
-  border: 2px solid #ffff66;
-  border-radius: 50%;
-  font-size: 2rem;
-  top: 10px;
-  right: 10px;
-  color: #ffff66;
-  padding: 0.3rem;
-  cursor: pointer;
 `;
 
 const StyledImg = styled("img")`
