@@ -47,31 +47,33 @@ const CaseProfile = ({ profile, index }: MainProfileProps) => {
           <Grid item xs={12}>
             <StyledSpan>{profile.sexualOrientation}</StyledSpan>
           </Grid>
-          <Grid
-            item
-            xs={12}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginTop: "0.25rem",
-            }}
-          >
-            <PersonSearchIcon />
-            <span
+          {profile.purposes.length > 0 && (
+            <Grid
+              item
+              xs={12}
               style={{
-                marginRight: "0.5rem",
-                fontSize: "1.2rem",
-                fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+                marginTop: "0.25rem",
               }}
             >
-              :
-            </span>
-            <div>
-              {profile.purposes.map((purpose, index) => (
-                <StyledSpan key={index}>{`${purpose.name}`}</StyledSpan>
-              ))}
-            </div>
-          </Grid>
+              <PersonSearchIcon />
+              <span
+                style={{
+                  marginRight: "0.5rem",
+                  fontSize: "1.2rem",
+                  fontWeight: "bold",
+                }}
+              >
+                :
+              </span>
+              <div>
+                {profile.purposes.map((purpose, index) => (
+                  <StyledSpan key={index}>{`${purpose.name}`}</StyledSpan>
+                ))}
+              </div>
+            </Grid>
+          )}
         </>
       );
       break;
@@ -104,11 +106,13 @@ const CaseProfile = ({ profile, index }: MainProfileProps) => {
           <Grid item xs={2}>
             <StledSubBox>{profile.age}</StledSubBox>
           </Grid>
-          <Grid item xs={12} maxHeight={"50px"}>
-            {profile.interests.map((interest, index) => (
-              <StyledSpan key={index}>{`${interest.name}`}</StyledSpan>
-            ))}
-          </Grid>
+          {profile.interests.length > 0 && (
+            <Grid item xs={12} maxHeight={"50px"}>
+              {profile.interests.map((interest, index) => (
+                <StyledSpan key={index}>{`${interest.name}`}</StyledSpan>
+              ))}
+            </Grid>
+          )}
         </>
       );
       break;
