@@ -204,6 +204,7 @@ class _ProfileRepository {
   };
 
   createProfile = async (profile: Profile, filter: Filter, userId: string) => {
+    const interest: Prisma.InterestCreateNestedManyWithoutProfilesInput = {};
     const data: Prisma.ProfileCreateInput = {
       id: profile.id(),
       userId,
@@ -221,6 +222,7 @@ class _ProfileRepository {
           purposes: filter.purposes(),
         },
       },
+      interests: {},
     };
     return await this.db.profile.create<Prisma.ProfileCreateArgs>({ data });
   };
