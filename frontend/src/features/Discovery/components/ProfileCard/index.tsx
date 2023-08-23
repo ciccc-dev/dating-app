@@ -52,6 +52,10 @@ const StyledCardContainer = styled("div")`
   height: 400px;
   background-color: lightgrey;
   box-shadow: 4px 4px 6px grey;
+  &:hover {
+    cursor: pointer;
+    outline: 3px solid #ec407a;
+  }
 `;
 
 const StyledSwiper = styled(Swiper)`
