@@ -6,25 +6,42 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Profile } from "../../../../pages/Discovery";
 import { styled } from "@mui/material";
-import { ProfileDialog } from "../ProfileDialog";
 import unknowUser from "../../../../pic/unkown_user.png";
 import { ProfileDetail } from "./ProfileDetail";
+import { ProfileDetailDialog } from "../ProfileDetailDilalog";
+import { ConstructionOutlined } from "@mui/icons-material";
+import { useState } from "react";
+import { ProfileSendLikeDialog } from "../ProfileSendLikeDialog";
 
 interface ProfileCardProps {
   profile: Profile;
 }
 
 export const ProfileCard = ({ profile }: ProfileCardProps) => {
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
       <StyledCardContainer>
-        <ProfileDialog profile={profile} />
+        <ProfileDetailDialog profile={profile} />
+        <ProfileSendLikeDialog
+          profile={profile}
+          open={open}
+          onClose={handleClose}
+        />
         <StyledSwiper
           effect={"flip"}
           grabCursor={true}
           pagination={true}
           modules={[EffectFlip, Pagination]}
           className="mySwiper"
+          onDoubleClick={handleClickOpen}
         >
           {profile.photos.length === 0 ? (
             <StyledSwiperSlide>
@@ -52,6 +69,10 @@ const StyledCardContainer = styled("div")`
   height: 400px;
   background-color: lightgrey;
   box-shadow: 4px 4px 6px grey;
+  &:hover {
+    cursor: pointer;
+    outline: 3px solid #ec407a;
+  }
 `;
 
 const StyledSwiper = styled(Swiper)`

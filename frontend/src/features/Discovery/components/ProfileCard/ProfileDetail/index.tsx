@@ -149,7 +149,7 @@ const StyledGrid = styled(Grid)`
   color: white;
 `;
 
-const getBackgroundStyle = (gender: string) => {
+export const getBackgroundStyle = (gender: string) => {
   switch (gender) {
     case "Man":
       return "linear-gradient(-225deg, #3D4E81 0%, #5753C9 48%, #6E7FF3 100%)";
@@ -160,7 +160,7 @@ const getBackgroundStyle = (gender: string) => {
   }
 };
 
-const StyledGenderSpan = styled("span")<StyledGenderSpanProps>(
+export const StyledGenderSpan = styled("span")<StyledGenderSpanProps>(
   ({ gender }) => ({
     border: "1px solid white",
     borderRadius: "1rem",
@@ -176,7 +176,7 @@ const StyledGenderSpan = styled("span")<StyledGenderSpanProps>(
   })
 );
 
-const StyledDistanceSpan = styled("span")`
+export const StyledDistanceSpan = styled("span")`
   border: 1px solid white;
   border-radius: 1rem;
   padding: 0.25rem 0.5rem;
@@ -187,13 +187,14 @@ const StyledDistanceSpan = styled("span")`
   margin-right: 0.5rem;
 `;
 
-const StyledSpan = styled("span")`
+export const StyledSpan = styled("span")`
+  display: inline-block;
   border: 1px solid white;
   border-radius: 1rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.1rem 0.5rem;
   color: white;
   background-color: grey;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   font-weight: 600;
   margin-right: 0.5rem;
 `;
@@ -214,7 +215,7 @@ const StledSubBox = styled("span")`
   background-size: 100% 20%;
 `;
 
-const StyledParagraph = styled("p")`
+export const StyledParagraph = styled("p")`
   margin: 0;
   padding: 0.25rem;
   color: white;

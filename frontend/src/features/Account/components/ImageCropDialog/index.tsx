@@ -157,6 +157,6 @@ const StlyedDialogActions = styled(DialogActions)`
 const StyledBox = styled(Box)`
   &:hover {
     cursor: pointer;
-    border: 2px solid #ec407a;
+    outline: 2px solid #ec407a;
   }
 `;

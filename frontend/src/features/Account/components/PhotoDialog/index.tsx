@@ -74,7 +74,7 @@ const StyleImg = styled("img")`
   border-radius: 10px;
   &:hover {
     cursor: pointer;
-    border: 2px solid #ec407a;
+    outline: 2px solid #ec407a;
   }
 `;
 
