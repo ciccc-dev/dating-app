@@ -12,6 +12,7 @@ import { Username } from "../features/Signup/components/Username";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { NotificationBar } from "../components/NotificationBar";
 import { useDialogState } from "../hooks/useDialogState";
+import { _interestClient } from "../features/Discovery/api/interest";
 
 interface Profile {
   username: string;
@@ -71,6 +72,13 @@ export const Signup = () => {
       process.env.REACT_APP_SERVER_URL ?? "",
       token
     );
+    const InterestAPI = new _interestClient(
+      process.env.REACT_APP_SERVER_URL ?? "",
+      token
+    );
+
+    const interests = await InterestAPI.getInterests(profile.interests);
+
     const result = await ProfileAPI.CreateProfile({
       username: profile.username,
       gender: profile.gender,
@@ -79,7 +87,9 @@ export const Signup = () => {
       showMe: profile.showMe,
       purposes: profile.purposes,
       aboutMe: "",
+      interests,
     });
+    console.log(result);
     if (!result.status) return open();
     navigate("/discovery");
   };
