@@ -37,17 +37,23 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
               ) : null}
             </Grid>
             <Grid item xs={10}>
-              <div>{profile.userName}</div>
+              <StledMainBox>{profile.userName}</StledMainBox>
             </Grid>
             <Grid item xs={2}>
-              <div>{profile.age}</div>
+              <StledMainBox>{profile.age}</StledMainBox>
             </Grid>
           </StyledGrid>
-          {profile.photos.map((item, index) => (
-            <StyledSwiperSlide key={index}>
-              <StyledImg src={item.photoUrl} alt={item.photoUrl} />
+          {profile.photos.length === 0 ? (
+            <StyledSwiperSlide>
+              <StyledImg src={unknowUser} alt="unknowUser" />
             </StyledSwiperSlide>
-          ))}
+          ) : (
+            profile.photos.map((item, index) => (
+              <StyledSwiperSlide key={index}>
+                <StyledImg src={item.photoUrl} alt={item.photoUrl} />
+              </StyledSwiperSlide>
+            ))
+          )}
           {/* <StyledSwiperSlide>
             <StyledImg
               src="https://swiperjs.com/demos/images/nature-1.jpg"
@@ -170,6 +176,13 @@ const StyledBox = styled(Box)`
   gap: 0.25rem;
 `;
 
+const StledMainBox = styled("span")`
+  background-image: linear-gradient(90deg, #4e9ff3, #8eefff);
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 20%;
+`;
+
 const StyledSpan = styled("span")`
   border: 1px solid white;
   border-radius: 1rem;
@@ -183,8 +196,6 @@ const StyledSpan = styled("span")`
 const StyledSwiper = styled(Swiper)`
   width: 300px;
   height: 400px;
-  background-image: url(${unknowUser});
-  background-size: cover;
   border-radius: 1.2rem;
 `;
 
