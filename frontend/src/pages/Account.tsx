@@ -21,6 +21,7 @@ import { Map } from "../features/Discovery/components/Map";
 import { _accountClient } from "../features/Discovery/api/account";
 import { useNavigate } from "react-router-dom";
 import { _photoClient } from "../features/Discovery/api/photo";
+import { convertToDateFormat } from "../utils/calculateAge";
 
 export interface ProfileHookForm {
   name: string;
@@ -327,7 +328,9 @@ export const Account = () => {
                   )}
                 />
               ) : (
-                <StyledReadOnly>{profile?.birthday}</StyledReadOnly>
+                <StyledReadOnly>
+                  {convertToDateFormat(profile?.birthday)}
+                </StyledReadOnly>
               )}
               <StyledSubTitle>
                 <span>Gender</span>
