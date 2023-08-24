@@ -89,7 +89,6 @@ export const Signup = () => {
       aboutMe: "",
       interests,
     });
-    console.log(result);
     if (!result.status) return open();
     navigate("/discovery");
   };
