@@ -68,7 +68,6 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
       if (croppedImage) {
         setSelectedFile(croppedImage);
         const result = await postPhoto(croppedImage);
-        console.log(result);
         if (result) {
           setIsUpdated(true);
           setOpen(false);

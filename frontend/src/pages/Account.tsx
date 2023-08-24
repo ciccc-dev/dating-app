@@ -22,7 +22,6 @@ import { _accountClient } from "../features/Discovery/api/account";
 import { useNavigate } from "react-router-dom";
 import { _photoClient } from "../features/Discovery/api/photo";
 import { convertToDateFormat } from "../utils/calculateAge";
-import axios from "axios";
 import { _geolocationClient } from "../features/Geolocation/api";
 
 export interface ProfileHookForm {
@@ -33,9 +32,12 @@ export interface ProfileHookForm {
   birthday: string;
 }
 
-export interface Geolocation {
+export interface Coordinate {
   latitude: number;
   longitude: number;
+}
+
+export interface Geolocation extends Coordinate {
   location: string;
 }
 
@@ -97,6 +99,7 @@ export const Account = () => {
     isUpdated,
     setIsUpdated,
   };
+
   const [interests, setInterests] = useState<Item[]>([]);
   const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
   const navigate = useNavigate();
@@ -179,10 +182,6 @@ export const Account = () => {
     setIsUpdated(true);
   };
 
-  const handleUpdateClick = () => {
-    setIsUpdated(true);
-  };
-
   const handleChange = <T,>(title: string, value: T) => {
     setProfile({ ...profile, [title]: value });
   };
@@ -227,17 +226,7 @@ export const Account = () => {
     if (result) handleEditProfileClick();
   };
 
-  const fetchIpAddress = async (): Promise<string> => {
-    try {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      return res.data.ip;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const fetchGeolocation = async (ipaddress: string) => {
+  const fetchGeolocation = async (coordinate: Coordinate) => {
     try {
       const token = await getAccessTokenSilently();
       if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
@@ -245,7 +234,7 @@ export const Account = () => {
           process.env.REACT_APP_SERVER_URL ?? "",
           token
         );
-        await GeolocationClient.fetchGeolocation(ipaddress, profile.id);
+        await GeolocationClient.fetchGeolocation(coordinate, profile.id);
         return true;
       }
     } catch (error) {
@@ -254,11 +243,22 @@ export const Account = () => {
   };
 
   const handleGeolocationClick = async () => {
-    const ipaddress = await fetchIpAddress();
-    const geolocationResult = await fetchGeolocation(ipaddress);
-    if (geolocationResult) {
-      setIsUpdated(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position: GeolocationPosition) => {
+          const updatedCoordinate = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+
+          const geolocationResult = await fetchGeolocation(updatedCoordinate);
+          if (geolocationResult) {
+            setIsUpdated(true);
+          }
+        }
+      );
     }
+    console.log("cannot get the location");
   };
 
   return (

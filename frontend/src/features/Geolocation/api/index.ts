@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Coordinate } from "../../../pages/Account";
 
 export class _geolocationClient {
   private apiUrl: string;
@@ -9,7 +10,7 @@ export class _geolocationClient {
     this.accessToken = accesToken;
   }
 
-  fetchGeolocation = async (ipaddress: string, profileId: string) => {
+  fetchGeolocation = async (coordinate: Coordinate, profileId: string) => {
     try {
       const res = await axios({
         url: `${this.apiUrl}/api/geolocation`,
@@ -18,7 +19,7 @@ export class _geolocationClient {
           Authorization: `Bearer ${this.accessToken}`,
           "Content-Type": "application/json",
         },
-        data: { ipaddress: ipaddress, profileId: profileId },
+        data: { coordinate: coordinate, profileId: profileId },
       });
       return res.data;
     } catch (error) {

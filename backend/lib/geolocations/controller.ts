@@ -13,17 +13,16 @@ export const putGeolocation = async (
   next: NextFunction
 ) => {
   try {
-    const exterenalGeolocation =
+    const city =
       await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
-        req.body.ipaddress
+        req.body.coordinate
       );
-
     const { id, profileId, location, latitude, longitude } =
       new ProfileGeolocation(
         req.body.profileId,
-        exterenalGeolocation.location,
-        exterenalGeolocation.latitude,
-        exterenalGeolocation.longitude
+        city,
+        req.body.coordinate.latitude,
+        req.body.coordinate.longitude
       ).toHash();
 
     const geolocation: Prisma.GeolocationCreateInput = {
@@ -41,26 +40,26 @@ export const putGeolocation = async (
   }
 };
 
-export const updateGeolocationByProfileId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const geolocation =
-      await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
-        req.body.ipaddress
-      );
+// export const updateGeolocationByProfileId = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const geolocation =
+//       await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
+//         req.body.ipaddress
+//       );
 
-    await GeolocationRepository.updateGeolocationByProfileId(
-      req.body.profileId,
-      geolocation
-    );
-    res.status(201).json();
-  } catch (err) {
-    next(err);
-  }
-};
+//     await GeolocationRepository.updateGeolocationByProfileId(
+//       req.body.profileId,
+//       geolocation
+//     );
+//     res.status(201).json();
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
 export const getGeolocationDistance = async (
   req: Request,
