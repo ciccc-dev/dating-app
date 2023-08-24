@@ -11,7 +11,6 @@ class _websocketClient {
 
   initialLoad = (user: User) => {
     this.socket.emit("initial_load", { userId: user.sub });
-    console.log(user);
   };
 
   onChatrooms = (update: (chatrooms: any) => void) => {

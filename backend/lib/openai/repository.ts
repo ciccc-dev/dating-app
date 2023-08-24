@@ -11,14 +11,6 @@ class _OpenAiRepository {
     this.gptModel = "gpt-3.5-turbo";
   }
 
-  getCompletion = async () => {
-    const completion = await this.openai.chat.completions.create({
-      messages: [{ role: "user", content: "Say this is a test" }],
-      model: this.gptModel,
-    });
-    console.log(completion.choices);
-  };
-
   getAnswersGeneratedByAi = async ({
     profile,
     question,

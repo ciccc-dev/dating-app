@@ -38,9 +38,5 @@ export const webscoketConnect = (
         }
       }
     );
-
-    socket.on("disconnect", (reason) => {
-      console.log(`user disconnected. reason is ${reason}.`);
-    });
   });
 };
