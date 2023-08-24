@@ -1,4 +1,5 @@
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+import React from "react";
 
 interface MapProps {
   latitude: number;
@@ -9,7 +10,7 @@ interface ProfileMapProps extends MapProps {
   googleMapsApiKey: string;
 }
 
-export const Map = ({ latitude, longitude }: MapProps) => {
+export const Map = React.memo(({ latitude, longitude }: MapProps) => {
   const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   if (googleMapsApiKey === undefined) {
     return <div>Error</div>;
@@ -22,7 +23,7 @@ export const Map = ({ latitude, longitude }: MapProps) => {
       longitude={longitude}
     />
   );
-};
+});
 
 const ProfileMap = ({
   googleMapsApiKey,

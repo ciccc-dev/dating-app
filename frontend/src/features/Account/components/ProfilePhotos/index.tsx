@@ -1,10 +1,10 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Box, Grid, styled } from "@mui/material";
-import { useRef, useState } from "react";
+import { Grid, styled } from "@mui/material";
 import { _photoClient } from "../../../Discovery/api/photo";
 import { PhotoDialog } from "../PhotoDialog";
 import { Photo } from "../../../../pages/Account";
 import { ImageCropDialog } from "../ImageCropDialog";
+import React from "react";
 
 export interface IFile {
   url: string;
@@ -16,143 +16,54 @@ interface ProfilePhotosProps {
   profileId: string;
 }
 
-export const ProfilePhotos = ({ photoUrls, profileId }: ProfilePhotosProps) => {
-  const { user, getAccessTokenSilently } = useAuth0();
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+export const ProfilePhotos = React.memo(
+  ({ photoUrls, profileId }: ProfilePhotosProps) => {
+    const { getAccessTokenSilently } = useAuth0();
 
-  const postPhotos = async (files: FileList) => {
-    try {
-      if (files) {
-        const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-          formData.append("photos", files[i]);
+    const postPhoto = async (file: File): Promise<boolean> => {
+      try {
+        if (file) {
+          const formData = new FormData();
+          formData.append("photo", file);
+          const token = await getAccessTokenSilently();
+          if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+            const PhotoClient = new _photoClient(
+              process.env.REACT_APP_SERVER_URL ?? "",
+              token
+            );
+            await PhotoClient.postPhoto(profileId, formData);
+            return true;
+          }
+          return false;
         }
-        const token = await getAccessTokenSilently();
-        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
-          const PhotoClient = new _photoClient(
-            process.env.REACT_APP_SERVER_URL ?? "",
-            token
-          );
-          const data = await PhotoClient.postPhotos(profileId, formData);
-        }
+        return false;
+      } catch (error) {
+        return false;
       }
-    } catch (error) {
-      throw error;
-    }
-  };
+    };
 
-  const postPhoto = async (file: File) => {
-    try {
-      if (file) {
-        const formData = new FormData();
-        formData.append("photo", file);
-        const token = await getAccessTokenSilently();
-        if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
-          const PhotoClient = new _photoClient(
-            process.env.REACT_APP_SERVER_URL ?? "",
-            token
-          );
-          const data = await PhotoClient.postPhoto(profileId, formData);
-        }
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const selectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      setSelectedFile(event.target.files[0]);
-    }
-  };
-
-  const selectImages = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let images: Array<string> = [];
-    let files = event.target.files;
-    if (files) {
-      for (let i = 0; i < files.length; i++) {
-        images.push(URL.createObjectURL(files[i]));
-      }
-      setSelectedFiles(files);
-      postPhotos(files);
-    }
-  };
-
-  const handleBoxClick = () => {
-    if (inputRef.current) {
-      inputRef.current.click();
-    }
-  };
-
-  return (
-    <>
-      <StyledGrid container spacing={1}>
-        {[...Array(5)].map((e, index) => (
-          <Grid key={index} item xs={index === 0 ? 12 : 3}>
-            {photoUrls && photoUrls[index] ? (
-              <PhotoDialog
-                photoUrl={photoUrls[index]}
-                index={index}
-                profileId={profileId}
-              />
-            ) : (
-              <ImageCropDialog postPhoto={postPhoto} />
-            )}
-            {/* {selectedFiles && selectedFiles[index] ? (
-                <StyleImg
-                  src={URL.createObjectURL(selectedFiles[index])}
-                  alt={`userPhoto-${index}`}
-                  sx={{
-                    width: "100%",
-                    aspectRatio: "0.75",
-                  }}
+    return (
+      <>
+        <StyledGrid container spacing={1}>
+          {[...Array(5)].map((e, index) => (
+            <Grid key={index} item xs={index === 0 ? 12 : 3}>
+              {photoUrls && photoUrls[index] ? (
+                <PhotoDialog
+                  photoUrl={photoUrls[index]}
+                  index={index}
+                  profileId={profileId}
                 />
-              ) : null} */}
-          </Grid>
-        ))}
-      </StyledGrid>
-      {/* <Box sx={{ marginTop: "1rem" }}>
-        <Stack direction="row" alignItems="center" spacing={2}>
-          <Button
-            variant="outlined"
-            component="label"
-            sx={{ width: "100%", fontSize: "1.2rem", marginBottom: "1rem" }}
-          >
-            Choose Photos
-            <input
-              hidden
-              accept="image/*"
-              multiple
-              type="file"
-              name="photos"
-              onChange={selectImages}
-            />
-          </Button>
-        </Stack>
-      </Box> */}
-    </>
-  );
-};
-
-const StyleImg = styled("img")`
-  aspect-ratio: 0.75;
-  width: 100%;
-  border-radius: 10px;
-  &:hover {
-    cursor: pointer;
-    border: 2px solid #ec407a;
+              ) : (
+                <ImageCropDialog postPhoto={postPhoto} />
+              )}
+            </Grid>
+          ))}
+        </StyledGrid>
+      </>
+    );
   }
-`;
+);
 
 const StyledGrid = styled(Grid)`
   width: 300px;
-`;
-
-const StyledBox = styled(Box)`
-  &:hover {
-    cursor: pointer;
-    border: 2px solid #ec407a;
-  }
 `;

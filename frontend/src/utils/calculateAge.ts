@@ -1,7 +1,9 @@
 import differenceInYears from "date-fns/differenceInYears";
 
-export const calculateAge = (birthdate: Date) =>
-  differenceInYears(new Date(), birthdate);
+export const calculateAge = (date: Date) => differenceInYears(new Date(), date);
 
-export const convertToDateFormat = (birthdate: string) =>
-  birthdate.substring(0, birthdate.indexOf("T"));
+export const convertToDateFormat = (date: string) =>
+  date.substring(0, date.indexOf("T"));
+
+export const convertToDateHourFormat = (date: string) =>
+  date.substring(0, date.indexOf("T"));

@@ -15,6 +15,17 @@ class _GeolocationRepository {
     return result;
   };
 
+  upsertGeolocation = async (geolocation: Prisma.GeolocationCreateInput) => {
+    const result = this.db.geolocation.upsert<Prisma.GeolocationUpsertArgs>({
+      where: {
+        profileId: geolocation.profile.connect?.id,
+      },
+      create: geolocation,
+      update: geolocation,
+    });
+    return result;
+  };
+
   updateGeolocationByProfileId = async (
     profileId: string,
     geolocation: Prisma.GeolocationUpdateInput

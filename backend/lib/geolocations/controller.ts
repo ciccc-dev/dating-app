@@ -7,7 +7,7 @@ import {
 import { ProfileGeolocation } from "./geolocation";
 import { Prisma } from "@prisma/client";
 
-export const postGeolocation = async (
+export const putGeolocation = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -33,7 +33,8 @@ export const postGeolocation = async (
       latitude: latitude,
       longitude: longitude,
     };
-    await GeolocationRepository.createGeolocation(geolocation);
+
+    await GeolocationRepository.upsertGeolocation(geolocation);
     res.status(201).json();
   } catch (err) {
     next(err);

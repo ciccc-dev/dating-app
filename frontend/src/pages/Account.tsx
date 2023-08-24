@@ -1,5 +1,5 @@
 import { Box, Button, Divider, TextField, styled } from "@mui/material";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Item } from "../features/Discovery/components/Navigation";
@@ -22,6 +22,8 @@ import { _accountClient } from "../features/Discovery/api/account";
 import { useNavigate } from "react-router-dom";
 import { _photoClient } from "../features/Discovery/api/photo";
 import { convertToDateFormat } from "../utils/calculateAge";
+import axios from "axios";
+import { _geolocationClient } from "../features/Geolocation/api";
 
 export interface ProfileHookForm {
   name: string;
@@ -29,6 +31,12 @@ export interface ProfileHookForm {
   userName: string;
   aboutMe: string;
   birthday: string;
+}
+
+export interface Geolocation {
+  latitude: number;
+  longitude: number;
+  location: string;
 }
 
 export interface Profile {
@@ -43,11 +51,7 @@ export interface Profile {
   updatedAt: Date;
   purposes: Item[];
   interests: Item[];
-  geolocation: {
-    latitude: number;
-    longitude: number;
-    location: string;
-  };
+  geolocation: Geolocation;
 }
 
 const defaultProfile = {
@@ -74,11 +78,25 @@ export interface Photo {
   photoUrl: string;
 }
 
+interface isUpdateType {
+  isUpdated: boolean;
+  setIsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const isUpdateContext = createContext<isUpdateType>({
+  isUpdated: false,
+  setIsUpdated: () => {},
+});
+
 export const Account = () => {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
+  const value = {
+    isUpdated,
+    setIsUpdated,
+  };
   const [interests, setInterests] = useState<Item[]>([]);
   const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
   const navigate = useNavigate();
@@ -102,6 +120,7 @@ export const Account = () => {
           if (user?.sub) {
             const data = await ProfileClient.getProfile(user.sub);
             setProfile(data);
+            console.log(data);
           }
         }
       } catch (error) {
@@ -127,7 +146,6 @@ export const Account = () => {
     };
     fetchProfileId();
     fetchPhotoUrls();
-
     setIsUpdated(false);
   }, [getAccessTokenSilently, user, isUpdated, profile.id]);
 
@@ -161,6 +179,10 @@ export const Account = () => {
     setIsUpdated(true);
   };
 
+  const handleUpdateClick = () => {
+    setIsUpdated(true);
+  };
+
   const handleChange = <T,>(title: string, value: T) => {
     setProfile({ ...profile, [title]: value });
   };
@@ -174,7 +196,8 @@ export const Account = () => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          return await ProfileClient.updateProfile(data, profile);
+          await ProfileClient.updateProfile(data, profile);
+          return true;
         }
       } catch (error) {
         throw error;
@@ -193,7 +216,8 @@ export const Account = () => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          return await AccountClient.updateAccount(data, profile.id);
+          await AccountClient.updateAccount(data, profile.id);
+          return true;
         }
       } catch (error) {
         throw error;
@@ -201,6 +225,40 @@ export const Account = () => {
     };
     const result = await updateAccount();
     if (result) handleEditProfileClick();
+  };
+
+  const fetchIpAddress = async (): Promise<string> => {
+    try {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      console.log(res.data);
+      return res.data.ip;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const fetchGeolocation = async (ipaddress: string) => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const GeolocationClient = new _geolocationClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        await GeolocationClient.fetchGeolocation(ipaddress, profile.id);
+        return true;
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleGeolocationClick = async () => {
+    const ipaddress = await fetchIpAddress();
+    const geolocationResult = await fetchGeolocation(ipaddress);
+    if (geolocationResult) {
+      setIsUpdated(true);
+    }
   };
 
   return (
@@ -214,7 +272,9 @@ export const Account = () => {
           >
             Go To Discovery
           </StlyedBackButton>
-          <ProfilePhotos photoUrls={photoUrls} profileId={profile.id} />
+          <isUpdateContext.Provider value={value}>
+            <ProfilePhotos photoUrls={photoUrls} profileId={profile.id} />
+          </isUpdateContext.Provider>
         </StyledAside>
         <StyledMain>
           <StyledForm component="form" onSubmit={handleSubmit(onAccountSubmit)}>
@@ -360,7 +420,7 @@ export const Account = () => {
                 <StyledTextarea
                   maxRows={4}
                   aria-label="maximum height"
-                  placeholder="Maximum 4 rows"
+                  placeholder="Hi! I'm a ..."
                   defaultValue={profile?.aboutMe}
                   {...register("aboutMe", {
                     required: "please enter a valid about me",
@@ -436,6 +496,9 @@ export const Account = () => {
             </StyledSection>
             <StyledTitleWrapper>
               <StyledTitle>Your Location</StyledTitle>
+              <Button variant="outlined" onClick={handleGeolocationClick}>
+                Get Location
+              </Button>
             </StyledTitleWrapper>
             <StyledDivder />
             <StyledSection>
