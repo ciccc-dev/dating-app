@@ -70,7 +70,7 @@ const StyledContent = styled(Box)`
   width: calc(100% - ${navigationWidth}px);
 
   @media (max-width: 600px) {
-    width: 100%;
+    width: 956%;
   }
 `;
 

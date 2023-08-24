@@ -12,7 +12,7 @@ interface Props {
 
 export const TableComponent = ({ header, body }: Props) => {
   return (
-    <TableContainer component={Paper} sx={{ margin: "20px" }}>
+    <TableContainer component={Paper} sx={{ margin: "20px", width: "95%" }}>
       <StyledTable>
         <TableHead>
           <>{header}</>
