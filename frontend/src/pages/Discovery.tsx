@@ -74,7 +74,7 @@ export const Discovery = () => {
         <UserProfileIdContext.Provider value={profileIdValue}>
           <isFilteredContext.Provider value={value}>
             <StyledNavigationWrapper component="nav">
-              <DiscoveryNavigation />
+              <DiscoveryNavigation loading={isLoading} />
             </StyledNavigationWrapper>
             <UserProfiles.Provider value={profileValue}>
               <StyledContent component="main" hasProfiles={profiles.length > 0}>
