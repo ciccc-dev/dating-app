@@ -31,6 +31,7 @@ export const Discovery = () => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [profileId, setProfileId] = useState("");
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFiltered, setIsfiltered] = useState<boolean>(false);
   const value = {
     isFiltered,
@@ -40,6 +41,7 @@ export const Discovery = () => {
   const profileValue = profiles.map(({ id }) => id);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchProfiles = async () => {
       try {
         const token = await getAccessTokenSilently();
@@ -61,6 +63,7 @@ export const Discovery = () => {
     };
     fetchProfiles();
     setIsfiltered(false);
+    setIsLoading(false);
   }, [getAccessTokenSilently, user, isFiltered]);
 
   console.log(profiles);
@@ -74,10 +77,17 @@ export const Discovery = () => {
               <DiscoveryNavigation />
             </StyledNavigationWrapper>
             <UserProfiles.Provider value={profileValue}>
-              <StyledContent component="main">
-                {profiles.map((profile, index) => (
-                  <ProfileCard profile={profile} key={index} />
-                ))}
+              <StyledContent component="main" hasProfiles={profiles.length > 0}>
+                {profileId &&
+                  (profiles.length > 0 ? (
+                    profiles.map((profile, index) => (
+                      <ProfileCard profile={profile} key={index} />
+                    ))
+                  ) : (
+                    <Box sx={{ fontSize: "2.5rem" }}>
+                      No matches found! Give your filters a tweak.
+                    </Box>
+                  ))}
               </StyledContent>
             </UserProfiles.Provider>
           </isFilteredContext.Provider>
@@ -101,7 +111,11 @@ const StyledNavigationWrapper = styled(Box)`
   }
 `;
 
-const StyledContent = styled(Box)`
+interface StyledContentProps {
+  hasProfiles: boolean;
+}
+
+const StyledContent = styled(Box)<StyledContentProps>`
   height: 100vh;
   display: flex;
   flex-direction: row;
@@ -110,11 +124,15 @@ const StyledContent = styled(Box)`
   flex-wrap: wrap;
   padding: 3px;
   width: calc(100% - ${navigationWidth}px);
-  & > :not(style) {
-    margin: 1.5rem;
-    width: 300px;
-    height: 400px;
-  }
+  ${(props) =>
+    props.hasProfiles &&
+    `
+    & > :not(style) {
+      margin: 1.5rem;
+      width: 300px;
+      height: 400px;
+    }
+  `}
 
   @media (max-width: 600px) {
     width: 100%;
