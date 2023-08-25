@@ -6,8 +6,7 @@ import { navigationWidth } from "../constants/navigation";
 import { DiscoveryNavigation } from "../features/Discovery/components/Navigation";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileCard } from "../features/Discovery/components/ProfileCard";
-import { Item } from "../features/Discovery/components/FilterDialog";
-import { Photo } from "./Account";
+import { Profile } from "../types";
 
 interface UserProfileIdType {
   profileId: string;
@@ -19,21 +18,6 @@ interface isFilteredType {
   setIsfiltered: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export interface Profile {
-  id: string;
-  userId: string;
-  userName: string;
-  age: number;
-  gender: string;
-  sexualOrientation: string;
-  aboutMe: string;
-  registeredAt: Date;
-  updatedAt: Date;
-  purposes: Item[];
-  interests: Item[];
-  photos: Photo[];
-  distance: number;
-}
 export const UserProfileIdContext = createContext<UserProfileIdType>({
   profileId: "",
   setProfileId: () => {},

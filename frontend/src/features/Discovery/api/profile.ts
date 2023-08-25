@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Profile, ProfileHookForm } from "../../../pages/Account";
+import { MyProfile, ProfileHookForm } from "../../../pages/Account";
 
 export class _profileClient {
   private apiUrl: string;
@@ -58,7 +58,7 @@ export class _profileClient {
     }
   };
 
-  updateProfile = async (data: ProfileHookForm, profile: Profile) => {
+  updateProfile = async (data: ProfileHookForm, profile: MyProfile) => {
     try {
       const res = await axios({
         url: `${this.apiUrl}/api/profiles/update`,

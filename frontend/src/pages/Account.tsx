@@ -2,7 +2,6 @@ import { Box, Button, Divider, TextField, styled } from "@mui/material";
 import { createContext, useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Item } from "../features/Discovery/components/Navigation";
 import { ProfilePhotos } from "../features/Account/components/ProfilePhotos";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
@@ -23,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { _photoClient } from "../features/Discovery/api/photo";
 import { convertToDateFormat } from "../utils/calculateAge";
 import { _geolocationClient } from "../features/Geolocation/api";
+import { Item, Photo } from "../types";
 
 export interface ProfileHookForm {
   name: string;
@@ -46,7 +46,7 @@ export interface Geolocation extends Coordinate {
   location: string;
 }
 
-export interface Profile {
+export interface MyProfile {
   id: string;
   userId: string;
   userName: string;
@@ -85,11 +85,6 @@ const defaultProfile = {
   },
 };
 
-export interface Photo {
-  id: string;
-  photoUrl: string;
-}
-
 interface isUpdateType {
   isUpdated: boolean;
   setIsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
@@ -121,7 +116,7 @@ export const coordinateContext = createContext<coordinateType>({
 });
 
 export const Account = () => {
-  const [profile, setProfile] = useState<Profile>(defaultProfile);
+  const [profile, setProfile] = useState<MyProfile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);

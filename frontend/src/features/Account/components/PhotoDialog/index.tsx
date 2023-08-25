@@ -2,10 +2,11 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import { Box, styled, Divider } from "@mui/material";
-import { Photo, isUpdateContext } from "../../../../pages/Account";
+import { isUpdateContext } from "../../../../pages/Account";
 import { useAuth0 } from "@auth0/auth0-react";
 import { _photoClient } from "../../../Discovery/api/photo";
 import { useContext, useState } from "react";
+import { Photo } from "../../../../types";
 
 interface PhotoDialogProps {
   photoUrl: Photo;

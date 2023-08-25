@@ -18,6 +18,7 @@ import {
   UserProfileIdContext,
   isFilteredContext,
 } from "../../../../pages/Discovery";
+import { Item } from "../../../../types";
 
 export interface Filter {
   id: string;
@@ -52,10 +53,6 @@ const defaultFilter = {
   interests: [],
   isInterestFiltered: false,
 };
-
-export interface Item {
-  name: string;
-}
 
 export const DiscoveryNavigation = () => {
   const { getAccessTokenSilently } = useAuth0();

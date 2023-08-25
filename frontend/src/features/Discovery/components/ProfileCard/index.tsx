@@ -4,14 +4,13 @@ import "swiper/css";
 import "swiper/css/effect-flip";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Profile } from "../../../../pages/Discovery";
 import { styled } from "@mui/material";
 import unknowUser from "../../../../pic/unkown_user.png";
 import { ProfileDetail } from "./ProfileDetail";
 import { ProfileDetailDialog } from "../ProfileDetailDilalog";
-import { ConstructionOutlined } from "@mui/icons-material";
 import { useState } from "react";
 import { ProfileSendLikeDialog } from "../ProfileSendLikeDialog";
+import { Profile } from "../../../../types";
 
 interface ProfileCardProps {
   profile: Profile;

@@ -9,6 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Box } from "@mui/material";
 import { useState } from "react";
+import { Item } from "../../../../types";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -18,10 +19,6 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
-
-export interface Item {
-  name: string;
-}
 
 export interface FilterDialogProps<T extends string | (string | Item)[]> {
   type: string;
