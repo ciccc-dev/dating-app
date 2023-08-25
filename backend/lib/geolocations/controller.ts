@@ -7,23 +7,22 @@ import {
 import { ProfileGeolocation } from "./geolocation";
 import { Prisma } from "@prisma/client";
 
-export const postGeolocation = async (
+export const putGeolocation = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const exterenalGeolocation =
-      await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
-        req.body.ipaddress
-      );
+    const city = await ExterenalGeolocationRepository.fetchGeolocationfromExApi(
+      req.body.coordinate
+    );
 
     const { id, profileId, location, latitude, longitude } =
       new ProfileGeolocation(
         req.body.profileId,
-        exterenalGeolocation.location,
-        exterenalGeolocation.latitude,
-        exterenalGeolocation.longitude
+        city,
+        req.body.coordinate.latitude,
+        req.body.coordinate.longitude
       ).toHash();
 
     const geolocation: Prisma.GeolocationCreateInput = {
@@ -33,7 +32,8 @@ export const postGeolocation = async (
       latitude: latitude,
       longitude: longitude,
     };
-    await GeolocationRepository.createGeolocation(geolocation);
+
+    await GeolocationRepository.upsertGeolocation(geolocation);
     res.status(201).json();
   } catch (err) {
     next(err);
@@ -46,31 +46,19 @@ export const updateGeolocationByProfileId = async (
   next: NextFunction
 ) => {
   try {
-    const geolocation =
-      await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
-        req.body.ipaddress
-      );
+    const city = await ExterenalGeolocationRepository.fetchGeolocationfromExApi(
+      req.body.coordinate
+    );
 
+    const geolocation = {
+      latitude: req.body.coordinate.latitude,
+      longitude: req.body.coordinate.longitude,
+      location: city,
+    };
     await GeolocationRepository.updateGeolocationByProfileId(
       req.body.profileId,
       geolocation
     );
-    res.status(201).json();
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const getGeolocationDistance = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    // await GeolocationRepository.fetchGeolocation(
-    //   req.body.longitude,
-    //   req.body.latitude
-    // );
     res.status(201).json();
   } catch (err) {
     next(err);

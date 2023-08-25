@@ -1,5 +1,5 @@
 import { Box, Button, Divider, TextField, styled } from "@mui/material";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Item } from "../features/Discovery/components/Navigation";
@@ -21,6 +21,8 @@ import { Map } from "../features/Discovery/components/Map";
 import { _accountClient } from "../features/Discovery/api/account";
 import { useNavigate } from "react-router-dom";
 import { _photoClient } from "../features/Discovery/api/photo";
+import { convertToDateFormat } from "../utils/calculateAge";
+import { _geolocationClient } from "../features/Geolocation/api";
 
 export interface ProfileHookForm {
   name: string;
@@ -28,6 +30,20 @@ export interface ProfileHookForm {
   userName: string;
   aboutMe: string;
   birthday: string;
+}
+
+export interface CoordinateMap {
+  lat: number;
+  lng: number;
+}
+
+export interface Coordinate {
+  latitude: number;
+  longitude: number;
+}
+
+export interface Geolocation extends Coordinate {
+  location: string;
 }
 
 export interface Profile {
@@ -42,12 +58,13 @@ export interface Profile {
   updatedAt: Date;
   purposes: Item[];
   interests: Item[];
-  geolocation: {
-    latitude: number;
-    longitude: number;
-    location: string;
-  };
+  geolocation: Geolocation;
 }
+
+const defaultCoordinate = {
+  lat: 9999,
+  lng: 9999,
+};
 
 const defaultProfile = {
   id: "",
@@ -73,11 +90,52 @@ export interface Photo {
   photoUrl: string;
 }
 
+interface isUpdateType {
+  isUpdated: boolean;
+  setIsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const isDisableContext = createContext<isDisableType>({
+  isDisable: true,
+  setisDisable: () => {},
+});
+
+interface isDisableType {
+  isDisable: boolean;
+  setisDisable: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const isUpdateContext = createContext<isUpdateType>({
+  isUpdated: false,
+  setIsUpdated: () => {},
+});
+
+interface coordinateType {
+  coordinate: CoordinateMap;
+  setCoordinate: React.Dispatch<React.SetStateAction<CoordinateMap>>;
+}
+
+export const coordinateContext = createContext<coordinateType>({
+  coordinate: defaultCoordinate,
+  setCoordinate: () => {},
+});
+
 export const Account = () => {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
+  const value = {
+    isUpdated,
+    setIsUpdated,
+  };
+  const [coordinate, setCoordinate] = useState(defaultCoordinate);
+  const [isDisable, setisDisable] = useState(true);
+  const disableValue = {
+    isDisable,
+    setisDisable,
+  };
+  const coordinateValue = { coordinate, setCoordinate };
   const [interests, setInterests] = useState<Item[]>([]);
   const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
   const navigate = useNavigate();
@@ -101,6 +159,12 @@ export const Account = () => {
           if (user?.sub) {
             const data = await ProfileClient.getProfile(user.sub);
             setProfile(data);
+            if (data.geolocation) {
+              setCoordinate({
+                lat: parseInt(data.geolocation.latitude),
+                lng: parseInt(data.geolocation.longitude),
+              });
+            }
           }
         }
       } catch (error) {
@@ -126,7 +190,6 @@ export const Account = () => {
     };
     fetchProfileId();
     fetchPhotoUrls();
-
     setIsUpdated(false);
   }, [getAccessTokenSilently, user, isUpdated, profile.id]);
 
@@ -173,7 +236,8 @@ export const Account = () => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          return await ProfileClient.updateProfile(data, profile);
+          await ProfileClient.updateProfile(data, profile);
+          return true;
         }
       } catch (error) {
         throw error;
@@ -192,7 +256,8 @@ export const Account = () => {
             process.env.REACT_APP_SERVER_URL ?? "",
             token
           );
-          return await AccountClient.updateAccount(data, profile.id);
+          await AccountClient.updateAccount(data, profile.id);
+          return true;
         }
       } catch (error) {
         throw error;
@@ -200,6 +265,67 @@ export const Account = () => {
     };
     const result = await updateAccount();
     if (result) handleEditProfileClick();
+  };
+
+  const fetchGeolocation = async (coordinate: Coordinate) => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const GeolocationClient = new _geolocationClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        await GeolocationClient.fetchGeolocation(coordinate, profile.id);
+        return true;
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateGeolocation = async (coordinate: Coordinate) => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const GeolocationClient = new _geolocationClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        await GeolocationClient.updateGeolocation(coordinate, profile.id);
+        return true;
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleGeolocationUpdateClick = async () => {
+    const geolocationResult = await updateGeolocation({
+      latitude: coordinate.lat,
+      longitude: coordinate.lng,
+    });
+    if (geolocationResult) {
+      setIsUpdated(true);
+    }
+  };
+
+  const handleGeolocationClick = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position: GeolocationPosition) => {
+          const updatedCoordinate = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+
+          const geolocationResult = await fetchGeolocation(updatedCoordinate);
+          if (geolocationResult) {
+            setIsUpdated(true);
+          }
+        }
+      );
+    }
+    console.log("cannot get the location");
   };
 
   return (
@@ -213,7 +339,9 @@ export const Account = () => {
           >
             Go To Discovery
           </StlyedBackButton>
-          <ProfilePhotos photoUrls={photoUrls} profileId={profile.id} />
+          <isUpdateContext.Provider value={value}>
+            <ProfilePhotos photoUrls={photoUrls} profileId={profile.id} />
+          </isUpdateContext.Provider>
         </StyledAside>
         <StyledMain>
           <StyledForm component="form" onSubmit={handleSubmit(onAccountSubmit)}>
@@ -327,7 +455,9 @@ export const Account = () => {
                   )}
                 />
               ) : (
-                <StyledReadOnly>{profile?.birthday}</StyledReadOnly>
+                <StyledReadOnly>
+                  {convertToDateFormat(profile?.birthday)}
+                </StyledReadOnly>
               )}
               <StyledSubTitle>
                 <span>Gender</span>
@@ -357,7 +487,7 @@ export const Account = () => {
                 <StyledTextarea
                   maxRows={4}
                   aria-label="maximum height"
-                  placeholder="Maximum 4 rows"
+                  placeholder="Hi! I'm a ..."
                   defaultValue={profile?.aboutMe}
                   {...register("aboutMe", {
                     required: "please enter a valid about me",
@@ -433,6 +563,19 @@ export const Account = () => {
             </StyledSection>
             <StyledTitleWrapper>
               <StyledTitle>Your Location</StyledTitle>
+              <Box>
+                <Button
+                  variant="outlined"
+                  disabled={isDisable}
+                  onClick={handleGeolocationUpdateClick}
+                  sx={{ marginRight: "0.5rem" }}
+                >
+                  Set Location
+                </Button>
+                <Button variant="outlined" onClick={handleGeolocationClick}>
+                  Get Location
+                </Button>
+              </Box>
             </StyledTitleWrapper>
             <StyledDivder />
             <StyledSection>
@@ -441,18 +584,11 @@ export const Account = () => {
                 <span>{profile?.geolocation?.location}</span>
               </StyledSubTitle>
               <StyledSubDivder />
-              <Map
-                latitude={
-                  typeof profile?.geolocation?.latitude === "string"
-                    ? parseInt(profile?.geolocation?.latitude)
-                    : profile?.geolocation?.latitude
-                }
-                longitude={
-                  typeof profile?.geolocation?.longitude === "string"
-                    ? parseInt(profile?.geolocation?.longitude)
-                    : profile?.geolocation?.longitude
-                }
-              />
+              <coordinateContext.Provider value={coordinateValue}>
+                <isDisableContext.Provider value={disableValue}>
+                  <Map />
+                </isDisableContext.Provider>
+              </coordinateContext.Provider>
             </StyledSection>
           </StyledForm>
         </StyledMain>

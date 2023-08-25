@@ -2,11 +2,10 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import { Box, styled, Divider } from "@mui/material";
-import { Photo } from "../../../../pages/Account";
+import { Photo, isUpdateContext } from "../../../../pages/Account";
 import { useAuth0 } from "@auth0/auth0-react";
 import { _photoClient } from "../../../Discovery/api/photo";
-import PersonIcon from "@mui/icons-material/Person";
-import { useRef, useState } from "react";
+import { useContext, useState } from "react";
 
 interface PhotoDialogProps {
   photoUrl: Photo;
@@ -19,8 +18,9 @@ export const PhotoDialog = ({
   photoUrl,
   profileId,
 }: PhotoDialogProps) => {
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
   const [open, setOpen] = useState(false);
+  const { setIsUpdated } = useContext(isUpdateContext);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -30,7 +30,7 @@ export const PhotoDialog = ({
     setOpen(false);
   };
 
-  const handleDeletePhoto = async () => {
+  const deletePhoto = async () => {
     try {
       const token = await getAccessTokenSilently();
       if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
@@ -38,11 +38,17 @@ export const PhotoDialog = ({
           process.env.REACT_APP_SERVER_URL ?? "",
           token
         );
-        return await ProfileClient.deletePhoto(photoUrl.id);
+        await ProfileClient.deletePhoto(photoUrl.id);
+        return true;
       }
     } catch (error) {
       throw error;
     }
+  };
+
+  const handleDeletePhoto = async () => {
+    const result = await deletePhoto();
+    if (result) setIsUpdated(true);
   };
 
   return (
@@ -58,8 +64,6 @@ export const PhotoDialog = ({
           <StyledButton onClick={handleDeletePhoto} autoFocus>
             Delete photo
           </StyledButton>
-          <Divider />
-          <StyledButton onClick={handleClose}>Replace photo</StyledButton>
           <Divider />
           <StyledButton onClick={handleClose}>Cancel</StyledButton>
         </StyledBox>

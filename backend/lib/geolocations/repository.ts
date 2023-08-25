@@ -1,6 +1,11 @@
 import axios from "axios";
 import { Prisma, PrismaClient } from "@prisma/client";
 
+export interface Coordinate {
+  latitude: number;
+  longitude: number;
+}
+
 class _GeolocationRepository {
   private db: PrismaClient;
 
@@ -11,6 +16,17 @@ class _GeolocationRepository {
   createGeolocation = async (geolocation: Prisma.GeolocationCreateInput) => {
     const result = this.db.geolocation.create<Prisma.GeolocationCreateArgs>({
       data: geolocation,
+    });
+    return result;
+  };
+
+  upsertGeolocation = async (geolocation: Prisma.GeolocationCreateInput) => {
+    const result = this.db.geolocation.upsert<Prisma.GeolocationUpsertArgs>({
+      where: {
+        profileId: geolocation.profile.connect?.id,
+      },
+      create: geolocation,
+      update: geolocation,
     });
     return result;
   };
@@ -41,17 +57,12 @@ class _GeolocationRepository {
 }
 
 class _ExternalGeolocationRepository {
-  fetchGeolocationfromExterenalApi = async (ipaddress: string) => {
-    const apiUrl = process.env.GEOLOCATION_API_URL;
-    const apiKey = process.env.GEOLOCATION_API_KEY;
-    const geolocationUrl = `${apiUrl}/${ipaddress}?access_key=${apiKey}`;
+  fetchGeolocationfromExApi = async (coordinate: Coordinate) => {
+    const apiUrl = process.env.GOOGLE_MAPS_API_URL;
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const geolocationUrl = `${apiUrl}/maps/api/geocode/json?latlng=${coordinate.latitude},${coordinate.longitude}&result_type=locality&key=${apiKey}`;
     const { data } = await axios.get(geolocationUrl);
-    const geolocation = {
-      latitude: data.latitude,
-      longitude: data.longitude,
-      location: data.city,
-    };
-    return geolocation;
+    return data.results[0].formatted_address;
   };
 }
 

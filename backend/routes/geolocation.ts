@@ -1,13 +1,11 @@
 import express from "express";
 import {
-  getGeolocationDistance,
-  postGeolocation,
+  putGeolocation,
   updateGeolocationByProfileId,
 } from "../lib/geolocations";
 
 const router = express.Router();
 
-router.get("", getGeolocationDistance);
-router.post("", postGeolocation);
+router.put("", putGeolocation);
 router.patch("/update", updateGeolocationByProfileId);
 export default router;

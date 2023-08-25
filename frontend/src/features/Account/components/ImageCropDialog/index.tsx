@@ -6,10 +6,11 @@ import {
   DialogContent,
   styled,
 } from "@mui/material";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 import unknowUser from "../../../../pic/unkown_user.png";
 import getCroppedImg from "../../../../utils/cropImage";
+import { isUpdateContext } from "../../../../pages/Account";
 
 const aspect = 3 / 4;
 const zoomInit = 1;
@@ -22,7 +23,7 @@ const croppedAreaInit = {
 };
 
 interface ImageCropDialogProps {
-  postPhoto: (file: File) => void;
+  postPhoto: (file: File) => Promise<boolean>;
 }
 
 export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
@@ -34,6 +35,7 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
     useState<Area>(croppedAreaInit);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFileUrl, setSelectedFileUrl] = useState("");
+  const { setIsUpdated } = useContext(isUpdateContext);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -65,12 +67,16 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
       );
       if (croppedImage) {
         setSelectedFile(croppedImage);
-        postPhoto(croppedImage);
+        const result = await postPhoto(croppedImage);
+        if (result) {
+          setIsUpdated(true);
+          setOpen(false);
+        }
       }
     } catch (error) {
       console.error(error);
     }
-  }, [croppedAreaPixels, selectedFile, postPhoto]);
+  }, [croppedAreaPixels, selectedFile, postPhoto, setIsUpdated]);
 
   const onCancel = () => {
     handleClose();
