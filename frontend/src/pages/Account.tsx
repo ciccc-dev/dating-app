@@ -165,6 +165,14 @@ export const Account = () => {
     control,
   } = useForm<ProfileHookForm>();
 
+  // for date picker
+  const today = new Date();
+  const minDate = new Date(
+    today.getFullYear() - 100,
+    today.getMonth(),
+    today.getDate()
+  );
+
   const { user, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     const fetchProfileId = async () => {
@@ -477,6 +485,8 @@ export const Account = () => {
                           parseISO(profile!.birthday),
                           parseISO(profile!.birthday).getTimezoneOffset()
                         )}
+                        minDate={minDate}
+                        maxDate={today}
                         onChange={(newValue: any) => {
                           const adjustedDate = subMinutes(
                             newValue,
