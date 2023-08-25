@@ -1,24 +1,12 @@
 import { MouseEventHandler } from "react";
-import { parseISO } from "date-fns";
 import Button from "@mui/material/Button";
-// import IconButton from "@mui/material/IconButton";
-// import MenuIcon from "@mui/icons-material/Menu";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import styled from "@emotion/styled";
 
 import { TableComponent } from "../../../../components/Table";
-import { calculateAge } from "../../../../utils/calculateAge";
 import { useNavigate } from "react-router-dom";
-
-interface Profile {
-  id: string;
-  userId: string;
-  userName: string;
-  birthday: string;
-  gender: string;
-  aboutMe: string;
-}
+import { Profile } from "../../../../types";
 
 export const MatchedTable = ({ profiles }: { profiles: Profile[] }) => {
   const navigate = useNavigate();
@@ -33,17 +21,17 @@ export const MatchedTable = ({ profiles }: { profiles: Profile[] }) => {
       <TableCell sx={{ width: "10%" }}>Gender</TableCell>
       <TableCell sx={{ width: "40%" }}>About Me</TableCell>
       <TableCell sx={{ width: "10%" }}></TableCell>
-      {/* <TableCell sx={{ width: "10%" }}></TableCell> */}
+      <TableCell sx={{ width: "10%" }}></TableCell>
     </TableRow>
   );
 
   const body = profiles.map((profile) => (
     <StyledTableRow key={profile.id}>
       <TableCell>{profile.userName}</TableCell>
-      {/* TODO: Move parseISO to hooks */}
-      <TableCell>{calculateAge(parseISO(profile.birthday))}</TableCell>
+      <TableCell>{profile.age}</TableCell>
       <TableCell>{profile.gender}</TableCell>
       <TableCell>{profile.aboutMe}</TableCell>
+      <TableCell></TableCell>
       <TableCell>
         <Button
           id={profile.userId}
@@ -53,11 +41,6 @@ export const MatchedTable = ({ profiles }: { profiles: Profile[] }) => {
           Message
         </Button>
       </TableCell>
-      {/* <TableCell>
-        <IconButton>
-          <MenuIcon />
-        </IconButton>
-      </TableCell> */}
     </StyledTableRow>
   ));
 

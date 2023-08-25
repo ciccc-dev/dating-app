@@ -1,4 +1,5 @@
 import axios from "axios";
+import { LikedList } from "../../../hooks/useFetchPhotosList";
 
 export class _photoClient {
   private apiUrl: string;
@@ -52,6 +53,27 @@ export class _photoClient {
         method: "GET",
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
+        },
+      });
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  fetchLikedListPhotos = async (likedList: LikedList) => {
+    try {
+      const res = await axios({
+        url: `${this.apiUrl}/api/photos/likedlist/`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+        params: {
+          sentTo: JSON.stringify(likedList.sentTo),
+          receivedFrom: JSON.stringify(likedList.receivedFrom),
+          matched: JSON.stringify(likedList.matched),
         },
       });
       return res.data;

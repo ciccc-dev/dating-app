@@ -153,7 +153,7 @@ class _ProfileRepository {
      ${
        filter.isDistanceFiltered()
          ? Prisma.sql`AND pd.distance <= ${filter.distance()}`
-         : Prisma.empty
+         : Prisma.sql`AND pd.distance <= 100 OR pd.distance IS NULL`
      }
      GROUP BY pr.id, pd.distance
      ORDER BY RANDOM()

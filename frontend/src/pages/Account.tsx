@@ -16,7 +16,7 @@ import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { addMinutes, format, parseISO, set, subMinutes } from "date-fns";
+import { addMinutes, parseISO, subMinutes } from "date-fns";
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import { purposes } from "../constants/purposes";
 import { _interestClient } from "../features/Discovery/api/interest";

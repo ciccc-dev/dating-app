@@ -11,15 +11,7 @@ import { useFetchMessages } from "../../../../hooks/useFetchMessages";
 import { useDialogState } from "../../../../hooks/useDialogState";
 import { Message } from "../../../Messages/types";
 import { useCreateLike } from "../../../../hooks/useCreateLike";
-
-interface Profile {
-  id: string;
-  userId: string;
-  userName: string;
-  birthday: string;
-  gender: string;
-  aboutMe: string;
-}
+import { Profile } from "../../../../types";
 
 export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
   const messages = useFetchMessages();
@@ -41,9 +33,10 @@ export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
   const header = (
     <TableRow>
       <TableCell sx={{ width: "20%" }}>Name</TableCell>
-      <TableCell sx={{ width: "40%" }}>About Me</TableCell>
-      <TableCell sx={{ width: "30%" }}>Received Mesage</TableCell>
-      <TableCell sx={{ width: "10%" }}></TableCell>
+      <TableCell sx={{ width: "10%" }}>Age</TableCell>
+      <TableCell sx={{ width: "10%" }}>Gender</TableCell>
+      <TableCell sx={{ width: "40%" }}>Recieved First Message</TableCell>
+      <TableCell sx={{ width: "20%" }}></TableCell>
     </TableRow>
   );
 
@@ -60,7 +53,7 @@ export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
         <TableCell>
           <Button
             id={profile.userId}
-            variant='contained'
+            variant="contained"
             onClick={handleClickApproveButton}
           >
             Approve

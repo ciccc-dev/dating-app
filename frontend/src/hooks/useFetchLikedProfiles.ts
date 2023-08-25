@@ -2,18 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { _LikesAPI } from "../features/Likes";
-
-interface Profile {
-  aboutMe: string;
-  birthday: string;
-  gender: string;
-  id: string;
-  registeredAt: string;
-  sexualOrientation: string;
-  updatedAt: string;
-  userId: string;
-  userName: string;
-}
+import { Profile } from "../types";
 
 export interface UseFetchLinkedProfilesResponse {
   sentTo: Profile[];
