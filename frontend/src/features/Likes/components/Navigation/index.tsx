@@ -8,7 +8,7 @@ import styled from "@emotion/styled";
 import { Navigation } from "../../../../components/Navigation";
 
 const NavigationItems = ({ onClick }: { onClick: (e: any) => void }) => {
-  const items = ["SENT", "RECEIVED", "MATCHED"];
+  const items = ["MATCHED", "SENT", "RECEIVED"];
   return (
     <>
       {items.map((item, idx) => (

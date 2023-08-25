@@ -5,7 +5,7 @@ import { Paper } from "@mui/material";
 import SnackbarContent from "@mui/material/SnackbarContent";
 import { pink } from "@mui/material/colors";
 import { styled } from "@mui/system";
-import { convertToDateFormat } from "../../../../utils/calculateAge";
+import { convertToDateHourFormat } from "../../../../utils/calculateAge";
 
 interface Message {
   id: string;
@@ -61,12 +61,12 @@ export const Chats = ({ messages }: { messages: Message[] }) => {
           {user?.sub === message.sentBy ? (
             <OwnText
               message={message.message}
-              timestamp={convertToDateFormat(message.timestamp)}
+              timestamp={convertToDateHourFormat(message.timestamp)}
             />
           ) : (
             <PartnerText
               message={message.message}
-              timestamp={convertToDateFormat(message.timestamp)}
+              timestamp={convertToDateHourFormat(message.timestamp)}
             />
           )}
         </List>

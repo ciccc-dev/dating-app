@@ -30,6 +30,15 @@ export const Likes = () => {
     return matched;
   }, [matched, receivedFrom, sentTo, state.category]);
 
+  // const { urlSentTo, urlReceivedFrom, urlMatched }: useFetchLikedListResponse =
+  //   useFetchPhotosList({ sentTo, receivedFrom, matched });
+
+  // const photos = useMemo(() => {
+  //   if (state.category === "SENT") return urlSentTo;
+  //   if (state.category === "RECEIVED") return urlReceivedFrom;
+  //   return urlMatched;
+  // }, [matched, urlReceivedFrom, urlSentTo, state.category]);
+
   const handleChangeCategory = (e: any) =>
     update(() => ({ category: e.currentTarget.dataset.item as string }));
 
@@ -40,11 +49,11 @@ export const Likes = () => {
       </StyledNavigationWrapper>
       <StyledContent>
         <StyleTableTitle variant="h5">{`${state.category} LIKES`}</StyleTableTitle>
+        {state.category === "MATCHED" && <MatchedTable profiles={profiles} />}
         {state.category === "SENT" && <SentLikesTable profiles={profiles} />}
         {state.category === "RECEIVED" && (
           <ReceivedLikesTable profiles={profiles} />
         )}
-        {state.category === "MATCHED" && <MatchedTable profiles={profiles} />}
       </StyledContent>
     </StyledWrapper>
   );

@@ -8,13 +8,7 @@ import {
   DialogContent,
   styled,
 } from "@mui/material";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 import unknowUser from "../../../../pic/unkown_user.png";
 import getCroppedImg from "../../../../utils/cropImage";
