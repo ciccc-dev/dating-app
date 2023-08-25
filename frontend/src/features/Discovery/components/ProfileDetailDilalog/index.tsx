@@ -59,17 +59,19 @@ export const ProfileDetailDialog = ({ profile }: ProfileDetailDialogProps) => {
               </Box>
               <StyledDivider />
               <StyledBox>
-                <StyledGenderSpan gender={profile.gender}>
+                <StyledGenderSpan gender={profile.gender} isLarge={true}>
                   {profile.gender}
                 </StyledGenderSpan>
-                <StyledSpan>{profile.sexualOrientation}</StyledSpan>
+                <StyledSpan isLarge={true}>
+                  {profile.sexualOrientation}
+                </StyledSpan>
               </StyledBox>
               {profile.purposes[0].name && (
                 <StyledBox
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    marginTop: "0.25rem",
+                    marginTop: "0.6rem",
                   }}
                 >
                   <PersonSearchIcon />
@@ -84,15 +86,23 @@ export const ProfileDetailDialog = ({ profile }: ProfileDetailDialogProps) => {
                   </span>
                   <div>
                     {profile.purposes.map((purpose, index) => (
-                      <StyledSpan key={index}>{`${purpose.name}`}</StyledSpan>
+                      <StyledSpan
+                        isLarge={true}
+                        key={index}
+                      >{`${purpose.name}`}</StyledSpan>
                     ))}
                   </div>
                 </StyledBox>
               )}
-              {profile.interests[0].name &&
-                profile.interests.map((interest, index) => (
-                  <StyledSpan key={index}>{`${interest.name}`}</StyledSpan>
-                ))}
+              <StyledBox>
+                {profile.interests[0].name &&
+                  profile.interests.map((interest, index) => (
+                    <StyledSpan
+                      isLarge={true}
+                      key={index}
+                    >{`${interest.name}`}</StyledSpan>
+                  ))}
+              </StyledBox>
               <StyledBox
                 sx={{ border: "1px solid black", borderRadius: "0.5rem" }}
               >
@@ -155,7 +165,7 @@ const StyledMainItemBox = styled(Box)`
 `;
 
 const StyledBox = styled(Box)`
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
 `;
 
 const StyledParagraph = styled("p")`

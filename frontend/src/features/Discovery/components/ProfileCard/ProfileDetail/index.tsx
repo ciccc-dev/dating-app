@@ -7,10 +7,6 @@ interface MainProfileProps {
   index: number;
 }
 
-interface StyledGenderSpanProps {
-  gender: string;
-}
-
 const CaseProfile = ({ profile, index }: MainProfileProps) => {
   let content;
 
@@ -19,11 +15,13 @@ const CaseProfile = ({ profile, index }: MainProfileProps) => {
       content = (
         <>
           <Grid item xs={12}>
-            <StyledGenderSpan gender={profile.gender}>
+            <StyledGenderSpan gender={profile.gender} isLarge={false}>
               {profile.gender}
             </StyledGenderSpan>
             {profile.distance ? (
-              <StyledDistanceSpan>{profile.distance}km away</StyledDistanceSpan>
+              <StyledDistanceSpan isLarge={false}>
+                {profile.distance}km away
+              </StyledDistanceSpan>
             ) : null}
           </Grid>
           <Grid item xs={10}>
@@ -45,7 +43,7 @@ const CaseProfile = ({ profile, index }: MainProfileProps) => {
             <StledSubBox>{profile.age}</StledSubBox>
           </Grid>
           <Grid item xs={12}>
-            <StyledSpan>{profile.sexualOrientation}</StyledSpan>
+            <StyledSpan isLarge={false}>{profile.sexualOrientation}</StyledSpan>
           </Grid>
           {profile.purposes.length > 0 && (
             <Grid
@@ -69,7 +67,10 @@ const CaseProfile = ({ profile, index }: MainProfileProps) => {
               </span>
               <div>
                 {profile.purposes.map((purpose, index) => (
-                  <StyledSpan key={index}>{`${purpose.name}`}</StyledSpan>
+                  <StyledSpan
+                    isLarge={false}
+                    key={index}
+                  >{`${purpose.name}`}</StyledSpan>
                 ))}
               </div>
             </Grid>
@@ -109,7 +110,10 @@ const CaseProfile = ({ profile, index }: MainProfileProps) => {
           {profile.interests.length > 0 && (
             <Grid item xs={12} maxHeight={"50px"}>
               {profile.interests.map((interest, index) => (
-                <StyledSpan key={index}>{`${interest.name}`}</StyledSpan>
+                <StyledSpan
+                  isLarge={false}
+                  key={index}
+                >{`${interest.name}`}</StyledSpan>
               ))}
             </Grid>
           )}
@@ -160,15 +164,21 @@ export const getBackgroundStyle = (gender: string) => {
   }
 };
 
+interface StyledGenderSpanProps {
+  gender: string;
+  isLarge: boolean;
+}
+
 export const StyledGenderSpan = styled("span")<StyledGenderSpanProps>(
-  ({ gender }) => ({
+  ({ gender, isLarge }) => ({
+    display: "inline-block",
     border: "1px solid white",
     borderRadius: "1rem",
-    padding: "0.25rem 0.5rem",
     color: "white",
-    fontSize: "0.7rem",
+    padding: isLarge ? "0.25rem 0.7rem" : "0.25rem 0.5rem",
+    fontSize: isLarge ? "0.8rem" : "0.7rem",
+    marginRight: isLarge ? "0.7rem" : "0.5rem",
     fontWeight: "600",
-    marginRight: "0.5rem",
     backgroundImage: getBackgroundStyle(gender),
     backgroundRepeat: "no-repeat",
     backgroundPosition: "bottom",
@@ -176,28 +186,39 @@ export const StyledGenderSpan = styled("span")<StyledGenderSpanProps>(
   })
 );
 
-export const StyledDistanceSpan = styled("span")`
-  border: 1px solid white;
-  border-radius: 1rem;
-  padding: 0.25rem 0.5rem;
-  color: white;
-  background-color: #006600;
-  font-size: 0.7rem;
-  font-weight: 600;
-  margin-right: 0.5rem;
-`;
+interface StyledDistanceSpanProps {
+  isLarge: boolean;
+}
 
-export const StyledSpan = styled("span")`
-  display: inline-block;
-  border: 1px solid white;
-  border-radius: 1rem;
-  padding: 0.1rem 0.5rem;
-  color: white;
-  background-color: grey;
-  font-size: 0.6rem;
-  font-weight: 600;
-  margin-right: 0.5rem;
-`;
+export const StyledDistanceSpan = styled("span")<StyledDistanceSpanProps>(
+  ({ isLarge }) => ({
+    display: "inline-block",
+    border: "1px solid white",
+    borderRadius: "1rem",
+    padding: isLarge ? "0.25rem 0.7rem" : "0.25rem 0.5rem",
+    fontSize: isLarge ? "0.8rem" : "0.7rem",
+    marginRight: isLarge ? "0.7rem" : "0.5rem",
+    fontWeight: "600",
+    color: "white",
+    backgroundColor: "#006600",
+  })
+);
+
+interface StyledSpanProps {
+  isLarge: boolean;
+}
+
+export const StyledSpan = styled("span")<StyledSpanProps>(({ isLarge }) => ({
+  display: "inline-block",
+  border: "1px solid white",
+  borderRadius: "1rem",
+  padding: isLarge ? "0.25rem 0.7rem" : "0.1rem 0.5rem",
+  fontSize: isLarge ? "0.8rem" : "0.64rem",
+  marginRight: isLarge ? "0.7rem" : "0.5rem",
+  fontWeight: 600,
+  color: "white",
+  backgroundColor: "grey",
+}));
 
 const StledMainBox = styled("span")`
   font-size: 1.8rem;

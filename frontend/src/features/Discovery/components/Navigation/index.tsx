@@ -54,7 +54,11 @@ const defaultFilter = {
   isInterestFiltered: false,
 };
 
-export const DiscoveryNavigation = () => {
+interface DiscoveryNavigationProps {
+  loading: boolean;
+}
+
+export const DiscoveryNavigation = ({ loading }: DiscoveryNavigationProps) => {
   const { getAccessTokenSilently } = useAuth0();
   const [filter, setFilter] = useState<Filter>(defaultFilter);
   const [interests, setInterests] = useState<Item[]>([]);
@@ -247,8 +251,12 @@ export const DiscoveryNavigation = () => {
           </StyledListBlock>
         </StyledListItem>
         <StyledListItem key="filter" disablePadding>
-          <StyledButton variant="contained" onClick={handleFilterClick}>
-            Filter
+          <StyledButton
+            variant="contained"
+            onClick={handleFilterClick}
+            disabled={loading}
+          >
+            <span>Filter</span>
           </StyledButton>
         </StyledListItem>
       </StyledList>
