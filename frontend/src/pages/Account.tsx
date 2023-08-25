@@ -16,7 +16,7 @@ import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { parseISO } from "date-fns";
+import { addMinutes, format, parseISO, set, subMinutes } from "date-fns";
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import { purposes } from "../constants/purposes";
 import { _interestClient } from "../features/Discovery/api/interest";
@@ -473,8 +473,17 @@ export const Account = () => {
                   render={({ field: { onChange } }) => (
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <StyledDatePicker
-                        defaultValue={parseISO(profile!.birthday)}
-                        onChange={onChange}
+                        defaultValue={addMinutes(
+                          parseISO(profile!.birthday),
+                          parseISO(profile!.birthday).getTimezoneOffset()
+                        )}
+                        onChange={(newValue: any) => {
+                          const adjustedDate = subMinutes(
+                            newValue,
+                            newValue.getTimezoneOffset()
+                          );
+                          onChange(adjustedDate);
+                        }}
                       />
                     </LocalizationProvider>
                   )}
