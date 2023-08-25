@@ -2,14 +2,12 @@ import crypto from "crypto";
 import parseISO from "date-fns/parseISO";
 
 import { Gender, GENDER } from "../../constants";
-import { SexualOrientation } from "../../constants";
 
 export class Profile {
   private _id: string;
   private _username: string;
   private _gender?: Gender;
   private _birthday: Date;
-  // private _sexualOrientation?: SexualOrientation;
   private _sexualOrientation?: string;
   private _aboutMe: string;
   private _interests: { id: number; name: string }[];
@@ -27,7 +25,6 @@ export class Profile {
     username: string;
     gender: Gender | undefined;
     birthday: string;
-    // sexualOrientation: SexualOrientation | undefined;
     sexualOrientation: string;
     aboutMe: string;
     interests: { id: number; name: string }[];

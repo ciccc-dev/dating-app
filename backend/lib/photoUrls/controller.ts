@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { PhotoUrl } from "./photoUrl";
-import { PhotoUrlRepository } from "./repository";
+import { PhotoUrlRepository, url } from "./repository";
 import { Prisma } from "@prisma/client";
 
 interface photoUrl {
@@ -103,4 +103,57 @@ export const deletePhotoUrl = async (
     req.params.photoUrlId
   );
   res.status(201).json(result);
+};
+
+export const fetchPhotoUrlsLikedList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // sentTo
+  interface PhotoUrls {
+    urLSentTo: url[];
+    urLReceivedFrom: url[];
+    urLMatched: url[];
+  }
+
+  const resultPhotos: PhotoUrls = {
+    urLSentTo: [],
+    urLReceivedFrom: [],
+    urLMatched: [],
+  };
+
+  try {
+    // sentTo
+    const jsonArraySentTo = JSON.parse(req.params.sentTo);
+    if (jsonArraySentTo.length > 0) {
+      const urls: Promise<url>[] = jsonArraySentTo.map(
+        async (item: string) => await PhotoUrlRepository.fetchPhotoUrls(item)
+      );
+      resultPhotos.urLSentTo = await Promise.all(urls);
+    }
+
+    // receivedFrom
+    const jsonArrayReceivedFrom = JSON.parse(req.params.receivedFrom);
+    if (jsonArrayReceivedFrom.length > 0) {
+      const urls: Promise<url>[] = jsonArrayReceivedFrom.map(
+        async (item: string) => await PhotoUrlRepository.fetchPhotoUrls(item)
+      );
+      resultPhotos.urLReceivedFrom = await Promise.all(urls);
+    }
+
+    // matched
+    const jsonArrayMatched = JSON.parse(req.params.matched);
+    if (jsonArrayMatched.length > 0) {
+      const urls: Promise<url>[] = jsonArrayMatched.map(
+        async (item: string) => await PhotoUrlRepository.fetchPhotoUrls(item)
+      );
+      resultPhotos.urLMatched = await Promise.all(urls);
+    }
+
+    console.log(resultPhotos);
+    res.status(201).json(resultPhotos);
+  } catch (err) {
+    next(err);
+  }
 };
