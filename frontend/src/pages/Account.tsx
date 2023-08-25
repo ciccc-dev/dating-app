@@ -1,4 +1,12 @@
-import { Box, Button, Divider, TextField, styled } from "@mui/material";
+import {
+  Backdrop,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  TextField,
+  styled,
+} from "@mui/material";
 import { createContext, useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -90,9 +98,9 @@ interface isUpdateType {
   setIsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const isDisableContext = createContext<isDisableType>({
-  isDisable: true,
-  setisDisable: () => {},
+export const isUpdateContext = createContext<isUpdateType>({
+  isUpdated: false,
+  setIsUpdated: () => {},
 });
 
 interface isDisableType {
@@ -100,10 +108,21 @@ interface isDisableType {
   setisDisable: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const isUpdateContext = createContext<isUpdateType>({
-  isUpdated: false,
-  setIsUpdated: () => {},
+export const isDisableContext = createContext<isDisableType>({
+  isDisable: true,
+  setisDisable: () => {},
 });
+
+interface isGeolocationProcessType {
+  isGeolocationProcess: boolean;
+  setIsGeolocationProcess: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const isGeolocationProcessContext =
+  createContext<isGeolocationProcessType>({
+    isGeolocationProcess: false,
+    setIsGeolocationProcess: () => {},
+  });
 
 interface coordinateType {
   coordinate: CoordinateMap;
@@ -124,13 +143,18 @@ export const Account = () => {
     isUpdated,
     setIsUpdated,
   };
+  const [isGeolocationProcess, setIsGeolocationProcess] = useState(false);
+  const geolocationProcessValue = {
+    isGeolocationProcess,
+    setIsGeolocationProcess,
+  };
   const [coordinate, setCoordinate] = useState(defaultCoordinate);
+  const coordinateValue = { coordinate, setCoordinate };
   const [isDisable, setisDisable] = useState(true);
   const disableValue = {
     isDisable,
     setisDisable,
   };
-  const coordinateValue = { coordinate, setCoordinate };
   const [interests, setInterests] = useState<Item[]>([]);
   const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
   const navigate = useNavigate();
@@ -186,6 +210,8 @@ export const Account = () => {
     fetchProfileId();
     fetchPhotoUrls();
     setIsUpdated(false);
+    setIsGeolocationProcess(false);
+    setisDisable(true);
   }, [getAccessTokenSilently, user, isUpdated, profile.id]);
 
   useEffect(() => {
@@ -295,17 +321,17 @@ export const Account = () => {
   };
 
   const handleGeolocationUpdateClick = async () => {
+    setIsGeolocationProcess(true);
     const geolocationResult = await updateGeolocation({
       latitude: coordinate.lat,
       longitude: coordinate.lng,
     });
-    if (geolocationResult) {
-      setIsUpdated(true);
-    }
+    geolocationResult ? setIsUpdated(true) : setIsGeolocationProcess(true);
   };
 
   const handleGeolocationClick = async () => {
     if (navigator.geolocation) {
+      setIsGeolocationProcess(true);
       navigator.geolocation.getCurrentPosition(
         async (position: GeolocationPosition) => {
           const updatedCoordinate = {
@@ -317,7 +343,11 @@ export const Account = () => {
           if (geolocationResult) {
             setIsUpdated(true);
           }
-        }
+        },
+        () => {
+          console.log("cannot get the location");
+        },
+        { enableHighAccuracy: true }
       );
     }
     console.log("cannot get the location");
@@ -561,13 +591,17 @@ export const Account = () => {
               <Box>
                 <Button
                   variant="outlined"
-                  disabled={isDisable}
+                  disabled={isDisable || isGeolocationProcess}
                   onClick={handleGeolocationUpdateClick}
                   sx={{ marginRight: "0.5rem" }}
                 >
                   Set Location
                 </Button>
-                <Button variant="outlined" onClick={handleGeolocationClick}>
+                <Button
+                  variant="outlined"
+                  onClick={handleGeolocationClick}
+                  disabled={isGeolocationProcess}
+                >
                   Get Location
                 </Button>
               </Box>
@@ -578,10 +612,32 @@ export const Account = () => {
                 <StyledProperty>City:</StyledProperty>
                 <span>{profile?.geolocation?.location}</span>
               </StyledSubTitle>
-              <StyledSubDivder />
+              {/* <StyledSubDivder /> */}
               <coordinateContext.Provider value={coordinateValue}>
                 <isDisableContext.Provider value={disableValue}>
-                  <Map />
+                  <isGeolocationProcessContext.Provider
+                    value={geolocationProcessValue}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        aspectRatio: "2/1",
+                        position: "relative",
+                      }}
+                    >
+                      <Map />
+                      <Backdrop
+                        sx={{
+                          color: "#fff",
+                          zIndex: (theme) => theme.zIndex.drawer + 1,
+                          position: "absolute",
+                        }}
+                        open={isGeolocationProcess}
+                      >
+                        <CircularProgress color="inherit" />
+                      </Backdrop>
+                    </div>
+                  </isGeolocationProcessContext.Provider>
                 </isDisableContext.Provider>
               </coordinateContext.Provider>
             </StyledSection>
