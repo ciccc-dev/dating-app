@@ -13,6 +13,7 @@ import {
   useFetchLikedProfiles,
 } from "../hooks/useFetchLikedProfiles";
 import { Typography } from "@mui/material";
+import { MatchedTable } from "../features/Likes/components/Table/Matched";
 
 interface State {
   category: string;
@@ -38,12 +39,12 @@ export const Likes = () => {
         <LikesNavigation onClick={handleChangeCategory} />
       </StyledNavigationWrapper>
       <StyledContent>
-        <StyleTableTitle variant='h5'>{`${state.category} LIKES`}</StyleTableTitle>
+        <StyleTableTitle variant="h5">{`${state.category} LIKES`}</StyleTableTitle>
         {state.category === "SENT" && <SentLikesTable profiles={profiles} />}
         {state.category === "RECEIVED" && (
           <ReceivedLikesTable profiles={profiles} />
         )}
-        {state.category === "MATCHED" && <SentLikesTable profiles={profiles} />}
+        {state.category === "MATCHED" && <MatchedTable profiles={profiles} />}
       </StyledContent>
     </StyledWrapper>
   );

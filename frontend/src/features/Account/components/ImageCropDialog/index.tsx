@@ -1,16 +1,25 @@
 import {
+  Backdrop,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   styled,
 } from "@mui/material";
-import React, { useCallback, useContext, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 import unknowUser from "../../../../pic/unkown_user.png";
 import getCroppedImg from "../../../../utils/cropImage";
 import { isUpdateContext } from "../../../../pages/Account";
+import { deepPurple, green } from "@mui/material/colors";
 
 const aspect = 3 / 4;
 const zoomInit = 1;
@@ -35,6 +44,7 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
     useState<Area>(croppedAreaInit);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFileUrl, setSelectedFileUrl] = useState("");
+  const [isCropImageProcess, setIsCropImageProcess] = useState(false);
   const { setIsUpdated } = useContext(isUpdateContext);
 
   const handleClickOpen = () => {
@@ -42,6 +52,7 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
   };
 
   const handleClose = () => {
+    URL.revokeObjectURL(selectedFileUrl);
     setOpen(false);
   };
 
@@ -60,16 +71,20 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
 
   const onUpload = useCallback(async () => {
     try {
+      const objUrl = URL.createObjectURL(selectedFile!);
       const croppedImage = await getCroppedImg(
-        URL.createObjectURL(selectedFile!),
+        objUrl,
         selectedFile!.name,
         croppedAreaPixels
       );
       if (croppedImage) {
+        URL.revokeObjectURL(objUrl);
         setSelectedFile(croppedImage);
+        setIsCropImageProcess(true);
         const result = await postPhoto(croppedImage);
         if (result) {
           setIsUpdated(true);
+          setIsCropImageProcess(false);
           setOpen(false);
         }
       }
@@ -119,6 +134,16 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
 
       {selectedFile && (
         <Dialog open={open} onClose={handleClose}>
+          <Backdrop
+            sx={{
+              color: "#fff",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+              position: "absolute",
+            }}
+            open={isCropImageProcess}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
           <DialogContent sx={{ width: "600px" }}>
             <StyledCropContainerBox>
               <Cropper
@@ -133,12 +158,20 @@ export const ImageCropDialog = ({ postPhoto }: ImageCropDialogProps) => {
             </StyledCropContainerBox>
           </DialogContent>
           <StlyedDialogActions>
-            <Button variant="contained" color="secondary" onClick={onUpload}>
+            <StyledButton
+              variant="contained"
+              sx={{ backgroundColor: deepPurple["A700"] }}
+              onClick={onUpload}
+            >
               Upload
-            </Button>
-            <Button variant="contained" color="secondary" onClick={onCancel}>
+            </StyledButton>
+            <StyledButton
+              variant="contained"
+              sx={{ backgroundColor: green["700"] }}
+              onClick={onCancel}
+            >
               Cancel
-            </Button>
+            </StyledButton>
           </StlyedDialogActions>
         </Dialog>
       )}
@@ -158,6 +191,7 @@ const StlyedDialogActions = styled(DialogActions)`
   justify-content: center;
   align-items: center;
   padding: 0 0 1.2rem 0;
+  gap: 1.2rem;
 `;
 
 const StyledBox = styled(Box)`
@@ -165,4 +199,9 @@ const StyledBox = styled(Box)`
     cursor: pointer;
     outline: 2px solid #ec407a;
   }
+`;
+
+const StyledButton = styled(Button)`
+  font-size: 1.2rem;
+  padding: 0.5rem 1.2rem;
 `;

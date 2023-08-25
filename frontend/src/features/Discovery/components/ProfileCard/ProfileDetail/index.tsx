@@ -1,6 +1,6 @@
 import { Grid, styled } from "@mui/material";
-import { Profile } from "../../../../../pages/Discovery";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import { Profile } from "../../../../../types";
 
 interface MainProfileProps {
   profile: Profile;

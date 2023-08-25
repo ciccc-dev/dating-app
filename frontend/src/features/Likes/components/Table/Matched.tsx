@@ -20,7 +20,7 @@ interface Profile {
   aboutMe: string;
 }
 
-export const SentLikesTable = ({ profiles }: { profiles: Profile[] }) => {
+export const MatchedTable = ({ profiles }: { profiles: Profile[] }) => {
   const navigate = useNavigate();
   const handleClickMessageButton: MouseEventHandler<HTMLButtonElement> = (
     event
@@ -28,18 +28,19 @@ export const SentLikesTable = ({ profiles }: { profiles: Profile[] }) => {
 
   const header = (
     <TableRow>
-      <TableCell sx={{ width: "20%" }}>Photo</TableCell>
       <TableCell sx={{ width: "20%" }}>Name</TableCell>
       <TableCell sx={{ width: "10%" }}>Age</TableCell>
       <TableCell sx={{ width: "10%" }}>Gender</TableCell>
       <TableCell sx={{ width: "40%" }}>About Me</TableCell>
+      <TableCell sx={{ width: "10%" }}></TableCell>
+      {/* <TableCell sx={{ width: "10%" }}></TableCell> */}
     </TableRow>
   );
 
   const body = profiles.map((profile) => (
     <StyledTableRow key={profile.id}>
-      <TableCell>{profile.gender}</TableCell>
       <TableCell>{profile.userName}</TableCell>
+      {/* TODO: Move parseISO to hooks */}
       <TableCell>{calculateAge(parseISO(profile.birthday))}</TableCell>
       <TableCell>{profile.gender}</TableCell>
       <TableCell>{profile.aboutMe}</TableCell>
@@ -52,6 +53,11 @@ export const SentLikesTable = ({ profiles }: { profiles: Profile[] }) => {
           Message
         </Button>
       </TableCell>
+      {/* <TableCell>
+        <IconButton>
+          <MenuIcon />
+        </IconButton>
+      </TableCell> */}
     </StyledTableRow>
   ));
 

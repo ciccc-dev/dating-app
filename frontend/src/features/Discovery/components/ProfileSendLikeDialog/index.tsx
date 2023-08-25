@@ -6,7 +6,6 @@ import DialogContent from "@mui/material/DialogContent";
 import { useContext, useState } from "react";
 import { Grid, styled } from "@mui/material";
 import {
-  Profile,
   UserProfileIdContext,
   UserProfiles,
   isFilteredContext,
@@ -16,6 +15,7 @@ import { _likeClient } from "../../api/like";
 import { _messageClient } from "../../api/messages";
 import { _profileUnselectedClient } from "../../api/profileUnselected";
 import unknowUser from "../../../../pic/unkown_user.png";
+import { Profile } from "../../../../types";
 
 interface ProfileSendLikeDialogProps {
   profile: Profile;

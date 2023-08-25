@@ -4,13 +4,12 @@ import DialogContent from "@mui/material/DialogContent";
 import InfoIcon from "@mui/icons-material/Info";
 import { useState } from "react";
 import { Box, Grid, styled } from "@mui/material";
-import { Profile } from "../../../../pages/Discovery";
-
 import unknowUser from "../../../../pic/unkown_user.png";
 import { StyledGenderSpan, StyledSpan } from "../ProfileCard/ProfileDetail";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
 import { pink } from "@mui/material/colors";
+import { Profile } from "../../../../types";
 
 interface ProfileDetailDialogProps {
   profile: Profile;

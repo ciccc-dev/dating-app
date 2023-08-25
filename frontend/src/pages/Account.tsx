@@ -1,15 +1,22 @@
-import { Box, Button, Divider, TextField, styled } from "@mui/material";
+import {
+  Backdrop,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  TextField,
+  styled,
+} from "@mui/material";
 import { createContext, useEffect, useState } from "react";
 import { _profileClient } from "../features/Discovery/api/profile";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Item } from "../features/Discovery/components/Navigation";
 import { ProfilePhotos } from "../features/Account/components/ProfilePhotos";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { parseISO } from "date-fns";
+import { addMinutes, format, parseISO, set, subMinutes } from "date-fns";
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import { purposes } from "../constants/purposes";
 import { _interestClient } from "../features/Discovery/api/interest";
@@ -23,6 +30,7 @@ import { useNavigate } from "react-router-dom";
 import { _photoClient } from "../features/Discovery/api/photo";
 import { convertToDateFormat } from "../utils/calculateAge";
 import { _geolocationClient } from "../features/Geolocation/api";
+import { Item, Photo } from "../types";
 
 export interface ProfileHookForm {
   name: string;
@@ -46,7 +54,7 @@ export interface Geolocation extends Coordinate {
   location: string;
 }
 
-export interface Profile {
+export interface MyProfile {
   id: string;
   userId: string;
   userName: string;
@@ -85,19 +93,14 @@ const defaultProfile = {
   },
 };
 
-export interface Photo {
-  id: string;
-  photoUrl: string;
-}
-
 interface isUpdateType {
   isUpdated: boolean;
   setIsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const isDisableContext = createContext<isDisableType>({
-  isDisable: true,
-  setisDisable: () => {},
+export const isUpdateContext = createContext<isUpdateType>({
+  isUpdated: false,
+  setIsUpdated: () => {},
 });
 
 interface isDisableType {
@@ -105,10 +108,21 @@ interface isDisableType {
   setisDisable: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const isUpdateContext = createContext<isUpdateType>({
-  isUpdated: false,
-  setIsUpdated: () => {},
+export const isDisableContext = createContext<isDisableType>({
+  isDisable: true,
+  setisDisable: () => {},
 });
+
+interface isGeolocationProcessType {
+  isGeolocationProcess: boolean;
+  setIsGeolocationProcess: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const isGeolocationProcessContext =
+  createContext<isGeolocationProcessType>({
+    isGeolocationProcess: false,
+    setIsGeolocationProcess: () => {},
+  });
 
 interface coordinateType {
   coordinate: CoordinateMap;
@@ -121,7 +135,7 @@ export const coordinateContext = createContext<coordinateType>({
 });
 
 export const Account = () => {
-  const [profile, setProfile] = useState<Profile>(defaultProfile);
+  const [profile, setProfile] = useState<MyProfile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
   const [isProfileEditable, setIsProfileEditable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
@@ -129,13 +143,18 @@ export const Account = () => {
     isUpdated,
     setIsUpdated,
   };
+  const [isGeolocationProcess, setIsGeolocationProcess] = useState(false);
+  const geolocationProcessValue = {
+    isGeolocationProcess,
+    setIsGeolocationProcess,
+  };
   const [coordinate, setCoordinate] = useState(defaultCoordinate);
+  const coordinateValue = { coordinate, setCoordinate };
   const [isDisable, setisDisable] = useState(true);
   const disableValue = {
     isDisable,
     setisDisable,
   };
-  const coordinateValue = { coordinate, setCoordinate };
   const [interests, setInterests] = useState<Item[]>([]);
   const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
   const navigate = useNavigate();
@@ -145,6 +164,14 @@ export const Account = () => {
     formState: { errors },
     control,
   } = useForm<ProfileHookForm>();
+
+  // for date picker
+  const today = new Date();
+  const minDate = new Date(
+    today.getFullYear() - 100,
+    today.getMonth(),
+    today.getDate()
+  );
 
   const { user, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
@@ -191,6 +218,8 @@ export const Account = () => {
     fetchProfileId();
     fetchPhotoUrls();
     setIsUpdated(false);
+    setIsGeolocationProcess(false);
+    setisDisable(true);
   }, [getAccessTokenSilently, user, isUpdated, profile.id]);
 
   useEffect(() => {
@@ -300,17 +329,17 @@ export const Account = () => {
   };
 
   const handleGeolocationUpdateClick = async () => {
+    setIsGeolocationProcess(true);
     const geolocationResult = await updateGeolocation({
       latitude: coordinate.lat,
       longitude: coordinate.lng,
     });
-    if (geolocationResult) {
-      setIsUpdated(true);
-    }
+    geolocationResult ? setIsUpdated(true) : setIsGeolocationProcess(true);
   };
 
   const handleGeolocationClick = async () => {
     if (navigator.geolocation) {
+      setIsGeolocationProcess(true);
       navigator.geolocation.getCurrentPosition(
         async (position: GeolocationPosition) => {
           const updatedCoordinate = {
@@ -322,7 +351,11 @@ export const Account = () => {
           if (geolocationResult) {
             setIsUpdated(true);
           }
-        }
+        },
+        () => {
+          console.log("cannot get the location");
+        },
+        { enableHighAccuracy: true }
       );
     }
     console.log("cannot get the location");
@@ -448,8 +481,19 @@ export const Account = () => {
                   render={({ field: { onChange } }) => (
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <StyledDatePicker
-                        defaultValue={parseISO(profile!.birthday)}
-                        onChange={onChange}
+                        defaultValue={addMinutes(
+                          parseISO(profile!.birthday),
+                          parseISO(profile!.birthday).getTimezoneOffset()
+                        )}
+                        minDate={minDate}
+                        maxDate={today}
+                        onChange={(newValue: any) => {
+                          const adjustedDate = subMinutes(
+                            newValue,
+                            newValue.getTimezoneOffset()
+                          );
+                          onChange(adjustedDate);
+                        }}
                       />
                     </LocalizationProvider>
                   )}
@@ -566,13 +610,17 @@ export const Account = () => {
               <Box>
                 <Button
                   variant="outlined"
-                  disabled={isDisable}
+                  disabled={isDisable || isGeolocationProcess}
                   onClick={handleGeolocationUpdateClick}
                   sx={{ marginRight: "0.5rem" }}
                 >
                   Set Location
                 </Button>
-                <Button variant="outlined" onClick={handleGeolocationClick}>
+                <Button
+                  variant="outlined"
+                  onClick={handleGeolocationClick}
+                  disabled={isGeolocationProcess}
+                >
                   Get Location
                 </Button>
               </Box>
@@ -583,10 +631,32 @@ export const Account = () => {
                 <StyledProperty>City:</StyledProperty>
                 <span>{profile?.geolocation?.location}</span>
               </StyledSubTitle>
-              <StyledSubDivder />
+              {/* <StyledSubDivder /> */}
               <coordinateContext.Provider value={coordinateValue}>
                 <isDisableContext.Provider value={disableValue}>
-                  <Map />
+                  <isGeolocationProcessContext.Provider
+                    value={geolocationProcessValue}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        aspectRatio: "2/1",
+                        position: "relative",
+                      }}
+                    >
+                      <Map />
+                      <Backdrop
+                        sx={{
+                          color: "#fff",
+                          zIndex: (theme) => theme.zIndex.drawer + 1,
+                          position: "absolute",
+                        }}
+                        open={isGeolocationProcess}
+                      >
+                        <CircularProgress color="inherit" />
+                      </Backdrop>
+                    </div>
+                  </isGeolocationProcessContext.Provider>
                 </isDisableContext.Provider>
               </coordinateContext.Provider>
             </StyledSection>

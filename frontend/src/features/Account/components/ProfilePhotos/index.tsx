@@ -2,9 +2,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Grid, styled } from "@mui/material";
 import { _photoClient } from "../../../Discovery/api/photo";
 import { PhotoDialog } from "../PhotoDialog";
-import { Photo } from "../../../../pages/Account";
 import { ImageCropDialog } from "../ImageCropDialog";
 import React from "react";
+import { Photo } from "../../../../types";
 
 export interface IFile {
   url: string;
