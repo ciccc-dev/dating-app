@@ -1,6 +1,8 @@
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import React, { useContext } from "react";
 import { coordinateContext, isDisableContext } from "../../../../pages/Account";
+import { Box } from "@mui/material";
+import styled from "@emotion/styled";
 
 interface ProfileMapProps {
   googleMapsApiKey: string;
@@ -36,7 +38,7 @@ const ProfileMap = ({ googleMapsApiKey }: ProfileMapProps) => {
 
   if (!isLoaded) return <div>Loading...</div>;
 
-  if (coordinate.lat === 9999) return <div>Cannot get geolocation</div>;
+  if (coordinate.lat === 9999) return <StyledBox>No Location Data</StyledBox>;
 
   return (
     <GoogleMap
@@ -49,3 +51,8 @@ const ProfileMap = ({ googleMapsApiKey }: ProfileMapProps) => {
     </GoogleMap>
   );
 };
+
+const StyledBox = styled(Box)`
+  margin: 1rem;
+  font-size: 1.5rem;
+`;
