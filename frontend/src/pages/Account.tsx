@@ -32,6 +32,11 @@ export interface ProfileHookForm {
   birthday: string;
 }
 
+export interface CoordinateMap {
+  lat: number;
+  lng: number;
+}
+
 export interface Coordinate {
   latitude: number;
   longitude: number;
@@ -55,6 +60,11 @@ export interface Profile {
   interests: Item[];
   geolocation: Geolocation;
 }
+
+const defaultCoordinate = {
+  lat: 9999,
+  lng: 9999,
+};
 
 const defaultProfile = {
   id: "",
@@ -90,6 +100,16 @@ export const isUpdateContext = createContext<isUpdateType>({
   setIsUpdated: () => {},
 });
 
+interface coordinateType {
+  coordinate: CoordinateMap;
+  setCoordinate: React.Dispatch<React.SetStateAction<CoordinateMap>>;
+}
+
+export const coordinateContext = createContext<coordinateType>({
+  coordinate: defaultCoordinate,
+  setCoordinate: () => {},
+});
+
 export const Account = () => {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [isUserAccountEditable, setIsUserAccountEditable] = useState(false);
@@ -99,7 +119,8 @@ export const Account = () => {
     isUpdated,
     setIsUpdated,
   };
-
+  const [coordinate, setCoordinate] = useState(defaultCoordinate);
+  const coordinateValue = { coordinate, setCoordinate };
   const [interests, setInterests] = useState<Item[]>([]);
   const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
   const navigate = useNavigate();
@@ -123,7 +144,12 @@ export const Account = () => {
           if (user?.sub) {
             const data = await ProfileClient.getProfile(user.sub);
             setProfile(data);
-            console.log(data);
+            if (data.geolocation) {
+              setCoordinate({
+                lat: parseInt(data.geolocation.latitude),
+                lng: parseInt(data.geolocation.longitude),
+              });
+            }
           }
         }
       } catch (error) {
@@ -497,6 +523,9 @@ export const Account = () => {
             <StyledTitleWrapper>
               <StyledTitle>Your Location</StyledTitle>
               <Button variant="outlined" onClick={handleGeolocationClick}>
+                Set Location
+              </Button>
+              <Button variant="outlined" onClick={handleGeolocationClick}>
                 Get Location
               </Button>
             </StyledTitleWrapper>
@@ -507,18 +536,20 @@ export const Account = () => {
                 <span>{profile?.geolocation?.location}</span>
               </StyledSubTitle>
               <StyledSubDivder />
-              <Map
-                latitude={
-                  typeof profile?.geolocation?.latitude === "string"
-                    ? parseInt(profile?.geolocation?.latitude)
-                    : profile?.geolocation?.latitude
-                }
-                longitude={
-                  typeof profile?.geolocation?.longitude === "string"
-                    ? parseInt(profile?.geolocation?.longitude)
-                    : profile?.geolocation?.longitude
-                }
-              />
+              <coordinateContext.Provider value={coordinateValue}>
+                <Map
+                // latitude={
+                //   typeof profile?.geolocation?.latitude === "string"
+                //     ? parseInt(profile?.geolocation?.latitude)
+                //     : profile?.geolocation?.latitude
+                // }
+                // longitude={
+                //   typeof profile?.geolocation?.longitude === "string"
+                //     ? parseInt(profile?.geolocation?.longitude)
+                //     : profile?.geolocation?.longitude
+                // }
+                />
+              </coordinateContext.Provider>
             </StyledSection>
           </StyledForm>
         </StyledMain>
