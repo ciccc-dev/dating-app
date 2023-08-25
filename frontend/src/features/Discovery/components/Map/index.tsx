@@ -1,6 +1,6 @@
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import React, { useContext } from "react";
-import { coordinateContext } from "../../../../pages/Account";
+import { coordinateContext, isDisableContext } from "../../../../pages/Account";
 
 interface ProfileMapProps {
   googleMapsApiKey: string;
@@ -17,6 +17,7 @@ export const Map = React.memo(() => {
 
 const ProfileMap = ({ googleMapsApiKey }: ProfileMapProps) => {
   const { coordinate, setCoordinate } = useContext(coordinateContext);
+  const { setisDisable } = useContext(isDisableContext);
 
   const handleMarkerDragEnd = (event: google.maps.MapMouseEvent) => {
     if (event.latLng) {
@@ -25,6 +26,7 @@ const ProfileMap = ({ googleMapsApiKey }: ProfileMapProps) => {
         lng: event.latLng.lng(),
       };
       setCoordinate(newLatLng);
+      setisDisable(false);
     }
   };
 

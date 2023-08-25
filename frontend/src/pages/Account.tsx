@@ -95,6 +95,16 @@ interface isUpdateType {
   setIsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+export const isDisableContext = createContext<isDisableType>({
+  isDisable: true,
+  setisDisable: () => {},
+});
+
+interface isDisableType {
+  isDisable: boolean;
+  setisDisable: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export const isUpdateContext = createContext<isUpdateType>({
   isUpdated: false,
   setIsUpdated: () => {},
@@ -120,6 +130,11 @@ export const Account = () => {
     setIsUpdated,
   };
   const [coordinate, setCoordinate] = useState(defaultCoordinate);
+  const [isDisable, setisDisable] = useState(true);
+  const disableValue = {
+    isDisable,
+    setisDisable,
+  };
   const coordinateValue = { coordinate, setCoordinate };
   const [interests, setInterests] = useState<Item[]>([]);
   const [photoUrls, setPhotoUrls] = useState<Photo[]>([]);
@@ -551,6 +566,7 @@ export const Account = () => {
               <Box>
                 <Button
                   variant="outlined"
+                  disabled={isDisable}
                   onClick={handleGeolocationUpdateClick}
                   sx={{ marginRight: "0.5rem" }}
                 >
@@ -569,7 +585,9 @@ export const Account = () => {
               </StyledSubTitle>
               <StyledSubDivder />
               <coordinateContext.Provider value={coordinateValue}>
-                <Map />
+                <isDisableContext.Provider value={disableValue}>
+                  <Map />
+                </isDisableContext.Provider>
               </coordinateContext.Provider>
             </StyledSection>
           </StyledForm>
