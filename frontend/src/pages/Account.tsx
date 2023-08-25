@@ -268,6 +268,32 @@ export const Account = () => {
     }
   };
 
+  const updateGeolocation = async (coordinate: Coordinate) => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token.length !== 0 && process.env.REACT_APP_SERVER_URL) {
+        const GeolocationClient = new _geolocationClient(
+          process.env.REACT_APP_SERVER_URL ?? "",
+          token
+        );
+        await GeolocationClient.updateGeolocation(coordinate, profile.id);
+        return true;
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleGeolocationUpdateClick = async () => {
+    const geolocationResult = await updateGeolocation({
+      latitude: coordinate.lat,
+      longitude: coordinate.lng,
+    });
+    if (geolocationResult) {
+      setIsUpdated(true);
+    }
+  };
+
   const handleGeolocationClick = async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -522,12 +548,18 @@ export const Account = () => {
             </StyledSection>
             <StyledTitleWrapper>
               <StyledTitle>Your Location</StyledTitle>
-              <Button variant="outlined" onClick={handleGeolocationClick}>
-                Set Location
-              </Button>
-              <Button variant="outlined" onClick={handleGeolocationClick}>
-                Get Location
-              </Button>
+              <Box>
+                <Button
+                  variant="outlined"
+                  onClick={handleGeolocationUpdateClick}
+                  sx={{ marginRight: "0.5rem" }}
+                >
+                  Set Location
+                </Button>
+                <Button variant="outlined" onClick={handleGeolocationClick}>
+                  Get Location
+                </Button>
+              </Box>
             </StyledTitleWrapper>
             <StyledDivder />
             <StyledSection>
@@ -537,18 +569,7 @@ export const Account = () => {
               </StyledSubTitle>
               <StyledSubDivder />
               <coordinateContext.Provider value={coordinateValue}>
-                <Map
-                // latitude={
-                //   typeof profile?.geolocation?.latitude === "string"
-                //     ? parseInt(profile?.geolocation?.latitude)
-                //     : profile?.geolocation?.latitude
-                // }
-                // longitude={
-                //   typeof profile?.geolocation?.longitude === "string"
-                //     ? parseInt(profile?.geolocation?.longitude)
-                //     : profile?.geolocation?.longitude
-                // }
-                />
+                <Map />
               </coordinateContext.Provider>
             </StyledSection>
           </StyledForm>

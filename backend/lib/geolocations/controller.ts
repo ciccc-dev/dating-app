@@ -13,10 +13,10 @@ export const putGeolocation = async (
   next: NextFunction
 ) => {
   try {
-    const city =
-      await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
-        req.body.coordinate
-      );
+    const city = await ExterenalGeolocationRepository.fetchGeolocationfromExApi(
+      req.body.coordinate
+    );
+
     const { id, profileId, location, latitude, longitude } =
       new ProfileGeolocation(
         req.body.profileId,
@@ -40,37 +40,25 @@ export const putGeolocation = async (
   }
 };
 
-// export const updateGeolocationByProfileId = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const geolocation =
-//       await ExterenalGeolocationRepository.fetchGeolocationfromExterenalApi(
-//         req.body.ipaddress
-//       );
-
-//     await GeolocationRepository.updateGeolocationByProfileId(
-//       req.body.profileId,
-//       geolocation
-//     );
-//     res.status(201).json();
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
-export const getGeolocationDistance = async (
+export const updateGeolocationByProfileId = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    // await GeolocationRepository.fetchGeolocation(
-    //   req.body.longitude,
-    //   req.body.latitude
-    // );
+    const city = await ExterenalGeolocationRepository.fetchGeolocationfromExApi(
+      req.body.coordinate
+    );
+
+    const geolocation = {
+      latitude: req.body.coordinate.latitude,
+      longitude: req.body.coordinate.longitude,
+      location: city,
+    };
+    await GeolocationRepository.updateGeolocationByProfileId(
+      req.body.profileId,
+      geolocation
+    );
     res.status(201).json();
   } catch (err) {
     next(err);

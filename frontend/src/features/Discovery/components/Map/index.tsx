@@ -38,7 +38,7 @@ const ProfileMap = ({ googleMapsApiKey }: ProfileMapProps) => {
 
   return (
     <GoogleMap
-      zoom={16}
+      zoom={12}
       center={coordinate}
       mapContainerClassName="map-container"
       mapContainerStyle={{ width: "100%", aspectRatio: 2 / 1 }}

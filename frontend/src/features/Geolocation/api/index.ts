@@ -26,4 +26,21 @@ export class _geolocationClient {
       throw error;
     }
   };
+
+  updateGeolocation = async (coordinate: Coordinate, profileId: string) => {
+    try {
+      const res = await axios({
+        url: `${this.apiUrl}/api/geolocation/update`,
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        data: { coordinate: coordinate, profileId: profileId },
+      });
+      return res.data;
+    } catch (error) {
+      throw error;
+    }
+  };
 }

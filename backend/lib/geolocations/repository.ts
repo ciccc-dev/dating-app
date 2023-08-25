@@ -57,7 +57,7 @@ class _GeolocationRepository {
 }
 
 class _ExternalGeolocationRepository {
-  fetchGeolocationfromExterenalApi = async (coordinate: Coordinate) => {
+  fetchGeolocationfromExApi = async (coordinate: Coordinate) => {
     const apiUrl = process.env.GOOGLE_MAPS_API_URL;
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
     const geolocationUrl = `${apiUrl}/maps/api/geocode/json?latlng=${coordinate.latitude},${coordinate.longitude}&result_type=locality&key=${apiKey}`;
