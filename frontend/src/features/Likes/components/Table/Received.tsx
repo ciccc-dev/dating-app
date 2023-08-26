@@ -35,8 +35,8 @@ export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
       <TableCell sx={{ width: "20%" }}>Name</TableCell>
       <TableCell sx={{ width: "10%" }}>Age</TableCell>
       <TableCell sx={{ width: "10%" }}>Gender</TableCell>
-      <TableCell sx={{ width: "40%" }}>Recieved First Message</TableCell>
-      <TableCell sx={{ width: "20%" }}></TableCell>
+      <TableCell sx={{ width: "50%" }}>Recieved First Message</TableCell>
+      <TableCell sx={{ width: "10%" }}></TableCell>
     </TableRow>
   );
 
@@ -44,7 +44,8 @@ export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
     <>
       <StyledTableRow key={profile.id}>
         <TableCell>{profile.userName}</TableCell>
-        <TableCell>{profile.aboutMe}</TableCell>
+        <TableCell>{profile.age}</TableCell>
+        <TableCell>{profile.gender}</TableCell>
         <TableCell>
           {profile.userId in initialMessages
             ? initialMessages[profile.userId].message
