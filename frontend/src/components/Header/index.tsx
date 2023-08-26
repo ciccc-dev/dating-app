@@ -13,20 +13,20 @@ interface Props {
 
 export const Header = ({ user }: Props) => {
   return (
-    <Box sx={{ flexGrow: 1 }} color="inherit">
-      <AppBar position="static">
+    <Box sx={{ flexGrow: 1 }} color='inherit'>
+      <AppBar position='static'>
         <Toolbar>
           <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
+            size='large'
+            edge='start'
+            color='inherit'
+            aria-label='menu'
             sx={{ mr: 2 }}
           ></IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Matching App
+          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+            The Three
           </Typography>
-          <Button color="inherit">{user?.name || <LoginButton />}</Button>
+          <Button color='inherit'>{user?.name || <LoginButton />}</Button>
         </Toolbar>
       </AppBar>
     </Box>
