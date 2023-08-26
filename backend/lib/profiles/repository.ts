@@ -75,7 +75,7 @@ class _ProfileRepository {
     const oldBirthday = convertAgetoDate(filter.maxAge());
     const interests = filter.interests().map((interest: Item) => interest.name);
 
-    console.log(gender);
+    console.log(longitude, latitude);
     //     const fetchProfiles = await this.db.$queryRaw<
     //       PrismaPromise<FilteredProfile[]>
     //     >`
@@ -165,87 +165,87 @@ class _ProfileRepository {
       PrismaPromise<FilteredProfile[]>
     >(
       Prisma.sql`
-        WITH profile_distance AS (
-          SELECT
-            pr.id,
-            CEILING(st_distance(st_makepoint(${longitude}, ${latitude}),
-              st_makepoint(g.longitude, g.latitude))) AS "distance"
-          FROM profile pr
-          JOIN geolocation g ON g.profile_id = pr.id
-        )
+      WITH profile_distance AS (
         SELECT
-          pr.id AS "id",
-          pr.user_id AS "userId",
-          pr.user_name AS "userName",
-          pr.birthday AS "birthday",
-          pr.gender AS "gender",
-          pr.sexual_orientation AS "sexualOrientation",
-          pr.about_me AS "aboutMe",
-          pd.distance AS "distance",
-          json_agg(DISTINCT jsonb_build_object(
-            'name', pu.name
-          )) AS purposes,
-          json_agg(DISTINCT jsonb_build_object(
-            'name', inte.name
-          )) AS interests,
-          json_agg(DISTINCT jsonb_build_object(
-            'id', ph.id,
-            'photoUrl', ph.photo_url
-          )) AS "photos"
+          pr.id,
+          CEILING(st_distance(st_makepoint(${longitude}, ${latitude}),
+            st_makepoint(g.longitude, g.latitude))) AS "distance"
         FROM profile pr
-        LEFT OUTER JOIN photo_url ph ON ph.profile_id = pr.id
-        LEFT OUTER JOIN "_InterestToProfile" intp ON intp."B" = pr.id
-        LEFT OUTER JOIN interest inte ON inte.id =  intp."A"
-        LEFT OUTER JOIN purpose pu ON pu.profile_id = pr.id
-        LEFT OUTER JOIN profile_distance pd ON pd.id = pr.id
-        WHERE
-          pr.id != ${filter.profileId()}::uuid
-          AND pr.id NOT IN (SELECT unselected_profile FROM profile_unselected
-          WHERE unselected_by = ${filter.profileId()}::uuid)
-          AND pr.user_id NOT IN (SELECT received_by FROM likes
-          WHERE sent_by = ${userId})
-          ${gender ? Prisma.sql`AND pr.gender = ${gender}` : Prisma.sql``}
-          ${
-            filter.isAgeFiltered()
-              ? Prisma.sql`AND pr.birthday >= ${oldBirthday} AND pr.birthday <= ${newBirthday}`
-              : Prisma.sql``
-          }
-          ${
-            filter.isSexualOrientationFiltered() &&
-            filter.sexualOrientations().length > 0
-              ? Prisma.sql`AND pr.sexual_orientation IN (${Prisma.join(
-                  filter.sexualOrientations()
-                )})`
-              : Prisma.sql``
-          }
-          ${
-            filter.isPurposeFiltered() && filter.purposes().length > 0
-              ? Prisma.sql`AND pr.id IN (
-              SELECT pr.id
-              FROM profile pr
-              JOIN purpose pu ON pu.profile_id = pr.id
-              WHERE pu.name IN (${Prisma.join(filter.purposes())}))`
-              : Prisma.sql``
-          }
-          ${
-            filter.isInterestFiltered() && filter.interests().length > 0
-              ? Prisma.sql`AND pr.id IN (
-              SELECT pr.id
-              FROM profile pr
-              JOIN "_InterestToProfile" intp ON intp."B" = pr.id
-              JOIN interest inte ON inte.id = intp."A"
-              WHERE inte.name IN (${Prisma.join(interests)}))`
-              : Prisma.sql``
-          }
-          ${
-            filter.isDistanceFiltered()
-              ? Prisma.sql`AND pd.distance <= ${filter.distance()}`
-              : Prisma.sql`AND (pd.distance <= 100 OR pd.distance IS NULL)`
-          }
-          GROUP BY pr.id, pd.distance
-          ORDER BY RANDOM()
-          LIMIT 3
-      `
+        JOIN geolocation g ON g.profile_id = pr.id
+      )
+      SELECT
+        pr.id AS "id",
+        pr.user_id AS "userId",
+        pr.user_name AS "userName",
+        pr.birthday AS "birthday",
+        pr.gender AS "gender",
+        pr.sexual_orientation AS "sexualOrientation",
+        pr.about_me AS "aboutMe",
+        pd.distance AS "distance",
+        json_agg(DISTINCT jsonb_build_object(
+          'name', pu.name
+        )) AS purposes,
+        json_agg(DISTINCT jsonb_build_object(
+          'name', inte.name
+        )) AS interests,
+        json_agg(DISTINCT jsonb_build_object(
+          'id', ph.id,
+          'photoUrl', ph.photo_url
+        )) AS "photos"
+      FROM profile pr
+      LEFT OUTER JOIN photo_url ph ON ph.profile_id = pr.id
+      LEFT OUTER JOIN "_InterestToProfile" intp ON intp."B" = pr.id
+      LEFT OUTER JOIN interest inte ON inte.id = intp."A"
+      LEFT OUTER JOIN purpose pu ON pu.profile_id = pr.id
+      LEFT OUTER JOIN profile_distance pd ON pd.id = pr.id
+      WHERE
+        pr.id != ${filter.profileId()}::uuid
+        AND pr.id NOT IN (SELECT unselected_profile FROM profile_unselected
+        WHERE unselected_by = ${filter.profileId()}::uuid)
+        AND pr.user_id NOT IN (SELECT received_by FROM likes
+        WHERE sent_by = ${userId})
+        ${gender ? Prisma.sql`AND pr.gender = ${gender}` : Prisma.sql``}
+        ${
+          filter.isAgeFiltered()
+            ? Prisma.sql`AND pr.birthday >= ${oldBirthday} AND pr.birthday <= ${newBirthday}`
+            : Prisma.sql``
+        }
+        ${
+          filter.isSexualOrientationFiltered() &&
+          filter.sexualOrientations().length > 0
+            ? Prisma.sql`AND pr.sexual_orientation IN (${Prisma.join(
+                filter.sexualOrientations()
+              )})`
+            : Prisma.sql``
+        }
+        ${
+          filter.isPurposeFiltered() && filter.purposes().length > 0
+            ? Prisma.sql`AND pr.id IN (
+            SELECT pr.id
+            FROM profile pr
+            JOIN purpose pu ON pu.profile_id = pr.id
+            WHERE pu.name IN (${Prisma.join(filter.purposes())}))`
+            : Prisma.sql``
+        }
+        ${
+          filter.isInterestFiltered() && filter.interests().length > 0
+            ? Prisma.sql`AND pr.id IN (
+            SELECT pr.id
+            FROM profile pr
+            JOIN "_InterestToProfile" intp ON intp."B" = pr.id
+            JOIN interest inte ON inte.id = intp."A"
+            WHERE inte.name IN (${Prisma.join(interests)}))`
+            : Prisma.sql``
+        }
+        ${
+          filter.isDistanceFiltered()
+            ? Prisma.sql`AND pd.distance <= ${filter.distance()}`
+            : Prisma.sql`AND (pd.distance <= 100 OR pd.distance IS NULL)`
+        }
+        GROUP BY pr.id, pd.distance
+        ORDER BY RANDOM()
+        LIMIT 3
+    `
     );
 
     const convertedProfiles = fetchProfiles.map(({ birthday, ...rest }) => ({
