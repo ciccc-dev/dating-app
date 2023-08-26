@@ -43,7 +43,7 @@ export const Purpose = ({ values, onChange, onChangePhase }: Props) => {
     <StyledWrapper>
       <Wrapper>
         <Typography variant='h2' gutterBottom align='center'>
-          I want to Find
+          I want to find
         </Typography>
       </Wrapper>
       <Wrapper>
