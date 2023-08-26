@@ -48,11 +48,11 @@ export const Likes = () => {
         <LikesNavigation onClick={handleChangeCategory} />
       </StyledNavigationWrapper>
       <StyledContent>
-        <StyleTableTitle variant="h5">{`${state.category} LIKES`}</StyleTableTitle>
+        <StyleTableTitle variant='h5'>{`${state.category} LIKES`}</StyleTableTitle>
         {state.category === "MATCHED" && <MatchedTable profiles={profiles} />}
         {state.category === "SENT" && <SentLikesTable profiles={profiles} />}
         {state.category === "RECEIVED" && (
-          <ReceivedLikesTable profiles={profiles} />
+          <ReceivedLikesTable profiles={profiles} matchedProfile={matched} />
         )}
       </StyledContent>
     </StyledWrapper>
