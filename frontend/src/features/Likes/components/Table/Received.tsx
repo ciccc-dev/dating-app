@@ -13,7 +13,13 @@ import { Message } from "../../../Messages/types";
 import { useCreateLike } from "../../../../hooks/useCreateLike";
 import { Profile } from "../../../../types";
 
-export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
+export const ReceivedLikesTable = ({
+  profiles,
+  matchedProfile,
+}: {
+  profiles: Profile[];
+  matchedProfile: Profile[];
+}) => {
   const messages = useFetchMessages();
   const [isOpen, { open, close }] = useDialogState();
   const [{ result, message }, CreateLike] = useCreateLike();
@@ -52,13 +58,15 @@ export const ReceivedLikesTable = ({ profiles }: { profiles: Profile[] }) => {
             : null}
         </TableCell>
         <TableCell>
-          <Button
-            id={profile.userId}
-            variant="contained"
-            onClick={handleClickApproveButton}
-          >
-            Approve
-          </Button>
+          {!matchedProfile.map((x) => x.id).includes(profile.id) ? (
+            <Button
+              id={profile.userId}
+              variant='contained'
+              onClick={handleClickApproveButton}
+            >
+              Approve
+            </Button>
+          ) : null}
         </TableCell>
       </StyledTableRow>
     </>
